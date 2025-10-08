@@ -205,7 +205,7 @@
 
         await db.collection("employees").add({
           employeeId,
-          detail,
+          details,
           photoURL,
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
