@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Anuphan&display=swap" rel="stylesheet">
+    <style>
+        /* CSS เหมือนเดิม ไม่มีการเปลี่ยนแปลง */
+        body { font-family: 'Anuphan', sans-serif; background: #f0f2f5; margin: 0; padding: 2rem; }
+        h2 { text-align: center; color: #333; margin-bottom: 2rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 1rem; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: .5rem; text-align: center; font-size: .8rem; }
+        .card img { width: 80px; height: 80px; border-radius: 8px; cursor: pointer; object-fit: cover; }
+        #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 999; padding: 1rem; box-sizing: border-box; }
+        .lightbox-content { position: relative; text-align: center; background: white; border-radius: 12px; padding: 1.5rem; max-width: 500px; width: 100%; }
+        .lightbox-content img { max-width: 100%; max-height: 70vh; border-radius: 8px; display: block; }
+        .lightbox-details { color: #333; margin: 1rem 0; text-align: left; }
+        .lightbox-details p { margin: 0.5rem 0; font-size: 1rem; }
+        .lightbox-buttons { margin-top: 1rem; }
+        .lightbox-buttons button { font-family: 'Anuphan', sans-serif; padding: 0.8rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; margin: 0 0.5rem; }
+        #delete-btn { background-color: #e74c3c; color: white; }
+        #close-btn { background-color: #7f8c8d; color: white; }
+    </style>
+</head>
+<body>
+    <h2>รายชื่อพนักงาน</h2>
+    <div class="grid" id="employeeGrid"></div>
+
+    <div id="lightbox">
+        <div class="lightbox-content">
+            <img id="lightbox-img" src="" alt="Full Image">
+            <div id="lightbox-details" class="lightbox-details"></div>
+            <div class="lightbox-buttons">
+                <button id="delete-btn">ลบข้อมูล</button>
+                <button id="close-btn">ปิด</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.5.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.5.0/firebase-firestore.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "faifah-ttb.firebaseapp.com",
+            projectId: "faifah-ttb",
+            storageBucket: "faifah-ttb.appspot.com",
+            messagingSenderId: "842980876200",
+            appId: "1:842980876200:web:f33bfad2ccbf263075079d",
+            measurementId: "G-DFMSBDT6W8"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const grid = document.getElementById("employeeGrid");
+        const lightbox = document.getElementById("lightbox");
+        const lightboxImg = document.getElementById("lightbox-img");
+        const lightboxDetails = document.getElementById("lightbox-details");
+        const deleteBtn = document.getElementById("delete-btn");
+        const closeBtn = document.getElementById("close-btn");
+
+        let currentDocId = null;
+
+        db.collection("employees").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+            grid.innerHTML = "";
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const card = document.createElement("div");
+                card.className = "card";
+
+                // ✨ จุดที่แก้ไข: ดึง URL ของ thumbnail มาใช้
+                // ถ้ามีฟิลด์ resized_200x200 ให้ใช้, ถ้าไม่มีให้ใช้ photoURL เดิม (เผื่อรูปเก่า)
+                const thumbnailUrl = data.resized_200x200 || data.photoURL;
+
+                card.innerHTML = `
+                    <img src="${thumbnailUrl}" 
+                         alt="Employee Photo"
+                         loading="lazy" data-full-image-url="${data.photoURL}" data-doc-id="${doc.id}"
+                         data-employee-id="${data.employeeId}"
+                         data-details="${data.details || 'ไม่มีรายละเอียด'}">
+                    <div class="id">รหัส: ${data.employeeId}</div>
+                `;
+                grid.appendChild(card);
+            });
+        });
+
+        grid.addEventListener("click", function(e) {
+            if (e.target.tagName === "IMG") {
+                // ✨ จุดที่แก้ไข: ดึง URL รูปเต็มจาก data attribute เพื่อไปแสดงใน lightbox
+                const fullImageUrl = e.target.dataset.fullImageUrl;
+                const docId = e.target.dataset.docId;
+                const employeeId = e.target.dataset.employeeId;
+                const details = e.target.dataset.details;
+                
+                openLightbox(fullImageUrl, docId, employeeId, details);
+            }
+        });
+
+        // ฟังก์ชัน openLightbox, closeLightbox, deleteData เหมือนเดิม ไม่มีการเปลี่ยนแปลง
+        function openLightbox(url, docId, employeeId, details) {
+            currentDocId = docId;
+            lightboxImg.src = url;
+            lightboxDetails.innerHTML = `
+                <p><strong>รหัสพนักงาน:</strong> ${employeeId}</p>
+                <p><strong>รายละเอียด:</strong> ${details}</p>
+            `;
+            lightbox.style.display = "flex";
+        }
+
+        function closeLightbox() {
+            lightbox.style.display = "none";
+            currentDocId = null;
+        }
+
+        async function deleteData() {
+            if (!currentDocId) return;
+            if (confirm("คุณต้องการลบข้อมูลนี้ใช่หรือไม่?")) {
+                try {
+                    await db.collection("employees").doc(currentDocId).delete();
+                    closeLightbox();
+                } catch (error) {
+                    console.error("Error removing document: ", error);
+                    alert("เกิดข้อผิดพลาดในการลบข้อมูล");
+                }
+            }
+        }
+
+        closeBtn.addEventListener("click", closeLightbox);
+        deleteBtn.addEventListener("click", deleteData);
+        lightbox.addEventListener("click", function (e) {
+            if (e.target.id === 'lightbox') {
+                closeLightbox();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>อัปโหลดรูปพนักงาน</title>
+  <link href="https://fonts.googleapis.com/css2?family=Anuphan&display=swap" rel="stylesheet">
+  <style> 
+    .reldy {
+      font-family: 'Anuphan', sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      font-family: 'Anuphan', sans-serif;
+      margin:auto;
+      background: white;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 80%;
+    }
+    h2, h3 {
+      font-family: 'Anuphan', sans-serif;
+      text-align: center;
+      color: #333;
+    }
+    h2 {
+      font-size: 1.2em;
+      line-height: 15px;
+    }
+    h3 {
+      font-size: .9em;
+    }
+    input[type="text"], input[type="file"] {
+      font-family: 'Anuphan', sans-serif;
+      width: 90%;
+      padding: 0.8rem;
+      margin: .5rem 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      font-family: 'Anuphan', sans-serif;
+      width: 100%;
+      padding: 0.8rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .message {
+      margin-top: 1rem;
+      text-align: center;
+      color: green;
+    }
+    .img {
+      margin: 25px auto 15px auto;
+    }
+
+    /* Lightbox styles */
+    #lightbox {
+      font-family: 'Anuphan', sans-serif;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .lightbox-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 70%;
+      text-align: center;
+      position: relative;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px; right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    .lightbox-content img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="img">
+    <center>
+      <div style="margin-top:25px;">
+        <h2>CRSG Summit 2025</h2>
+        <h3 style="margin-top:-10px;">24 November 2025 (09:00-21:00)</h3>
+        <img src="./upload.png" style="width:80%; max-width: 350px;">
+      </div>
+    </center>
+  </div>
+
+  <div class="container">
+    <h3 style="margin-top:10px;">ภาพย้อนอดีตของคุณ</h3>
+    <form id="uploadForm">
+      <input type="text" id="employeeId" placeholder="รหัสพนักงาน" required />
+      <input type="file" id="employeePhoto" accept="image/*" required />
+      <textarea id="employeeDetail" placeholder="บอกรายละเอียดเกี่ยวกับภาพถ่ายนี้" maxlength="256" rows="4" style="width:90%; padding:0.8rem; margin:.5rem 0; border:1px solid #ccc; border-radius:8px; font-family:'Anuphan', sans-serif;"></textarea>
+      <button type="submit">ส่งภาพกิจกรรม</button>
+    </form>
+    <div class="message" id="message"></div>
+  </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox">
+    <div class="lightbox-content">
+      <span class="close-btn" onclick="closeLightbox()">×</span>
+      <div id="lightbox-body"></div>
+    </div>
+  </div>
+  <div style="height: 25px;"></div>
+
+  <!-- Firebase SDK v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAciknEYhZU7AwOdfYytC1t_AnW2Ee11us",
+      authDomain: "faifah-ttb.firebaseapp.com",
+      databaseURL: "https://file-upload-faifah-ttb.firebaseio.com",
+      databaseURL: "https://file-upload-6f4fc.firebaseio.com",
+      projectId: "faifah-ttb",
+      storageBucket: "faifah-ttb.appspot.com",
+      messagingSenderId: "842980876200",
+      appId: "1:842980876200:web:f33bfad2ccbf263075079d",
+      measurementId: "G-DFMSBDT6W8"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const storage = firebase.storage();
+    const db = firebase.firestore();
+
+    function showLightbox(contentHTML) {
+      document.getElementById("lightbox-body").innerHTML = contentHTML;
+      document.getElementById("lightbox").style.display = "flex";
+    }
+
+    function closeLightbox() {
+      document.getElementById("lightbox").style.display = "none";
+    }
+
+    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const employeeId = document.getElementById("employeeId").value.trim();
+      const detail = document.getElementById("employeeDetail").value.trim();
+      const file = document.getElementById("employeePhoto").files[0];
+      const message = document.getElementById("message");
+      const button = document.querySelector("button");
+
+      if (!employeeId || !file || !detail) {
+        message.textContent = "กรุณากรอกข้อมูลให้ครบถ้วน";
+        return;
+      }
+
+      if (file.size > 3 * 1024 * 1024) {
+        showLightbox(`
+          <img src="./error.gif">
+          <p style="margin-top:-20px;">ขนาดไฟล์เกิน 3MB ❌</p>
+          <br/><button onclick="closeLightbox()">ปิดหน้าต่างนี้</button>
+        `);
+        return;
+      }
+
+      button.disabled = true;
+      showLightbox(`
+        <img src="./upload.gif" alt="imation: blink 1s infinite;">Uploading...</p>
+        <style>
+          @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+          }
+        </style>
+      `);
+
+      try {
+        const storageRef = storage.ref(`photos/${employeeId}_${Date.now()}.jpg`);
+        await storageRef.put(file);
+        const photoURL = await storageRef.getDownloadURL();
+
+        await db.collection("employees").add({
+          employeeId,
+          detail,
+          photoURL,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        showLightbox(`
+          <img src="./done.gif"><p style="color:green;">Upload Done!!! ✅</p>
+          <br/><button onclick="location.reload()">ปิดหน้าต่างนี้</button>
+        `);
+        document.getElementById("uploadForm").reset();
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาด:", error);
+        showLightbox("<p>เกิดข้อผิดพลาดในการส่งข้อมูล ❌</p>");
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
