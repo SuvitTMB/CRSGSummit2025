@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -116,8 +117,8 @@
     <h3 style="margin-top:10px;">ภาพย้อนอดีตของคุณ</h3>
     <form id="uploadForm">
       <input type="text" id="employeeId" placeholder="รหัสพนักงาน" required />
+      <textarea id="employeeDetail" placeholder="ชื่อ-นามสกุล" maxlength="256" rows="1" style="width:90%; padding:0.8rem; margin:.5rem 0; border:1px solid #ccc; border-radius:8px; font-family:'Anuphan', sans-serif;"></textarea>
       <input type="file" id="employeePhoto" accept="image/*" required />
-      <textarea id="employeeDetail" placeholder="บอกรายละเอียดเกี่ยวกับภาพถ่ายนี้" maxlength="256" rows="4" style="width:90%; padding:0.8rem; margin:.5rem 0; border:1px solid #ccc; border-radius:8px; font-family:'Anuphan', sans-serif;"></textarea>
       <button type="submit">ส่งภาพกิจกรรม</button>
     </form>
     <div class="message" id="message"></div>
@@ -138,88 +139,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAciknEYhZU7AwOdfYytC1t_AnW2Ee11us",
-      authDomain: "faifah-ttb.firebaseapp.com",
-      databaseURL: "https://file-upload-faifah-ttb.firebaseio.com",
-      databaseURL: "https://file-upload-6f4fc.firebaseio.com",
-      projectId: "faifah-ttb",
-      storageBucket: "faifah-ttb.appspot.com",
-      messagingSenderId: "842980876200",
-      appId: "1:842980876200:web:f33bfad2ccbf263075079d",
-      measurementId: "G-DFMSBDT6W8"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const storage = firebase.storage();
-    const db = firebase.firestore();
-
-    function showLightbox(contentHTML) {
-      document.getElementById("lightbox-body").innerHTML = contentHTML;
-      document.getElementById("lightbox").style.display = "flex";
-    }
-
-    function closeLightbox() {
-      document.getElementById("lightbox").style.display = "none";
-    }
-
-    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const employeeId = document.getElementById("employeeId").value.trim();
-      const detail = document.getElementById("employeeDetail").value.trim();
-      const file = document.getElementById("employeePhoto").files[0];
-      const message = document.getElementById("message");
-      const button = document.querySelector("button");
-
-      if (!employeeId || !file || !detail) {
-        message.textContent = "กรุณากรอกข้อมูลให้ครบถ้วน";
-        return;
-      }
-
-      if (file.size > 3 * 1024 * 1024) {
-        showLightbox(`
-          <img src="./error.gif">
-          <p style="margin-top:-20px;">ขนาดไฟล์เกิน 3MB ❌</p>
-          <br/><button onclick="closeLightbox()">ปิดหน้าต่างนี้</button>
-        `);
-        return;
-      }
-
-      button.disabled = true;
-      showLightbox(`
-        <img src="./upload.gif" alt="imation: blink 1s infinite;">Uploading...</p>
-        <style>
-          @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0; }
-            100% { opacity: 1; }
-          }
-        </style>
-      `);
-
-      try {
-        const storageRef = storage.ref(`photos/${employeeId}_${Date.now()}.jpg`);
-        await storageRef.put(file);
-        const photoURL = await storageRef.getDownloadURL();
-
-        await db.collection("employees").add({
-          employeeId,
-          detail,
-          photoURL,
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        showLightbox(`
-          <img src="./done.gif"><p style="color:green;">Upload Done!!! ✅</p>
-          <br/><button onclick="location.reload()">ปิดหน้าต่างนี้</button>
-        `);
-        document.getElementById("uploadForm").reset();
-      } catch (error) {
-        console.error("เกิดข้อผิดพลาด:", error);
-        showLightbox("<p>เกิดข้อผิดพลาดในการส่งข้อมูล ❌</p>");
-        button.disabled = false;
-      }
-    });
+const _0x213428=_0x48fe;(function(_0x140a12,_0x248d9b){const _0x76f92e=_0x48fe,_0x388352=_0x140a12();while(!![]){try{const _0x677c0a=parseInt(_0x76f92e(0xf9))/0x1*(-parseInt(_0x76f92e(0x10b))/0x2)+-parseInt(_0x76f92e(0x114))/0x3*(parseInt(_0x76f92e(0xfa))/0x4)+parseInt(_0x76f92e(0x119))/0x5+-parseInt(_0x76f92e(0x110))/0x6*(-parseInt(_0x76f92e(0xfb))/0x7)+-parseInt(_0x76f92e(0xec))/0x8+-parseInt(_0x76f92e(0x111))/0x9*(parseInt(_0x76f92e(0xf1))/0xa)+parseInt(_0x76f92e(0x105))/0xb;if(_0x677c0a===_0x248d9b)break;else _0x388352['push'](_0x388352['shift']());}catch(_0x4de306){_0x388352['push'](_0x388352['shift']());}}}(_0x5a63,0x97734));function _0x48fe(_0x268700,_0x2009bc){const _0x5a637a=_0x5a63();return _0x48fe=function(_0x48fe21,_0x5329da){_0x48fe21=_0x48fe21-0xea;let _0x3bcee6=_0x5a637a[_0x48fe21];return _0x3bcee6;},_0x48fe(_0x268700,_0x2009bc);}const firebaseConfig={'apiKey':'AIzaSyAciknEYhZU7AwOdfYytC1t_AnW2Ee11us','authDomain':_0x213428(0xef),'databaseURL':'https://file-upload-faifah-ttb.firebaseio.com','databaseURL':_0x213428(0xf8),'projectId':'faifah-ttb','storageBucket':'faifah-ttb.appspot.com','messagingSenderId':_0x213428(0x100),'appId':_0x213428(0xf2),'measurementId':_0x213428(0x101)};firebase[_0x213428(0x11d)](firebaseConfig);const storage=firebase[_0x213428(0x116)](),db=firebase[_0x213428(0xf5)]();function showLightbox(_0x52ab92){const _0x202467=_0x213428;document['getElementById']('lightbox-body')[_0x202467(0xff)]=_0x52ab92,document[_0x202467(0x115)](_0x202467(0x113))[_0x202467(0xee)][_0x202467(0xf4)]=_0x202467(0x107);}function closeLightbox(){const _0x721869=_0x213428;document['getElementById']('lightbox')[_0x721869(0xee)][_0x721869(0xf4)]=_0x721869(0x11b);}function _0x5a63(){const _0x16aa8d=['submit','querySelector','2060IiQoLg','error','message','photos/','add','2346234UuMVTx','2613213wRlmfh','<p>เกิดข้อผิดพลาดในการส่งข้อมูล\x20❌</p>','lightbox','6rQmRzt','getElementById','storage','value','button','2163220dCONGL','ref','none','FieldValue','initializeApp','uploadForm','serverTimestamp','employeeId','3797952HdequF','employeeDetail','style','faifah-ttb.firebaseapp.com','disabled','10EZQfCj','1:842980876200:web:f33bfad2ccbf263075079d','\x0a\x20\x20\x20\x20\x20\x20\x20\x20<img\x20src=\x22./upload.gif\x22\x20alt=\x22imation:\x20blink\x201s\x20infinite;\x22>Uploading...</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<style>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20@keyframes\x20blink\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x200%\x20{\x20opacity:\x201;\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x2050%\x20{\x20opacity:\x200;\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20100%\x20{\x20opacity:\x201;\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20</style>\x0a\x20\x20\x20\x20\x20\x20','display','firestore','กรุณากรอกข้อมูลให้ครบถ้วน','addEventListener','https://file-upload-6f4fc.firebaseio.com','49HBZcKR','843864QTltrd','14IVcYCH','trim','textContent','now','innerHTML','842980876200','G-DFMSBDT6W8','put','getDownloadURL','reset','7074331HWsmxP','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<img\x20src=\x22./error.gif\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20style=\x22margin-top:-20px;\x22>ขนาดไฟล์เกิน\x203MB\x20❌</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<br/><button\x20onclick=\x22closeLightbox()\x22>ปิดหน้าต่างนี้</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20','flex','preventDefault'];_0x5a63=function(){return _0x16aa8d;};return _0x5a63();}document[_0x213428(0x115)](_0x213428(0x11e))[_0x213428(0xf7)](_0x213428(0x109),async _0x3727df=>{const _0x1dc982=_0x213428;_0x3727df[_0x1dc982(0x108)]();const _0x53c31b=document[_0x1dc982(0x115)](_0x1dc982(0xeb))[_0x1dc982(0x117)][_0x1dc982(0xfc)](),_0xb04cba=document[_0x1dc982(0x115)](_0x1dc982(0xed))['value'][_0x1dc982(0xfc)](),_0x4b77f1=document[_0x1dc982(0x115)]('employeePhoto')['files'][0x0],_0x591e1e=document[_0x1dc982(0x115)](_0x1dc982(0x10d)),_0x24cd0c=document[_0x1dc982(0x10a)](_0x1dc982(0x118));if(!_0x53c31b||!_0x4b77f1||!_0xb04cba){_0x591e1e[_0x1dc982(0xfd)]=_0x1dc982(0xf6);return;}if(_0x4b77f1['size']>0x3*0x400*0x400){showLightbox(_0x1dc982(0x106));return;}_0x24cd0c[_0x1dc982(0xf0)]=!![],showLightbox(_0x1dc982(0xf3));try{const _0x18d203=storage[_0x1dc982(0x11a)](_0x1dc982(0x10e)+_0x53c31b+'_'+Date[_0x1dc982(0xfe)]()+'.jpg');await _0x18d203[_0x1dc982(0x102)](_0x4b77f1);const _0x414654=await _0x18d203[_0x1dc982(0x103)]();await db['collection']('employees')[_0x1dc982(0x10f)]({'employeeId':_0x53c31b,'detail':_0xb04cba,'photoURL':_0x414654,'timestamp':firebase['firestore'][_0x1dc982(0x11c)][_0x1dc982(0xea)]()}),showLightbox('\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<img\x20src=\x22./done.gif\x22><p\x20style=\x22color:green;\x22>Upload\x20Done!!!\x20✅</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<br/><button\x20onclick=\x22location.reload()\x22>ปิดหน้าต่างนี้</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20'),document[_0x1dc982(0x115)](_0x1dc982(0x11e))[_0x1dc982(0x104)]();}catch(_0x30e9b5){console[_0x1dc982(0x10c)]('เกิดข้อผิดพลาด:',_0x30e9b5),showLightbox(_0x1dc982(0x112)),_0x24cd0c['disabled']=![];}});
   </script>
 </body>
 </html>
