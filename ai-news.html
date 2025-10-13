@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Financial Assistant - ผู้ช่วยการลงทุน AI</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Sarabun & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Sarabun', 'Inter', sans-serif;
+            background-color: #F8F9FC; /* Light gray background */
+        }
+        .pulse-indicator { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .content-fade-in { animation: fadeIn 0.8s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .main-card { background: linear-gradient(135deg, #0d9488, #0f766e); }
+        .nav-link-active { color: #0d9488; font-weight: 600; }
+        /* Chat bubble styles */
+        .chat-bubble-ai { background-color: #ffffff; border: 1px solid #e2e8f0; }
+        .chat-bubble-user { background-color: #ccefe8; }
+        .thinking-bubble span { animation: bounce 1.4s infinite ease-in-out both; }
+        .thinking-bubble span:nth-child(1) { animation-delay: -0.32s; }
+        .thinking-bubble span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+
+        /* --- NEW: AI Loading Animation Styles --- */
+        .ai-loader-container svg {
+            width: 120px;
+            height: 120px;
+        }
+        .ai-loader-outer-ring {
+            stroke: #d1fae5; /* teal-100 */
+        }
+        .ai-loader-inner-ring {
+            stroke: #6ee7b7; /* teal-300 */
+            animation: rotate 4s linear infinite;
+            transform-origin: center;
+        }
+        .ai-loader-brain-pulse {
+            fill: #a7f3d0; /* teal-200 */
+            animation: brain-pulse 2s ease-in-out infinite;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes brain-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <!-- Header Section -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-20 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <!-- Logo -->
+            <div class="flex items-center space-x-3">
+                <div class="bg-teal-500 p-2 rounded-lg"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-candlestick-chart"><path d="M3 3v18h18"/><path d="M7 12v5"/><path d="M7 7v2"/><path d="M12 11v5"/><path d="M12 5v3"/><path d="M17 13v5"/><path d="M17 9v1"/></svg></div>
+                <span class="text-xl font-bold text-slate-800">FinAI</span>
+            </div>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#" id="nav-briefing" class="nav-link text-slate-600 hover:text-teal-600 font-medium transition-colors nav-link-active">Daily Briefing</a>
+                <a href="#" id="nav-qa" class="nav-link text-slate-600 hover:text-teal-600 font-medium transition-colors">AI ช่วยตอบ</a>
+                <a href="#" class="bg-teal-600 text-white px-5 py-2 rounded-full hover:bg-teal-700 font-bold transition-all transform hover:scale-105">พอร์ตของฉัน</a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden">
+                <button id="mobile-menu-btn" class="text-slate-600 hover:text-teal-600 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white pb-4">
+            <a href="#" class="block py-2 px-6 text-slate-600 hover:bg-teal-50" id="mobile-nav-briefing">Daily Briefing</a>
+            <a href="#" class="block py-2 px-6 text-slate-600 hover:bg-teal-50" id="mobile-nav-qa">AI ช่วยตอบ</a>
+            <a href="#" class="block py-2 px-6 text-slate-600 hover:bg-teal-50">พอร์ตของฉัน</a>
+        </div>
+    </header>
+
+    <!-- Main Content: Container for Pages -->
+    <main class="container mx-auto px-6 py-8">
+        
+        <!-- Page 1: Daily Briefing -->
+        <div id="page-briefing">
+            <!-- NEW: Updated Loading State -->
+            <div id="briefing-loadingState" class="text-center text-slate-500 py-20 flex flex-col items-center justify-center">
+                 <div class="ai-loader-container">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <circle class="ai-loader-outer-ring" cx="50" cy="50" r="45" stroke-width="5" fill="none" />
+                        <circle class="ai-loader-inner-ring" cx="50" cy="50" r="35" stroke-width="3" fill="none" stroke-dasharray="150 100" />
+                        <path class="ai-loader-brain-pulse" d="M50 30 C 40 20, 30 35, 30 45 S 35 65, 50 70 S 65 65, 70 45 S 60 20, 50 30 Z" />
+                    </svg>
+                </div>
+                <p class="mt-6 text-lg font-medium text-slate-600">AI กำลังเตรียมบทสรุปให้คุณ...</p>
+            </div>
+            <div id="briefing-contentArea" class="hidden content-fade-in">
+                <!-- ... Briefing content from before ... -->
+                 <div class="main-card text-white rounded-3xl shadow-2xl shadow-teal-900/20 p-8 mb-10">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h1 class="text-3xl md:text-4xl font-bold">Daily Briefing</h1>
+                            <p id="briefingDate" class="opacity-80 mt-1">ข้อมูลสรุปตลาดประจำวันที่...</p>
+                        </div>
+                        <div id="aiStatus" class="flex items-center space-x-2 text-white opacity-0 transition-opacity duration-300">
+                            <div class="pulse-indicator w-2.5 h-2.5 bg-white rounded-full"></div>
+                            <span class="text-sm">กำลังพูด...</span>
+                        </div>
+                    </div>
+                    <p id="mainSummary" class="mt-6 text-lg leading-relaxed opacity-90"></p>
+                    <button id="playBtn" class="w-full mt-8 flex items-center justify-center space-x-3 bg-white/20 backdrop-blur-sm text-white font-bold py-3.5 px-4 rounded-xl hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm-2 14.5v-9l6 4.5z"/></svg>
+                        <svg id="stopIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="hidden"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm-1 5h2a3 3 0 0 1 3 3v2a3 3 0 0 1-3 3h-2a3 3 0 0 1-3-3v-2a3 3 0 0 1 3-3z"/></svg>
+                        <span id="playBtnText">รอข้อมูล...</span>
+                    </button>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 mb-5">ประเด็นสำคัญวันนี้</h2>
+                <div id="highlightsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+        </div>
+
+        <!-- Page 2: AI Q&A -->
+        <div id="page-qa" class="hidden content-fade-in">
+            <!-- ... AI Q&A content from before ... -->
+             <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-2">AI ช่วยตอบ</h1>
+            <p class="text-slate-500 mb-8">ถามคำถามเกี่ยวกับการเงิน การลงทุน หรือหุ้นที่คุณสนใจได้เลย</p>
+            <div class="bg-white rounded-2xl shadow-lg shadow-slate-200/60">
+                <div id="chat-container" class="p-6 h-96 overflow-y-auto flex flex-col space-y-4">
+                    <div class="flex justify-start">
+                        <div class="chat-bubble-ai p-4 rounded-lg max-w-lg">
+                            สวัสดีครับ มีอะไรให้ผมช่วยเกี่ยวกับการลงทุนวันนี้?
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 border-t border-slate-200 bg-slate-50 rounded-b-2xl">
+                    <form id="qa-form" class="flex items-center space-x-4">
+                        <input type="text" id="qa-input" placeholder="พิมพ์คำถามของคุณที่นี่..." class="w-full bg-white border border-slate-300 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-teal-500 transition disabled:bg-slate-100">
+                        <button type="submit" id="qa-submit-btn" class="bg-teal-600 text-white rounded-lg p-3 hover:bg-teal-700 transition transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-slate-400 disabled:cursor-not-allowed">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send-horizontal"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- Universal Elements & State ---
+        let isSpeaking = false;
+        let utterance;
+        const speech = window.speechSynthesis;
+        const GEMINI_API_KEY = "AIzaSyBFUWczi94LOnK3df4sSzHfBTlzTTeNInA"; // <-- สำคัญ! กรุณาใส่ Gemini API Key ของคุณที่นี่
+
+        // --- Page Navigation ---
+        const pages = { briefing: document.getElementById('page-briefing'), qa: document.getElementById('page-qa') };
+        const navLinks = { briefing: document.getElementById('nav-briefing'), qa: document.getElementById('nav-qa') };
+        function navigate(pageName) { Object.values(pages).forEach(p => p.classList.add('hidden')); Object.values(navLinks).forEach(l => l.classList.remove('nav-link-active')); pages[pageName].classList.remove('hidden'); navLinks[pageName].classList.add('nav-link-active'); stopSpeaking(); }
+        navLinks.briefing.addEventListener('click', (e) => { e.preventDefault(); navigate('briefing'); });
+        navLinks.qa.addEventListener('click', (e) => { e.preventDefault(); navigate('qa'); });
+        
+        // --- NEW: Mobile Menu Logic ---
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileNavBriefing = document.getElementById('mobile-nav-briefing');
+        const mobileNavQa = document.getElementById('mobile-nav-qa');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        function closeMobileMenuAndNavigate(pageName) {
+            mobileMenu.classList.add('hidden');
+            navigate(pageName);
+        }
+
+        mobileNavBriefing.addEventListener('click', (e) => { e.preventDefault(); closeMobileMenuAndNavigate('briefing'); });
+        mobileNavQa.addEventListener('click', (e) => { e.preventDefault(); closeMobileMenuAndNavigate('qa'); });
+
+
+        // --- Page 1: Daily Briefing Logic ---
+        const briefingLoading = document.getElementById('briefing-loadingState');
+        const briefingContent = document.getElementById('briefing-contentArea');
+        const briefingDate = document.getElementById('briefingDate');
+        const mainSummary = document.getElementById('mainSummary');
+        const highlightsContainer = document.getElementById('highlightsContainer');
+        const playBtn = document.getElementById('playBtn');
+        const playBtnText = document.getElementById('playBtnText');
+        const playIcon = document.getElementById('playIcon');
+        const stopIcon = document.getElementById('stopIcon');
+        const aiStatus = document.getElementById('aiStatus');
+        let currentBriefing = null;
+        
+        const icons = { 'trending-up': `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>`, 'flame': `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flame"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`, 'bank': `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-landmark"><line x1="12" x2="12" y1="22" y2="18"/><path d="M16 18h-8"/><path d="M3 22h18"/><path d="M4 18V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10"/><path d="M4 12h16"/><path d="m20 8-8-5-8 5"/><path d="M8 12v4"/><path d="M16 12v4"/></svg>`, 'circle-dollar-sign': `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-dollar-sign"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>`, 'globe': `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>`};
+        
+        async function fetchRealAIBriefing() { /* ... function content remains the same ... */ 
+            if (!GEMINI_API_KEY) {
+                console.error("Gemini API Key is missing.");
+                return { mainSummary: "ไม่สามารถโหลดข้อมูลได้", highlights: [], speechText: "ขออภัยค่ะ ไม่สามารถเชื่อมต่อกับ AI ได้เนื่องจากไม่ได้ตั้งค่า API Key" };
+            }
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+            const prompt = `
+                ในฐานะผู้เชี่ยวชาญด้านการเงินและการลงทุน, กรุณาสรุปข้อมูลสรุปประจำวันสำหรับวันนี้ (${new Date().toLocaleDateString('th-TH')}).
+                หัวข้อที่ต้องการคือ: ภาพรวมการเงิน, การลงทุน, ราคาทองคำล่าสุด, ราคาหุ้นต่างประเทศ (เช่น S&P 500), หุ้นไทย (SET Index), ราคาน้ำมัน, และสถานการณ์โลกที่สำคัญ.
+                กรุณาตอบกลับเป็น JSON object ที่มีโครงสร้างตามนี้เท่านั้น ห้ามมีข้อความอื่นนอก JSON object และไม่ต้องใส่ markdown backticks:
+                {
+                  "mainSummary": "บทสรุปหลักที่กระชับ 1-2 ประโยค",
+                  "highlights": [
+                    {"title": "หัวข้อไฮไลท์", "detail": "รายละเอียดสั้นๆ"},
+                    {"title": "หัวข้อไฮไลท์", "detail": "รายละเอียดสั้นๆ"},
+                    {"title": "หัวข้อไฮไลท์", "detail": "รายละเอียดสั้นๆ"}
+                  ],
+                  "speechText": "ข้อความทั้งหมดสำหรับอ่านออกเสียง"
+                }
+            `;
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                tools: [{ "google_search": {} }],
+            };
+            try {
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) { throw new Error(`API call failed: ${response.status}`); }
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const rawText = candidate.content.parts[0].text;
+                    const jsonStart = rawText.indexOf('{');
+                    const jsonEnd = rawText.lastIndexOf('}') + 1;
+                    if (jsonStart !== -1 && jsonEnd > jsonStart) {
+                        const jsonString = rawText.substring(jsonStart, jsonEnd);
+                        try {
+                            return JSON.parse(jsonString);
+                        } catch (e) {
+                             console.error("Failed to parse JSON from AI response:", e, jsonString);
+                             throw new Error("AI returned invalid JSON format.");
+                        }
+                    } else {
+                        throw new Error("No JSON object found in AI response.");
+                    }
+                } else {
+                    throw new Error("Invalid response structure from API.");
+                }
+            } catch (error) {
+                console.error("Error fetching real AI briefing:", error);
+                return { mainSummary: "เกิดข้อผิดพลาดในการดึงข้อมูลสรุป", highlights: [], speechText: "เกิดข้อผิดพลาดในการดึงข้อมูลสรุป กรุณาลองใหม่อีกครั้งครับ" };
+            }
+        }
+        
+        function assignIconToHighlight(title) { /* ... function content remains the same ... */ 
+            const lowerTitle = title.toLowerCase();
+            if (lowerTitle.includes('ทอง')) return 'circle-dollar-sign';
+            if (lowerTitle.includes('น้ำมัน')) return 'flame';
+            if (lowerTitle.includes('หุ้น') || lowerTitle.includes('ตลาด') || lowerTitle.includes('set')) return 'trending-up';
+            if (lowerTitle.includes('โลก') || lowerTitle.includes('รัฐเซีย') || lowerTitle.includes('จีน') || lowerTitle.includes('สหรัฐ')) return 'globe';
+            return 'bank'; 
+        }
+
+        function displayBriefing(data) { /* ... function content remains the same ... */ 
+             mainSummary.textContent = data.mainSummary;
+            highlightsContainer.innerHTML = '';
+            if (data.highlights && Array.isArray(data.highlights)) {
+                data.highlights.forEach(item => {
+                    const iconName = assignIconToHighlight(item.title);
+                    const card = document.createElement('div');
+                    card.className = 'bg-white rounded-2xl p-6 shadow-lg shadow-slate-200/60 flex items-start space-x-5 transition-transform transform hover:-translate-y-1.5';
+                    card.innerHTML = `<div class="bg-teal-50 text-teal-600 rounded-lg p-3">${icons[iconName] || icons['bank']}</div><div><h3 class="font-bold text-slate-800">${item.title}</h3><p class="text-slate-500 mt-1">${item.detail}</p></div>`;
+                    highlightsContainer.appendChild(card);
+                });
+            }
+            const today = new Date();
+            briefingDate.textContent = `ข้อมูลสรุปตลาดประจำวันที่ ${today.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}`;
+            playBtn.disabled = false;
+            playBtnText.textContent = "ฟังบทวิเคราะห์";
+        }
+        
+        playBtn.addEventListener('click', () => { if (isSpeaking) { stopSpeaking(); } else if(currentBriefing) { speak(currentBriefing.speechText, updateUIForBriefing); } });
+
+        // --- Page 2: AI Q&A Logic ---
+        const qaForm = document.getElementById('qa-form');
+        const qaInput = document.getElementById('qa-input');
+        const qaSubmitBtn = document.getElementById('qa-submit-btn');
+        const chatContainer = document.getElementById('chat-container');
+
+        async function getAIAnswer(question) { /* ... function content remains the same ... */ 
+            if (!GEMINI_API_KEY) { console.error("Gemini API Key is missing."); return { answer: "ขออภัยค่ะ ไม่สามารถเชื่อมต่อกับ AI ได้เนื่องจากไม่ได้ตั้งค่า API Key" }; }
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+            const systemPrompt = "คุณคือ FinAI ผู้ช่วย AI อัจฉริยะที่เชี่ยวชาญด้านการเงินการลงทุน แต่ก็สามารถตอบคำถามทั่วไปได้ทุกเรื่อง กรุณาตอบคำถามของผู้ใช้งานเป็นภาษาไทยให้กระชับ ชัดเจน และเข้าใจง่ายที่สุด";
+            const payload = { contents: [{ parts: [{ text: question }] }], tools: [{ "google_search": {} }], systemInstruction: { parts: [{ text: systemPrompt }] }, };
+            try {
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) { throw new Error(`API call failed with status: ${response.status}`); }
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+                if (candidate && candidate.content?.parts?.[0]?.text) { return { answer: candidate.content.parts[0].text }; } 
+                else { throw new Error("Invalid response structure from API."); }
+            } catch (error) {
+                console.error("Error fetching AI answer:", error);
+                return { answer: "เกิดข้อผิดพลาดในการเชื่อมต่อกับ AI กรุณาลองใหม่อีกครั้งครับ" };
+            }
+        }
+        function addMessageToChat(sender, text, hasAudio = false) { /* ... function content remains the same ... */ 
+            const messageWrapper = document.createElement('div');
+            messageWrapper.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+            const messageBubble = document.createElement('div');
+            messageBubble.className = `p-4 rounded-lg max-w-lg ${sender === 'user' ? 'chat-bubble-user' : 'chat-bubble-ai'}`;
+            if (sender === 'thinking') { messageBubble.innerHTML = `<div class="thinking-bubble flex space-x-1.5">${text}</div>`; } 
+            else { messageBubble.innerHTML = text.replace(/\n/g, '<br>'); }
+            if (hasAudio) {
+                const audioBtn = document.createElement('button');
+                audioBtn.className = 'ml-3 text-teal-600 hover:text-teal-800 align-middle inline-block';
+                audioBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon></svg>`;
+                audioBtn.onclick = () => speak(text);
+                messageBubble.appendChild(audioBtn);
+            }
+            messageWrapper.appendChild(messageBubble);
+            chatContainer.appendChild(messageWrapper);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            return messageWrapper;
+        }
+        qaForm.addEventListener('submit', async (e) => { /* ... function content remains the same ... */ 
+            e.preventDefault();
+            const question = qaInput.value.trim();
+            if (!question) return;
+
+            qaInput.disabled = true;
+            qaSubmitBtn.disabled = true;
+
+            addMessageToChat('user', question);
+            qaInput.value = '';
+            const thinkingBubble = addMessageToChat('thinking', '<span></span><span></span><span></span>');
+            
+            const response = await getAIAnswer(question);
+            
+            thinkingBubble.remove();
+            addMessageToChat('ai', response.answer, true);
+
+            qaInput.disabled = false;
+            qaSubmitBtn.disabled = false;
+        });
+        
+        // --- Universal Speech & UI Functions ---
+        function speak(text, uiUpdater = null) { /* ... function content remains the same ... */ 
+            if (speech.speaking) { speech.cancel(); }
+            const cleanText = text.replace(/[\*#]/g, '');
+            utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'th-TH';
+            utterance.rate = 1;
+            utterance.onstart = () => { isSpeaking = true; if (uiUpdater) uiUpdater.speaking(); };
+            utterance.onend = () => { isSpeaking = false; if (uiUpdater) uiUpdater.stopped(); };
+            speech.speak(utterance);
+        }
+        function stopSpeaking() { speech.cancel(); isSpeaking = false; updateUIForBriefing.stopped(); }
+        const updateUIForBriefing = {
+            speaking: () => { aiStatus.classList.remove('opacity-0'); playBtnText.textContent = 'หยุดฟัง'; playIcon.classList.add('hidden'); stopIcon.classList.remove('hidden'); },
+            stopped: () => { aiStatus.classList.add('opacity-0'); playBtnText.textContent = 'ฟังซ้ำอีกครั้ง'; playIcon.classList.remove('hidden'); stopIcon.classList.add('hidden'); }
+        };
+
+        // --- Initial Load ---
+        window.addEventListener('DOMContentLoaded', async () => {
+             if (!GEMINI_API_KEY) {
+                briefingLoading.innerHTML = '<p class="text-lg text-red-500">กรุณาตั้งค่า GEMINI_API_KEY ในโค้ดก่อนใช้งาน</p>';
+                return;
+            }
+            currentBriefing = await fetchRealAIBriefing();
+            briefingLoading.classList.add('hidden');
+            briefingContent.classList.remove('hidden');
+            displayBriefing(currentBriefing);
+            if (currentBriefing && currentBriefing.speechText) {
+                speak(currentBriefing.speechText, updateUIForBriefing);
+            }
+        });
+        window.addEventListener('beforeunload', stopSpeaking);
+    </script>
+</body>
+</html>
+
