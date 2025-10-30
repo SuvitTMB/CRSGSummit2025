@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRSG Summit 2025 Dashboard</title>
+    <!-- โหลด Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            background-color: #ffffff; /* (แก้ไข) เปลี่ยนเป็นสีขาว */
+        }
+        /* เพิ่ม: Style สำหรับ Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e5e7eb;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            height: 1.5rem; /* เพิ่มความสูง */
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #3b82f6;
+            width: 0%;
+            transition: width 0.3s ease-in-out;
+            text-align: center;
+            color: white;
+            line-height: 1.5rem; /* จัดกลางข้อความแนวตั้ง */
+            font-size: 0.875rem; /* ขนาดตัวอักษร */
+        }
+         /* (เพิ่ม) Style สำหรับ Edit Modal Inputs */
+        #editEmployeeModal input[type="text"] {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 0.375rem; /* rounded-md */
+            margin-top: 0.25rem;
+        }
+         /* (เพิ่ม) Style สำหรับ Dropdown ฟ้าอ่อน */
+        select.light-blue-bg {
+             background-color: #eff6ff; /* blue-50 */
+             padding-left: 0.75rem; /* px-3 */
+             padding-right: 0.75rem; /* px-3 */
+             padding-top: 0.5rem; /* py-2 */
+             padding-bottom: 0.5rem; /* py-2 */
+        }
+         /* (เพิ่ม) Style หัวตารางสีเทา */
+        thead.table-header-gray {
+             background-color: #e5e7eb; /* gray-200 */
+        }
+    </style>
+    <!-- Chart.js CDN --><script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+</head>
+<body class="flex flex-col items-center min-h-screen py-10 bg-white">
+
+    <div class="w-[90%] max-w-6xl p-0 bg-white rounded-lg"> <!-- (แก้ไข) w-[90%], p-0 -->
+        <!-- Header (แก้ไข: จัดกลาง, ปรับ pt) --><div class="flex flex-col items-center mb-6 pt-6 px-8"> <!-- (แก้ไข) pt-6 (1.5rem) -->
+            <div class="text-center">
+                <!-- (แก้ไข) text-2xl และ style color -->
+                <h1 class="text-2xl font-bold" style="color: #0056ff;">CRSG Summit 2025</h1>
+               <!-- ลบ Subtitle ออกแล้ว --></div>
+            <div class="text-center mt-2">
+                <p id="currentDateTime" class="text-sm text-gray-600 font-medium"></p>
+            </div>
+        </div>
+        
+        <!-- Tab Navigation (แก้ไข: ปรับ space, เปลี่ยนชื่อ, เพิ่มแท็บ) --><div class="mb-6 border-b border-gray-200 px-8"> <!-- (แก้ไข) เพิ่ม px-8 -->
+            <nav class="-mb-px flex space-x-1" aria-label="Tabs"> <!-- แก้ไข: space-x-1 --><button id="tab-dashboard" class="whitespace-nowrap py-3 px-3 border-b-2 font-medium text-sm text-gray-700 bg-gray-300 border-blue-600">
+                    ข้อมูล Dashboard
+                </button>
+                <button id="tab-team-list" class="whitespace-nowrap py-3 px-3 border-b-2 font-medium text-sm text-gray-500 bg-gray-100 border-transparent hover:text-gray-700 hover:border-gray-300">
+                    ข้อมูลสมาชิกทีม <!-- (แก้ไข) เปลี่ยนชื่อ --></button>
+                <!-- (เพิ่ม) แท็บใหม่ -->
+                <button id="tab-group-view" class="whitespace-nowrap py-3 px-3 border-b-2 font-medium text-sm text-gray-500 bg-gray-100 border-transparent hover:text-gray-700 hover:border-gray-300">
+                    ข้อมูลจัดกลุ่ม
+                </button>
+                <button id="tab-employee-list" class="whitespace-nowrap py-3 px-3 border-b-2 font-medium text-sm text-gray-500 bg-gray-100 border-transparent hover:text-gray-700 hover:border-gray-300">
+                    ข้อมูลพนักงาน CRSG <!-- เพิ่ม: แท็บใหม่ -->
+                </button>
+                <!-- (เพิ่ม) แท็บใหม่สำหรับลงทะเบียน -->
+                <button id="tab-register" class="whitespace-nowrap py-3 px-3 border-b-2 font-medium text-sm text-gray-500 bg-gray-100 border-transparent hover:text-gray-700 hover:border-gray-300">
+                    ลงทะเบียนเข้าร่วมงาน
+                </button>
+            </nav>
+        </div>
+
+        <!-- Dashboard Content --><div id="dashboard-content" class="px-8 pb-8"> <!-- (แก้ไข) เพิ่ม px-8 pb-8 -->
+            <!-- ภาพรวมผู้ลงทะเบียน (แก้ไข: โครงสร้างใหม่ 50/50, ปรับกล่องซ้าย) --><h2 class="text-lg font-semibold text-gray-800 mb-4">ภาพรวมผู้ลงทะเบียน</h2>
+            <div class="flex flex-col lg:flex-row gap-6 mb-8">
+                
+                <!-- กล่องที่ 1 (50%) --><div class="lg:w-1/2"> <!-- (แก้ไข) lg:w-1/2 -->
+                     <!-- (แก้ไข) ปรับโครงสร้างกล่องซ้าย -->
+                     <div class="space-y-6">
+                         <!-- แถว 1: เป้าหมาย + ลงทะเบียนทั้งหมด -->
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center">
+                                <p class="text-gray-600 text-sm mb-2">เป้าหมายผู้ร่วมกิจกรรม</p>
+                                <p id="targetCountOverall" class="text-4xl font-bold text-blue-800">0</p> 
+                                <p class="text-xs text-gray-400 mt-1">(มี Manager & Team)</p> <!-- (แก้ไข) คำอธิบาย -->
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center">
+                                <p class="text-gray-600 text-sm mb-2">ผู้ลงทะเบียนทั้งหมด</p>
+                                <p id="totalEmployeesCount" class="text-4xl font-bold text-gray-900">0</p>
+                                <p class="text-xs text-gray-400 mt-1">(นับจากผู้มี DateLogin)</p>
+                            </div>
+                         </div>
+                         <!-- แถว 2: เข้าร่วม + ร่วมงาน -->
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                             <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center">
+                                <p class="text-gray-600 text-sm mb-2">ผู้เข้าร่วมกิจกรรม</p>
+                                <p id="participantsCount" class="text-4xl font-bold text-blue-600">0</p>
+                                <p class="text-xs text-gray-400 mt-1">(ผู้ลงทะเบียนที่มี Check_Place)</p>
+                            </div>
+                             <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center"> <!-- (ย้ายมา) ผู้ร่วมงาน -->
+                                <p class="text-gray-600 text-sm mb-2">ผู้ร่วมงาน</p>
+                                <p id="attendeesCountMoved" class="text-4xl font-bold text-green-600">0</p> <!-- (แก้ไข) เปลี่ยน ID -->
+                                <p class="text-xs text-gray-400 mt-1">(ผู้ลงทะเบียนที่ไม่มี Check_Place)</p>
+                            </div>
+                         </div>
+                     </div>
+                </div>
+
+                <!-- กล่องที่ 2 (50%) : กราฟวงกลมและสรุปยอด (แก้ไข: เพิ่มกล่อง Participants) --><div class="lg:w-1/2"> <!-- (แก้ไข) lg:w-1/2 -->
+                    <div class="flex gap-6 h-full">
+                         <!-- กล่องซ้าย (65%) : กราฟวงกลม -->
+                         <div class="w-[65%] bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center justify-center">
+                            <p class="text-gray-600 text-sm mb-4">เป้าหมายผู้ลงทะเบียน</p>
+                            <div class="relative w-48 h-48">
+                                <canvas id="registrationDonutChart"></canvas>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span id="donutPercentage" class="text-2xl font-bold text-gray-900">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                         <!-- กล่องขวา (35%) : สรุปยอด (แก้ไข: ปรับ spacing) -->
+                         <div class="w-[35%] flex flex-col justify-between space-y-2"> <!-- (แก้ไข) space-y-2 -->
+                            <!-- จำนวนเป้าหมาย --><div class="h-1/4 bg-blue-50 p-3 rounded-lg flex flex-col justify-center items-center text-center"> <!-- แก้ไข h-1/4, p-3 -->
+                                <p class="text-blue-700 text-xs">จำนวนเป้าหมาย</p> <!-- แก้ไข text-xs -->
+                                <p id="targetCount" class="text-lg font-bold text-blue-800 mt-1">0</p> <!-- แก้ไข text-lg -->
+                            </div>
+                            <!-- (เพิ่ม) ผู้เข้าร่วมกิจกรรม --><div class="h-1/4 bg-green-50 p-3 rounded-lg flex flex-col justify-center items-center text-center"> <!-- แก้ไข h-1/4, p-3 -->
+                                <p class="text-green-700 text-xs">ผู้เข้าร่วมกิจกรรม</p> <!-- แก้ไข text-xs -->
+                                <p id="participantsCountBox" class="text-lg font-bold text-green-800 mt-1">0</p> <!-- (เพิ่ม) ID ใหม่, แก้ไข text-lg -->
+                            </div>
+                             <!-- ผู้ร่วมงาน (ย้ายมา) --><div class="h-1/4 bg-yellow-50 p-3 rounded-lg flex flex-col justify-center items-center text-center">
+                                <p class="text-yellow-700 text-xs">ผู้ร่วมงาน</p>
+                                <p id="attendeesCount" class="text-lg font-bold text-yellow-800 mt-1">0</p>
+                            </div>
+                            <!-- จำนวนคงเหลือ --><div class="h-1/4 bg-red-50 p-3 rounded-lg flex flex-col justify-center items-center text-center"> <!-- แก้ไข h-1/4, p-3 -->
+                                <p class="text-red-700 text-xs">จำนวนคงเหลือ</p> <!-- แก้ไข text-xs -->
+                                <p id="remainingCount" class="text-lg font-bold text-red-800 mt-1">0</p> <!-- แก้ไข text-lg -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- สรุปข้อมูลผู้ลงทะเบียน (แก้ไข: ย้ายปุ่ม, แบ่งกราฟเป็น ซ้าย/ขวา) --><div class="mb-8">
+                <div class="flex justify-between items-center mb-4">
+                     <h2 class="text-lg font-semibold text-gray-800">สรุปข้อมูลผู้ลงทะเบียน</h2>
+                     <!-- (แก้ไข) ปรับสไตล์ปุ่ม -->
+                     <button id="randomizeButton" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+                         สุ่มเลือกผู้ร่วมงาน
+                     </button>
+                 </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6"> <!-- แบ่งเป็น 2 คอลัมน์ -->
+                    <!-- กล่องซ้าย: กราฟแท่ง 1 -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <p class="text-gray-600 text-sm mb-4">กราฟแสดงข้อมูลสถิติ (ส่วนที่ 1)</p>
+                        <div class="h-[25rem]"> <!-- (แก้ไข) เพิ่มความสูง -->
+                            <canvas id="teamBarChart1"></canvas> 
+                        </div>
+                    </div>
+                    <!-- กล่องขวา: กราฟแท่ง 2 -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                         <p class="text-gray-600 text-sm mb-4">กราฟแสดงข้อมูลสถิติ (ส่วนที่ 2)</p>
+                        <div class="h-[25rem]"> <!-- (แก้ไข) เพิ่มความสูง -->
+                            <canvas id="teamBarChart2"></canvas> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- สรุปข้อมูลผู้ร่วมงานและรายชื่อล่าสุด (แก้ไข: เพิ่มคอลัมน์) --><h2 class="text-lg font-semibold text-gray-800 mb-4">สรุปข้อมูลผู้ร่วมงานและรายชื่อล่าสุด</h2>
+            <div class="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm">
+                        <thead class="table-header-gray"> <!-- (แก้ไข) เปลี่ยนจาก bg-gray-50 -->
+                            <tr>
+                                <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">รหัสพนักงาน</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">ชื่อ-นามสกุล</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">กลุ่ม</th> <!-- (BU_th) -->
+                                <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">สังกัด</th> <!-- (แก้ไข) Check_Manager -->
+                                <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">ทีม</th> <!-- (เพิ่ม) Check_Place -->
+                                <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">สถานะ</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">ลบรายการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="latestRegistrationsTableBody" class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td colspan="7" class="p-6 text-center text-gray-500">กำลังโหลดข้อมูล...</td> <!-- (แก้ไข) colspan="7" -->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- (เพิ่ม) Register Content -->
+        <div id="register-content" class="hidden pb-8 px-6">
+             <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center">
+                <h2 class="text-xl font-semibold text-gray-800 text-center mb-6">สแกน QR Code เพื่อลงทะเบียนเข้าร่วมงาน</h2>
+                <img 
+                    src="./images/QRcode-CRSG.png" 
+                    alt="QR Code ลงทะเบียน" 
+                    class="rounded-lg shadow-md border border-gray-200" 
+                    style=" width:40%;"
+                >
+             </div>
+        </div>
+
+        <!-- (แก้ไข) ลบ </div> ที่ปิดผิดพลาด (เคยอยู่ที่นี่ บรรทัด 228) -->
+
+        <!-- (ลบ) บล็อก HTML ที่เสีย (เคยอยู่ที่นี่ 287-424) -->
+
+        <!-- (เพิ่ม) Team List Content (ที่ขาดหายไปทั้งหมด) -->
+        <div id="team-list-content" class="hidden pb-8 px-6">
+            <div class="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
+                <!-- Top Stats/Actions Bar -->
+                <div class="px-6 py-4 border-b grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                    <!-- Stat 1: Manager Count -->
+                    <div class="bg-blue-50 p-4 rounded-lg text-center">
+                        <p class="text-sm text-blue-700">พนักงานที่มี Manager</p>
+                        <p id="managerEmployeeCount" class="text-2xl font-bold text-blue-900 mt-1">0</p>
+                    </div>
+                    <!-- Stat 2: Team Member Count -->
+                    <div class="bg-green-50 p-4 rounded-lg text-center">
+                        <p class="text-sm text-green-700">พนักงานที่มี Team</p>
+                        <p id="teamMemberCountElem" class="text-2xl font-bold text-green-900 mt-1">0</p>
+                    </div>
+                    <!-- Stat 3: Defined Teams (Scrollable) -->
+                    <div class="bg-gray-50 p-4 rounded-lg overflow-y-auto max-h-24"> 
+                        <p class="text-sm text-gray-700 mb-1 font-medium">รายชื่อทีมที่กำหนด:</p>
+                        <p id="definedTeamNames" class="text-xs text-gray-600 break-words"></p> 
+                    </div>
+                </div>
+
+                <!-- Actions Bar (Reset/Create) -->
+                <div class="px-6 py-4 border-b flex flex-col md:flex-row gap-4 justify-center">
+                     <button id="resetTeamButton" class="w-full md:w-auto px-6 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out">
+                         Reset Team
+                     </button>
+                     <button id="createTeamButton" class="w-full md:w-auto px-6 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out">
+                         Random Team
+                     </button>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div id="teamCreationProgressContainer" class="hidden p-6 border-b">
+                    <p class="text-sm text-gray-600 mb-2">กำลังสร้างทีม...</p>
+                    <div class="progress-bar-container">
+                        <div id="teamCreationProgressBar" class="progress-bar">0%</div>
+                    </div>
+                    <p id="teamCreationStatus" class="text-xs text-gray-500 mt-1"></p>
+                </div>
+                
+                <!-- Team Member Table Section -->
+                 <div class="p-6">
+                     <div class="flex justify-between items-center mb-4">
+                         <h3 class="text-lg font-semibold">ข้อมูลสมาชิกในแต่ละทีม</h3>
+                         <div>
+                             <label for="teamSelect" class="text-sm font-medium mr-2">เลือกทีม:</label>
+                             <select id="teamSelect" class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm light-blue-bg">
+                                 <option value="">-- กรุณาเลือก --</option>
+                                 <!-- Options will be populated by JS -->
+                             </select>
+                         </div>
+                     </div>
+                     <div class="overflow-x-auto border rounded-lg">
+                        <table class="min-w-full text-sm">
+                            <thead class="table-header-gray">
+                                <tr>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">ลำดับ</th>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">รหัสพนักงาน</th>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">ชื่อ-นามสกุล</th>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">สายงาน</th>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">สังกัด</th>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">สถานะ</th>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">แก้ไข</th>
+                                </tr>
+                            </thead>
+                            <tbody id="selectedTeamTableBody" class="divide-y divide-gray-200">
+                                <tr>
+                                    <td colspan="7" class="p-6 text-center text-gray-500">กรุณาเลือกทีม</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                 </div>
+            </div>
+        </div>
+        
+        <!-- (เพิ่ม) Group View Content -->
+        <div id="group-view-content" class="hidden pb-8 px-6">
+             <div class="bg-white overflow-hidden">
+                <!-- (แก้ไข) เพิ่ม Flexbox, Dropdown -->
+                <div class="px-6 py-4 border-b flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-semibold">ข้อมูลจัดกลุ่ม (Team View)</h2>
+                        <p class="text-sm text-gray-600">แสดงจำนวนสมาชิกในแต่ละทีม (คลิกเพื่อดูรายชื่อ)</p>
+                    </div>
+                    <div>
+                         <label for="groupViewManagerFilter" class="text-sm font-medium mr-2">กรองตามสังกัด:</label>
+                         <select id="groupViewManagerFilter" class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm light-blue-bg">
+                             <option value="">-- ดูทั้งหมด --</option>
+                             <!-- Options will be populated by JS -->
+                         </select>
+                    </div>
+                </div>
+                <!-- (เพิ่ม) Grid for Team Boxes -->
+                <div id="teamBoxesContainer" class="p-6 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <!-- Team boxes will be populated by JS -->
+                    <p class="text-gray-500">กำลังโหลดข้อมูล...</p>
+                </div>
+             </div>
+        </div>
+        
+        <!-- Employee List Content (แก้ไข: ลบกรอบ, ปรับ padding, เพิ่ม filter, แก้ไข table, ปรับ Style) --><div id="employee-list-content" class="hidden pb-8 px-0"> <!-- (แก้ไข) px-0 -->
+             <div class="bg-white overflow-hidden"> <!-- (แก้ไข) ลบ shadow, border, rounded -->
+                <div class="px-6 py-4 border-b flex justify-between items-center"> <!-- (แก้ไข) เพิ่ม px-6, flex -->
+                    <div>
+                        <h2 class="text-xl font-semibold">ข้อมูลพนักงาน CRSG ทั้งหมด</h2>
+                        <p class="text-sm text-gray-600">แสดงรายชื่อพนักงานทั้งหมดในระบบ</p>
+                    </div>
+                     <!-- (เพิ่ม) Filter Dropdown -->
+                     <div>
+                         <label for="managerFilterSelect" class="text-sm font-medium mr-2">กรองตามสังกัด:</label> <!-- (แก้ไข) Label -->
+                         <select id="managerFilterSelect" class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm light-blue-bg">
+                             <option value="">-- ทั้งหมด --</option>
+                             <!-- Manager Options will be populated by JS -->
+                         </select>
+                     </div>
+                </div>
+                
+                <div class="overflow-x-auto p-6"> <!-- (แก้ไข) เพิ่ม p-6 -->
+                    <table class="min-w-full text-sm">
+                        <thead class="table-header-gray"> <!-- (แก้ไข) เพิ่ม class -->
+                            <tr>
+                                <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">รหัส</th> <!-- (แก้ไข) -->
+                                <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">ชื่อ-นามสกุล</th> <!-- (แก้ไข) -->
+                                <!-- <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">ตำแหน่ง</th> --> <!-- (ลบ) -->
+                                <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">ทีม</th> <!-- (แก้ไข) -->
+                                <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">สถานะ</th> <!-- (แก้ไข) -->
+                                <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">แก้ไข</th> <!-- (เพิ่ม) -->
+                            </tr>
+                        </thead>
+                        <tbody id="employeeListTableBody" class="divide-y divide-gray-200"> <!-- (แก้ไข) ลบ bg-white -->
+                            <tr>
+                                <td colspan="5" class="p-6 text-center text-gray-500">กรุณาเลือกสังกัด</td> <!-- (แก้ไข) colspan, ข้อความ -->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- *** เพิ่ม: Lightbox/Modal สำหรับสุ่มเลือก *** --><div id="randomizeModal" class="hidden fixed inset-0 z-40 overflow-y-auto bg-gray-600 bg-opacity-75 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-3xl mx-4">
+            <!-- แถวที่ 1: Title --><h3 class="text-xl font-semibold text-center text-gray-900 mb-4">ระบบสุ่มเลือกผู้ร่วมกิจกรรม</h3>
+            
+            <!-- แถวที่ 2: Stats --><div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-blue-50 p-4 rounded-lg text-center">
+                    <p class="text-sm text-blue-700">ผู้เข้าร่วมกิจกรรม (ที่สุ่มได้)</p>
+                    <p id="modalParticipantsCount" class="text-3xl font-bold text-blue-900">0</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg text-center">
+                    <p class="text-sm text-green-700">ผู้ได้รับการสุ่มแล้ว</p>
+                    <p id="modalDrawnCount" class="text-3xl font-bold text-green-900">0</p>
+                </div>
+            </div>
+            
+            <!-- แถวที่ 3: 5 Digits --><div class="flex justify-center space-x-2 mb-6">
+                <div id="digit1" class="w-16 h-20 bg-black text-white text-5xl font-mono rounded-lg flex items-center justify-center">0</div>
+                <div id="digit2" class="w-16 h-20 bg-black text-white text-5xl font-mono rounded-lg flex items-center justify-center">0</div>
+                <div id="digit3" class="w-16 h-20 bg-black text-white text-5xl font-mono rounded-lg flex items-center justify-center">0</div>
+                <div id="digit4" class="w-16 h-20 bg-black text-white text-5xl font-mono rounded-lg flex items-center justify-center">0</div>
+                <div id="digit5" class="w-16 h-20 bg-black text-white text-5xl font-mono rounded-lg flex items-center justify-center">0</div>
+            </div>
+            
+            <!-- แถวที่ 4: Button --><div class="mb-6">
+                <button id="startRandomizeButton" class="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out disabled:bg-gray-400">
+                    สุ่มเลือกผู้ร่วมกิจกรรม
+                </button>
+                <p id="randomizeError" class="text-red-600 text-sm text-center mt-2"></p>
+            </div>
+            
+            <!-- แถวที่ 5: Table --><h4 class="text-lg font-semibold text-gray-800 mb-2">ข้อมูลผู้ที่ได้รับการสุ่มเลือก</h4>
+            <div class="h-48 overflow-y-auto border rounded-lg">
+                <table class="min-w-full text-sm">
+                    <thead class="bg-gray-50 sticky top-0">
+                        <tr>
+                            <th class="px-4 py-2 text-left font-medium text-gray-600 uppercase tracking-wider">รหัสพนักงาน</th>
+                            <th class="px-4 py-2 text-left font-medium text-gray-600 uppercase tracking-wider">ชื่อ-นามสกุล</th>
+                            <th class="px-4 py-2 text-left font-medium text-gray-600 uppercase tracking-wider">สายงาน (BU)</th>
+                            <th class="px-4 py-2 text-center font-medium text-gray-600 uppercase tracking-wider">ยกเลิก</th>
+                        </tr>
+                    </thead>
+                    <tbody id="drawnWinnersTableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Data will be populated by JS --></tbody>
+                </table>
+            </div>
+            
+            <!-- แถวที่ 6: Close Button --><div class="mt-6 text-right">
+                <button id="closeRandomizeModalButton" class="px-4 py-2 text-sm bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
+                    ปิดหน้านี้
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- *** เพิ่ม: Lightbox/Modal 2 สำหรับแสดงผู้ชนะ *** --><div id="winnerDetailModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-80 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl p-8 m-4 max-w-lg w-full text-center">
+            <h3 class="text-2xl font-bold text-blue-600 mb-4">ยินดีด้วย!</h3>
+            <p class="text-lg text-gray-700">ผู้โชคดีคือ:</p>
+            <p id="winnerName" class="text-3xl font-extrabold text-gray-900 my-2"></p>
+            <p id="winnerEmployeeId" class="text-base text-gray-500 mb-1"></p>
+            <p id="winnerTeam" class="text-base text-gray-500 mb-1"></p>
+            <p id="winnerBU" class="text-base text-gray-500 mb-6"></p>
+            
+            <div class="flex justify-center space-x-4">
+                <button id="cancelWinnerButton" class="px-4 py-2 text-xs bg-red-100 text-red-700 rounded-md hover:bg-red-200">
+                    ยกเลิกการสุ่ม
+                </button>
+                <button id="closeWinnerModalButton" class="px-4 py-2 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    ปิดหน้าต่าง
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- *** เพิ่ม: Lightbox/Modal 3 สำหรับยืนยันการยกเลิก/Reset *** --><div id="confirmModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-80 flex items-center justify-center"> <!-- (แก้ไข) เปลี่ยน ID -->
+        <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-sm w-full">
+            <h3 id="confirmTitle" class="text-lg font-semibold text-gray-900 mb-4">ยืนยัน</h3> <!-- (แก้ไข) เพิ่ม ID -->
+            <p id="confirmText" class="text-sm text-gray-700 mb-6"></p> <!-- (แก้ไข) เปลี่ยน ID -->
+            <div class="flex justify-end space-x-3">
+                <button id="closeConfirmButton" class="px-3 py-1.5 text-xs bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
+                    ไม่
+                </button> <!-- (แก้ไข) เปลี่ยน ID -->
+                <button id="confirmActionButton" class="px-3 py-1.5 text-xs bg-red-600 text-white rounded-md hover:bg-red-700">
+                    <!-- Text will be set by JS -->
+                </button> <!-- (แก้ไข) เปลี่ยน ID -->
+            </div>
+        </div>
+    </div>
+
+    <!-- *** (เพิ่ม) Lightbox/Modal 4 สำหรับแก้ไขข้อมูลพนักงาน *** -->
+    <div id="editEmployeeModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-80 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-lg w-full">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">แก้ไขข้อมูลพนักงาน</h3>
+            <div class="space-y-4">
+                <div>
+                    <span class="text-sm font-medium text-gray-700">รหัสพนักงาน:</span>
+                    <span id="editEmpId" class="text-sm text-gray-900 ml-2"></span>
+                </div>
+                 <div>
+                    <span class="text-sm font-medium text-gray-700">ชื่อ-นามสกุล:</span>
+                    <span id="editEmpName" class="text-sm text-gray-900 ml-2"></span>
+                </div>
+                 <div>
+                    <label for="editEmpManager" class="block text-sm font-medium text-gray-700">Manager (Check_Manager)</label>
+                    <input type="text" id="editEmpManager">
+                </div>
+                 <div>
+                    <label for="editEmpTeam" class="block text-sm font-medium text-gray-700">ทีม (Check_Place)</label>
+                    <input type="text" id="editEmpTeam">
+                </div>
+                <!-- สามารถเพิ่ม Fields อื่นๆ ที่ต้องการแสดง (แต่แก้ไขไม่ได้) ตรงนี้ -->
+                 <p id="editError" class="text-red-600 text-sm"></p>
+            </div>
+            <div class="mt-6 flex justify-end space-x-3">
+                 <button id="closeEditModalButton" class="px-4 py-2 text-sm bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
+                    ยกเลิกการแก้ไข
+                 </button>
+                 <button id="saveEditModalButton" class="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    บันทึกรายการ
+                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- *** (เพิ่ม) Lightbox/Modal 5 สำหรับแก้ไขสมาชิกทีม (จากแท็บ Team List / Group View) (ส่วนนี้ขาดหายไป) *** -->
+    <div id="editTeamMemberModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-80 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-lg w-full">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">แก้ไขข้อมูลสมาชิกทีม</h3>
+            <div class="space-y-4">
+                <div>
+                    <p class="text-sm text-gray-600">รหัสพนักงาน: <span id="editMemberEmpId" class="font-medium text-gray-900"></span></p>
+                    <p class="text-sm text-gray-600">ชื่อ: <span id="editMemberEmpName" class="font-medium text-gray-900"></span></p>
+                </div>
+                <div>
+                    <label for="editMemberTeamSelect" class="block text-sm font-medium text-gray-700">ทีม (Check_Place):</label>
+                    <select id="editMemberTeamSelect" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm mt-1 light-blue-bg">
+                        <!-- Options populated by JS -->
+                    </select>
+                </div>
+                <p id="editMemberError" class="text-red-600 text-sm"></p>
+            </div>
+            <div class="mt-6 flex justify-between">
+                <div>
+                     <button id="deleteEditMemberModalButton" class="px-3 py-1.5 text-xs bg-red-100 text-red-700 rounded-md hover:bg-red-200 disabled:bg-gray-400">
+                        ลบรายการนี้
+                    </button>
+                </div>
+                <div class="flex space-x-3">
+                    <button id="closeEditMemberModalButton" class="px-3 py-1.5 text-xs bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 disabled:bg-gray-400">
+                        ยกเลิก
+                    </button>
+                    <button id="saveEditMemberModalButton" class="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400">
+                        บันทึกรายการ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- *** (เพิ่ม) Lightbox/Modal 6 สำหรับแสดงสมาชิกในทีม (Group View) *** -->
+    <div id="groupViewModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-80 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-6xl w-full"> <!-- (แก้ไข) max-w-6xl (กว้างขึ้น) -->
+            <div class="flex justify-between items-center mb-4">
+                 <h3 id="groupViewModalTitle" class="text-xl font-semibold text-gray-900">สมาชิกในทีม</h3>
+                 <!-- (เพิ่ม) ปุ่มปิด -->
+                 <button id="closeGroupViewModalButton" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
+            </div>
+            
+            <!-- (เพิ่ม) Table container -->
+            <div class="max-h-[60vh] overflow-y-auto border rounded-lg">
+                 <table class="min-w-full text-sm">
+                    <thead class="table-header-gray sticky top-0"> <!-- (เพิ่ม) sticky top-0 -->
+                        <tr>
+                            <!-- (เพิ่ม) ต้องเหมือนกับตารางใน "ข้อมูลสมาชิกทีม" -->
+                            <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">ลำดับ</th>
+                            <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">รหัสพนักงาน</th>
+                            <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">ชื่อ-นามสกุล</th>
+                            <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">สายงาน</th>
+                            <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">สังกัด</th>
+                            <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">สถานะ</th>
+                            <th class="px-4 py-3 text-left font-medium text-gray-600 uppercase tracking-wider">แก้ไข</th>
+                        </tr>
+                    </thead>
+                    <tbody id="groupViewTableBody" class="divide-y divide-gray-200">
+                        <tr><td colspan="7" class="p-6 text-center text-gray-500">กำลังโหลด...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+    </div>
+
+
+    <!-- Firebase SDK และการเชื่อมต่อ --><script type="module">
+        // นำเข้า Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, collection, query, where, onSnapshot, 
+            orderBy, limit, setLogLevel, doc, updateDoc, serverTimestamp, writeBatch, Timestamp // (เพิ่ม) Timestamp
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"; // (เพิ่ม) writeBatch
+
+        // --- *** 1. ใส่ Firebase Config ของคุณที่นี่ (ใช้ตัวเดียวกับ chat.html) *** ---
+const _0x5518bc=_0x4a77;(function(_0x72836a,_0xc6f476){const _0xfb6cf3=_0x4a77,_0x2d3d7d=_0x72836a();while(!![]){try{const _0x47381f=-parseInt(_0xfb6cf3(0x278))/0x1+parseInt(_0xfb6cf3(0x1f0))/0x2+-parseInt(_0xfb6cf3(0x2a6))/0x3+parseInt(_0xfb6cf3(0x1af))/0x4*(-parseInt(_0xfb6cf3(0x1fa))/0x5)+-parseInt(_0xfb6cf3(0x23c))/0x6+-parseInt(_0xfb6cf3(0x236))/0x7+-parseInt(_0xfb6cf3(0x276))/0x8*(-parseInt(_0xfb6cf3(0x2c6))/0x9);if(_0x47381f===_0xc6f476)break;else _0x2d3d7d['push'](_0x2d3d7d['shift']());}catch(_0x4396a8){_0x2d3d7d['push'](_0x2d3d7d['shift']());}}}(_0x3610,0x4e241));const firebaseConfig={'apiKey':_0x5518bc(0x241),'authDomain':_0x5518bc(0x1d3),'databaseURL':_0x5518bc(0x26b),'projectId':_0x5518bc(0x24b),'storageBucket':'ttb-register.firebasestorage.app','messagingSenderId':_0x5518bc(0x218),'appId':'1:1070273157855:web:5c8120e1df27e233d8676a','measurementId':_0x5518bc(0x1fd)};let db,auth,donutChart,barChart1,barChart2;const currentDateTimeElement=document['getElementById'](_0x5518bc(0x1ed)),totalEmployeesCount=document[_0x5518bc(0x2cd)]('totalEmployeesCount'),participantsCount=document['getElementById']('participantsCount'),attendeesCountMoved=document[_0x5518bc(0x2cd)](_0x5518bc(0x23d)),attendeesCount=document[_0x5518bc(0x2cd)](_0x5518bc(0x1d8)),latestRegistrationsTableBody=document[_0x5518bc(0x2cd)](_0x5518bc(0x2c1)),donutPercentage=document['getElementById']('donutPercentage'),targetCountElem=document['getElementById'](_0x5518bc(0x1df)),remainingCountElem=document['getElementById']('remainingCount'),targetCountOverall=document[_0x5518bc(0x2cd)](_0x5518bc(0x217)),participantsCountBoxElem=document['getElementById']('participantsCountBox'),tabDashboard=document['getElementById'](_0x5518bc(0x2a9)),tabTeamList=document['getElementById'](_0x5518bc(0x212)),tabGroupView=document[_0x5518bc(0x2cd)](_0x5518bc(0x256)),tabEmployeeList=document[_0x5518bc(0x2cd)](_0x5518bc(0x285)),tabRegister=document[_0x5518bc(0x2cd)]('tab-register'),dashboardContent=document[_0x5518bc(0x2cd)]('dashboard-content'),teamListContent=document[_0x5518bc(0x2cd)](_0x5518bc(0x252)),groupViewContent=document[_0x5518bc(0x2cd)]('group-view-content'),employeeListContent=document['getElementById'](_0x5518bc(0x293)),registerContent=document[_0x5518bc(0x2cd)](_0x5518bc(0x25a));function _0x4a77(_0x37c4b5,_0x57b687){const _0x361001=_0x3610();return _0x4a77=function(_0x4a7762,_0x74be1b){_0x4a7762=_0x4a7762-0x1ab;let _0x182bac=_0x361001[_0x4a7762];return _0x182bac;},_0x4a77(_0x37c4b5,_0x57b687);}let calculatedTarget=0x0;const latestRegistrationsLimit=0x5,teamNames=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','AA','BB','CC','DD','EE','FF','GG','HH','II','JJ','KK','LL','MM','NN','OO','PP','QQ'],teamSize=0xa;let employeesWithManager=[],currentConfirmAction=null;const managerEmployeeCountElem=document[_0x5518bc(0x2cd)](_0x5518bc(0x228)),definedTeamNamesElem=document[_0x5518bc(0x2cd)]('definedTeamNames'),resetTeamButton=document[_0x5518bc(0x2cd)](_0x5518bc(0x232)),createTeamButton=document[_0x5518bc(0x2cd)](_0x5518bc(0x2c7)),teamCreationProgressContainer=document['getElementById'](_0x5518bc(0x1b2)),teamCreationProgressBar=document['getElementById'](_0x5518bc(0x246)),teamCreationStatus=document['getElementById'](_0x5518bc(0x237)),teamSelect=document[_0x5518bc(0x2cd)](_0x5518bc(0x231)),selectedTeamTableBody=document[_0x5518bc(0x2cd)](_0x5518bc(0x1b1)),teamMemberCountElem=document[_0x5518bc(0x2cd)](_0x5518bc(0x266)),confirmModal=document['getElementById'](_0x5518bc(0x1b4)),confirmTitle=document[_0x5518bc(0x2cd)]('confirmTitle'),confirmText=document[_0x5518bc(0x2cd)]('confirmText'),closeConfirmButton=document[_0x5518bc(0x2cd)](_0x5518bc(0x292)),confirmActionButton=document[_0x5518bc(0x2cd)](_0x5518bc(0x2b1)),editEmployeeModal=document['getElementById'](_0x5518bc(0x2cf)),editEmpId=document[_0x5518bc(0x2cd)](_0x5518bc(0x28a)),editEmpName=document[_0x5518bc(0x2cd)]('editEmpName'),editEmpManager=document[_0x5518bc(0x2cd)](_0x5518bc(0x265)),editEmpTeam=document[_0x5518bc(0x2cd)](_0x5518bc(0x298)),editError=document['getElementById'](_0x5518bc(0x2a0)),closeEditModalButton=document['getElementById'](_0x5518bc(0x2c2)),saveEditModalButton=document[_0x5518bc(0x2cd)](_0x5518bc(0x261));let currentEditingDocId=null;const editTeamMemberModal=document[_0x5518bc(0x2cd)](_0x5518bc(0x2b7)),editMemberEmpId=document[_0x5518bc(0x2cd)](_0x5518bc(0x1cb)),editMemberEmpName=document['getElementById'](_0x5518bc(0x22c)),editMemberTeamSelect=document['getElementById'](_0x5518bc(0x1e0)),editMemberError=document[_0x5518bc(0x2cd)](_0x5518bc(0x291)),closeEditMemberModalButton=document[_0x5518bc(0x2cd)]('closeEditMemberModalButton'),saveEditMemberModalButton=document['getElementById'](_0x5518bc(0x286)),deleteEditMemberModalButton=document[_0x5518bc(0x2cd)](_0x5518bc(0x1ef)),groupViewModal=document['getElementById'](_0x5518bc(0x2be)),groupViewModalTitle=document[_0x5518bc(0x2cd)](_0x5518bc(0x205)),closeGroupViewModalButton=document['getElementById']('closeGroupViewModalButton'),groupViewTableBody=document[_0x5518bc(0x2cd)](_0x5518bc(0x23f)),teamBoxesContainer=document['getElementById'](_0x5518bc(0x26c)),groupViewManagerFilter=document[_0x5518bc(0x2cd)](_0x5518bc(0x288));let allEmployeesData=[],currentParticipants=[],availableToDraw=[],alreadyDrawn=[],randomizationInterval=null,docIdToCancel=null;const randomizeButton=document[_0x5518bc(0x2cd)]('randomizeButton'),randomizeModal=document[_0x5518bc(0x2cd)]('randomizeModal'),closeRandomizeModalButton=document[_0x5518bc(0x2cd)](_0x5518bc(0x27b)),modalParticipantsCount=document[_0x5518bc(0x2cd)](_0x5518bc(0x271)),modalDrawnCount=document[_0x5518bc(0x2cd)](_0x5518bc(0x26d)),digits=[document[_0x5518bc(0x2cd)](_0x5518bc(0x1ab)),document[_0x5518bc(0x2cd)]('digit2'),document[_0x5518bc(0x2cd)]('digit3'),document[_0x5518bc(0x2cd)](_0x5518bc(0x230)),document['getElementById']('digit5')],startRandomizeButton=document['getElementById']('startRandomizeButton'),randomizeError=document['getElementById'](_0x5518bc(0x25c)),drawnWinnersTableBody=document['getElementById']('drawnWinnersTableBody'),winnerDetailModal=document[_0x5518bc(0x2cd)](_0x5518bc(0x225)),winnerName=document['getElementById'](_0x5518bc(0x1dd)),winnerEmployeeId=document[_0x5518bc(0x2cd)](_0x5518bc(0x201)),winnerTeam=document[_0x5518bc(0x2cd)](_0x5518bc(0x287)),winnerBU=document[_0x5518bc(0x2cd)](_0x5518bc(0x22a)),cancelWinnerButton=document[_0x5518bc(0x2cd)](_0x5518bc(0x267)),closeWinnerModalButton=document[_0x5518bc(0x2cd)]('closeWinnerModalButton'),managerFilterSelect=document['getElementById'](_0x5518bc(0x1e1));try{const app=initializeApp(firebaseConfig);db=getFirestore(app),auth=getAuth(app),setLogLevel(_0x5518bc(0x1f9)),await signInAnonymously(auth),console['log'](_0x5518bc(0x29f)),initializeCharts(),populateTeamUI(),listenToAllCrsgData(),setupModalListeners(),setupTeamTabListeners(),setupEmployeeListListeners(),setupEditTeamMemberModalListeners(),setupGroupViewListeners(),updateCurrentDateTime(),setInterval(updateCurrentDateTime,0x3e8);}catch(_0x3eb461){console['error'](_0x5518bc(0x25d),_0x3eb461),document[_0x5518bc(0x2a2)][_0x5518bc(0x26e)]=_0x5518bc(0x29e)+_0x3eb461['message']+_0x5518bc(0x2c5);}function formatThaiTimestamp(_0x3014da){const _0x4bda0d=_0x5518bc;if(!_0x3014da||typeof _0x3014da[_0x4bda0d(0x1e9)]!=='function')return _0x4bda0d(0x253);return _0x3014da['toLocaleString'](_0x4bda0d(0x1c7),{'year':'numeric','month':_0x4bda0d(0x262),'day':'numeric','hour':_0x4bda0d(0x1de),'minute':'2-digit','second':_0x4bda0d(0x1de)});}function updateCurrentDateTime(){const _0x3787b1=_0x5518bc,_0x28c523=new Date();currentDateTimeElement['textContent']='วันที่\x20'+_0x28c523[_0x3787b1(0x208)]('th-TH',{'day':_0x3787b1(0x20a),'month':'long','year':_0x3787b1(0x20a)})+_0x3787b1(0x1c0)+_0x28c523[_0x3787b1(0x235)](_0x3787b1(0x1c7),{'hour':'2-digit','minute':_0x3787b1(0x1de),'second':_0x3787b1(0x1de)});}function initializeCharts(){const _0x21d39a=_0x5518bc,_0x437f64=document['getElementById']('registrationDonutChart')[_0x21d39a(0x20b)]('2d');donutChart=new Chart(_0x437f64,{'type':'doughnut','data':{'labels':[_0x21d39a(0x1fc),_0x21d39a(0x245)],'datasets':[{'data':[0x0,calculatedTarget],'backgroundColor':[_0x21d39a(0x1cc),'#E5E7EB'],'hoverOffset':0x4}]},'options':{'responsive':!![],'maintainAspectRatio':![],'cutout':'80%','plugins':{'legend':{'display':![]},'tooltip':{'callbacks':{'label':_0x24bfb6=>_0x24bfb6['label']+':\x20'+_0x24bfb6[_0x21d39a(0x1be)]+'\x20คน'}}}},'plugins':[ChartDataLabels]});const _0x18127c={'indexAxis':'y','responsive':!![],'maintainAspectRatio':![],'scales':{'x':{'beginAtZero':!![],'stacked':!![],'title':{'display':!![],'text':_0x21d39a(0x1c5)},'ticks':{'stepSize':0x1}},'y':{'stacked':!![],'title':{'display':![]}}},'plugins':{'legend':{'display':!![],'position':'bottom'},'datalabels':{'anchor':'center','align':_0x21d39a(0x2b6),'color':_0x244802=>{const _0x2ebd30=_0x21d39a,_0x21e4fb=_0x244802[_0x2ebd30(0x272)][_0x2ebd30(0x275)][_0x244802[_0x2ebd30(0x22b)]];return _0x21e4fb>0x0?_0x2ebd30(0x24e):'#6b7280';},'font':{'weight':_0x21d39a(0x25f)},'formatter':_0x1942dd=>_0x1942dd>0x0?_0x1942dd:''}}},_0xe556da=document[_0x21d39a(0x2cd)](_0x21d39a(0x22d))[_0x21d39a(0x20b)]('2d');barChart1=new Chart(_0xe556da,{'type':_0x21d39a(0x1ca),'data':{'labels':[],'datasets':[{'label':_0x21d39a(0x1fc),'data':[],'backgroundColor':_0x21d39a(0x1cc),'borderColor':_0x21d39a(0x200),'borderWidth':0x1},{'label':'ยังไม่ลงทะเบียน','data':[],'backgroundColor':_0x21d39a(0x202),'borderColor':_0x21d39a(0x2af),'borderWidth':0x1}]},'options':{..._0x18127c},'plugins':[ChartDataLabels]});const _0x26476d=document[_0x21d39a(0x2cd)](_0x21d39a(0x27a))[_0x21d39a(0x20b)]('2d');barChart2=new Chart(_0x26476d,{'type':'bar','data':{'labels':[],'datasets':[{'label':_0x21d39a(0x1fc),'data':[],'backgroundColor':_0x21d39a(0x1cc),'borderColor':_0x21d39a(0x200),'borderWidth':0x1},{'label':'ยังไม่ลงทะเบียน','data':[],'backgroundColor':_0x21d39a(0x202),'borderColor':_0x21d39a(0x2af),'borderWidth':0x1}]},'options':{..._0x18127c},'plugins':[ChartDataLabels]});}function populateTeamUI(){const _0x26e6c3=_0x5518bc;definedTeamNamesElem['textContent']=teamNames[_0x26e6c3(0x1e3)](',\x20'),teamSelect['innerHTML']=_0x26e6c3(0x281),teamNames[_0x26e6c3(0x295)](_0x49bfe1=>{const _0x8ee2a5=_0x26e6c3,_0x52c985=document[_0x8ee2a5(0x1f3)](_0x8ee2a5(0x21f));_0x52c985[_0x8ee2a5(0x290)]=_0x49bfe1,_0x52c985[_0x8ee2a5(0x207)]=_0x49bfe1,teamSelect[_0x8ee2a5(0x224)](_0x52c985);});}function listenToAllCrsgData(){const _0x1a7fcc=_0x5518bc;try{const _0x1fa7db=_0x1a7fcc(0x250),_0x44f381=collection(db,_0x1fa7db);onSnapshot(_0x44f381,_0x4d5da3=>{const _0x2f5024=_0x1a7fcc,_0x3dc28c=[],_0x4d47d2=[],_0x5efcb4={};let _0x2c731b=0x0,_0x56e307=0x0,_0x316d33=0x0;const _0x5ac360=new Set();_0x4d5da3[_0x2f5024(0x295)](_0x48db47=>{const _0x310a78=_0x2f5024,_0x3cbfdc=_0x48db47[_0x310a78(0x275)](),_0x524e03=_0x48db47['id'];_0x3dc28c[_0x310a78(0x226)]({'id':_0x48db47['id'],..._0x3cbfdc});const _0x47d901=_0x3cbfdc[_0x310a78(0x1e2)]&&_0x3cbfdc['Check_Manager'][_0x310a78(0x233)]()!=='',_0x515556=_0x3cbfdc[_0x310a78(0x21b)]&&_0x3cbfdc[_0x310a78(0x21b)][_0x310a78(0x233)]()!=='';_0x47d901&&(_0x2c731b++,_0x5ac360['add'](_0x3cbfdc[_0x310a78(0x1e2)][_0x310a78(0x233)]()));_0x515556&&_0x56e307++;_0x47d901&&_0x515556&&_0x316d33++;const _0x3a2e31=_0x3cbfdc[_0x310a78(0x21b)];_0x515556&&_0x3a2e31&&(!_0x5efcb4[_0x3a2e31]&&(_0x5efcb4[_0x3a2e31]={'total':0x0,'registered':0x0}),_0x3cbfdc[_0x310a78(0x24c)]&&_0x5efcb4[_0x3a2e31][_0x310a78(0x263)]++),_0x3cbfdc[_0x310a78(0x24c)]&&_0x4d47d2[_0x310a78(0x226)]({'id':_0x48db47['id'],..._0x3cbfdc});}),_0x3dc28c['forEach'](_0x13aa1a=>{const _0x3e7947=_0x2f5024,_0x31cae5=_0x13aa1a[_0x3e7947(0x21b)];_0x31cae5&&_0x31cae5[_0x3e7947(0x233)]()!==''&&_0x5efcb4[_0x31cae5]&&_0x5efcb4[_0x31cae5][_0x3e7947(0x274)]++;}),allEmployeesData=_0x3dc28c,employeesWithManager=_0x3dc28c['filter'](_0x5cfbd8=>_0x5cfbd8['Check_Manager']&&_0x5cfbd8[_0x2f5024(0x1e2)][_0x2f5024(0x233)]()!==''),managerEmployeeCountElem[_0x2f5024(0x207)]=employeesWithManager[_0x2f5024(0x2a1)],teamMemberCountElem[_0x2f5024(0x207)]=_0x56e307,populateManagerFilter(_0x5ac360);const _0x34ca31=_0x4d47d2[_0x2f5024(0x2a1)];totalEmployeesCount[_0x2f5024(0x207)]=_0x34ca31;const _0x2e2781=_0x4d47d2[_0x2f5024(0x1f2)](_0x31473d=>_0x31473d[_0x2f5024(0x24c)]&&_0x31473d[_0x2f5024(0x21b)]&&_0x31473d[_0x2f5024(0x21b)][_0x2f5024(0x233)]()!=='');participantsCount[_0x2f5024(0x207)]=_0x2e2781['length'];const _0x5a99aa=_0x4d47d2[_0x2f5024(0x1f2)](_0x1a5a61=>_0x1a5a61[_0x2f5024(0x24c)]&&(!_0x1a5a61[_0x2f5024(0x21b)]||_0x1a5a61[_0x2f5024(0x21b)][_0x2f5024(0x233)]()===''));attendeesCountMoved[_0x2f5024(0x207)]=_0x5a99aa[_0x2f5024(0x2a1)],attendeesCount['textContent']=_0x5a99aa[_0x2f5024(0x2a1)];!randomizeModal[_0x2f5024(0x214)][_0x2f5024(0x1d1)](_0x2f5024(0x23e))&&(updateRandomizerDataBasedOnAllEmployees(),updateModalUI());const _0x4604df=_0x4d47d2[_0x2f5024(0x2a1)];calculatedTarget=_0x316d33;const _0x343e94=calculatedTarget-_0x4604df,_0x58502a=calculatedTarget>0x0?(_0x4604df/calculatedTarget*0x64)[_0x2f5024(0x1bb)](0x0):0x0;donutChart['data'][_0x2f5024(0x1ae)][0x0]['data']=[_0x4604df,Math[_0x2f5024(0x240)](0x0,_0x343e94)],donutChart[_0x2f5024(0x220)](),donutPercentage[_0x2f5024(0x207)]=_0x58502a+'%',targetCountOverall[_0x2f5024(0x207)]=calculatedTarget,targetCountElem['textContent']=calculatedTarget;const _0x3a1544=_0x2e2781[_0x2f5024(0x2a1)];participantsCountBoxElem[_0x2f5024(0x207)]=_0x3a1544,remainingCountElem[_0x2f5024(0x207)]=Math[_0x2f5024(0x240)](0x0,calculatedTarget-_0x3a1544);const _0xd56ef7={};teamNames[_0x2f5024(0x295)](_0x571d2f=>{_0x5efcb4[_0x571d2f]&&(_0xd56ef7[_0x571d2f]=_0x5efcb4[_0x571d2f]);});const _0x1f9ce0=Object[_0x2f5024(0x2a3)](_0xd56ef7),_0x3af198=_0x1f9ce0['map'](_0x15fc1a=>_0xd56ef7[_0x15fc1a]['registered']),_0x52ff5a=_0x1f9ce0['map'](_0x1cbc29=>Math[_0x2f5024(0x240)](0x0,_0xd56ef7[_0x1cbc29][_0x2f5024(0x274)]-_0xd56ef7[_0x1cbc29][_0x2f5024(0x263)])),_0x499cf0=Math['ceil'](_0x1f9ce0[_0x2f5024(0x2a1)]/0x2),_0x4d853e=_0x1f9ce0[_0x2f5024(0x243)](0x0,_0x499cf0),_0x1cad88=_0x3af198[_0x2f5024(0x243)](0x0,_0x499cf0),_0x28fead=_0x52ff5a[_0x2f5024(0x243)](0x0,_0x499cf0),_0x4a7fe6=_0x1f9ce0['slice'](_0x499cf0),_0x598215=_0x3af198[_0x2f5024(0x243)](_0x499cf0),_0x500a7e=_0x52ff5a[_0x2f5024(0x243)](_0x499cf0);barChart1[_0x2f5024(0x275)][_0x2f5024(0x29b)]=_0x4d853e,barChart1[_0x2f5024(0x275)][_0x2f5024(0x1ae)][0x0]['data']=_0x1cad88,barChart1[_0x2f5024(0x275)][_0x2f5024(0x1ae)][0x1][_0x2f5024(0x275)]=_0x28fead,barChart1[_0x2f5024(0x220)](),barChart2['data'][_0x2f5024(0x29b)]=_0x4a7fe6,barChart2['data'][_0x2f5024(0x1ae)][0x0][_0x2f5024(0x275)]=_0x598215,barChart2[_0x2f5024(0x275)][_0x2f5024(0x1ae)][0x1][_0x2f5024(0x275)]=_0x500a7e,barChart2[_0x2f5024(0x220)](),updateLatestRegistrationsTable(_0x4d47d2),displaySelectedTeamMembers(),updateEmployeeListTable(_0x3dc28c),updateGroupView(_0x3dc28c);},_0x1abed0=>{const _0x30685b=_0x1a7fcc;console[_0x30685b(0x1ce)](_0x30685b(0x1c1),_0x1abed0);});}catch(_0x564e23){console['error'](_0x1a7fcc(0x239),_0x564e23);}}function updateLatestRegistrationsTable(_0x2743a4){const _0x43c5a6=_0x5518bc;latestRegistrationsTableBody[_0x43c5a6(0x26e)]='';if(_0x2743a4[_0x43c5a6(0x2a1)]===0x0){latestRegistrationsTableBody['innerHTML']='<tr><td\x20colspan=\x227\x22\x20class=\x22p-6\x20text-center\x20text-gray-500\x22>ยังไม่มีผู้ลงทะเบียน</td></tr>';return;}_0x2743a4['sort']((_0x1f35ec,_0x15b3b9)=>{const _0xc4e708=_0x43c5a6,_0x4777e7=teamNames['indexOf'](_0x1f35ec[_0xc4e708(0x21b)]||''),_0x209bb4=teamNames[_0xc4e708(0x27d)](_0x15b3b9[_0xc4e708(0x21b)]||''),_0x901a64=_0x1f35ec[_0xc4e708(0x1c8)]||'',_0x5ce90e=_0x15b3b9[_0xc4e708(0x1c8)]||'',_0x137546=_0x4777e7===-0x1?Infinity:_0x4777e7,_0x1eabce=_0x209bb4===-0x1?Infinity:_0x209bb4;if(_0x137546<_0x1eabce)return-0x1;if(_0x137546>_0x1eabce)return 0x1;return _0x901a64['localeCompare'](_0x5ce90e);}),_0x2743a4['forEach']((_0xbfa8f8,_0x1c70cf)=>{const _0x164e14=_0x43c5a6,_0x56ee6f=document[_0x164e14(0x1f3)]('tr');_0x56ee6f['className']=_0x1c70cf%0x2===0x0?_0x164e14(0x22f):_0x164e14(0x251);const _0x57c29f=!!_0xbfa8f8[_0x164e14(0x24c)];_0x56ee6f[_0x164e14(0x26e)]=_0x164e14(0x1c6)+(_0xbfa8f8[_0x164e14(0x1fb)]||'')+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x20font-medium\x22>'+(_0xbfa8f8[_0x164e14(0x1c8)]||'')+_0x164e14(0x222)+(_0xbfa8f8[_0x164e14(0x24a)]||'')+'</td>\x20<!--\x20(แก้ไข)\x20นี่คือ\x20\x22กลุ่ม\x22\x20(BU_th)\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x22>'+(_0xbfa8f8['Check_Manager']||'')+'</td>\x20<!--\x20(แก้ไข)\x20นี่คือ\x20\x22สังกัด\x22\x20(Check_Manager)\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x22>'+(_0xbfa8f8['Check_Place']||'')+'</td>\x20<!--\x20(เพิ่ม)\x20นี่คือ\x20\x22ทีม\x22\x20(Check_Place)\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20(ลบ)\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x22>'+(_0xbfa8f8[_0x164e14(0x229)]||'')+_0x164e14(0x268)+(_0x57c29f?_0x164e14(0x1c3):'<span\x20class=\x22inline-flex\x20items-center\x20px-2\x20py-0.5\x20rounded-full\x20text-xs\x20font-medium\x20bg-gray-100\x20text-gray-800\x22>ยังไม่ลงทะเบียน</span>')+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20(เพิ่ม)\x20Cell\x20สำหรับปุ่มลบ\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x20text-center\x22></td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20';const _0x2185b8=document['createElement']('button');_0x2185b8[_0x164e14(0x207)]=_0x164e14(0x1b7),_0x2185b8['className']=_0x164e14(0x283),_0x2185b8[_0x164e14(0x1d0)]=()=>showConfirmCancelRegistration(_0xbfa8f8),_0x56ee6f[_0x164e14(0x1bf)][0x6][_0x164e14(0x224)](_0x2185b8),latestRegistrationsTableBody[_0x164e14(0x224)](_0x56ee6f);});}function updateEmployeeListTable(_0x5ee1ed){const _0x6d807c=_0x5518bc,_0x2d8a80=managerFilterSelect[_0x6d807c(0x290)];employeeListTableBody[_0x6d807c(0x26e)]='';const _0x47ca50=_0x2d8a80?_0x5ee1ed[_0x6d807c(0x1f2)](_0x5a135c=>{const _0x5d0ba7=_0x6d807c;if(_0x2d8a80===_0x5d0ba7(0x29d))return!_0x5a135c['Check_Manager']||_0x5a135c[_0x5d0ba7(0x1e2)][_0x5d0ba7(0x233)]()==='';return _0x5a135c['Check_Manager']===_0x2d8a80;}):[];if(!_0x2d8a80){employeeListTableBody[_0x6d807c(0x26e)]='<tr><td\x20colspan=\x225\x22\x20class=\x22p-6\x20text-center\x20text-gray-500\x22>กรุณาเลือกสังกัด</td></tr>';return;}if(_0x47ca50[_0x6d807c(0x2a1)]===0x0){employeeListTableBody[_0x6d807c(0x26e)]=_0x6d807c(0x2ce)+_0x2d8a80+'</td></tr>';return;}_0x47ca50[_0x6d807c(0x279)]((_0x166b88,_0xa028a1)=>{const _0x23a9c9=_0x6d807c,_0x2b1a75=teamNames[_0x23a9c9(0x27d)](_0x166b88['Check_Place']||''),_0x4e2bfc=teamNames[_0x23a9c9(0x27d)](_0xa028a1['Check_Place']||''),_0x4cea2a=_0x166b88[_0x23a9c9(0x1c8)]||'',_0x16ed4e=_0xa028a1[_0x23a9c9(0x1c8)]||'',_0x182eca=_0x2b1a75===-0x1?Infinity:_0x2b1a75,_0x449a8e=_0x4e2bfc===-0x1?Infinity:_0x4e2bfc;if(_0x182eca<_0x449a8e)return-0x1;if(_0x182eca>_0x449a8e)return 0x1;if(_0x4cea2a<_0x16ed4e)return-0x1;if(_0x4cea2a>_0x16ed4e)return 0x1;return 0x0;}),_0x47ca50[_0x6d807c(0x295)]((_0x139568,_0xc96e3d)=>{const _0x3748a8=_0x6d807c,_0x2925d8=document[_0x3748a8(0x1f3)]('tr');_0x2925d8[_0x3748a8(0x1dc)]=_0xc96e3d%0x2===0x0?_0x3748a8(0x22f):_0x3748a8(0x251);const _0x159098=_0x139568[_0x3748a8(0x24c)]instanceof Timestamp,_0x4da7ea=document[_0x3748a8(0x1f3)](_0x3748a8(0x2ba));_0x4da7ea['textContent']=_0x3748a8(0x1fe),_0x4da7ea[_0x3748a8(0x1dc)]='text-white\x20bg-orange-500\x20hover:bg-orange-600\x20text-xs\x20py-1\x20px-3\x20rounded\x20shadow',_0x4da7ea[_0x3748a8(0x1d0)]=()=>showEditModal(_0x139568),_0x2925d8[_0x3748a8(0x26e)]=_0x3748a8(0x1c6)+(_0x139568['employeeId']||'')+_0x3748a8(0x289)+(_0x139568['FullName_th']||'')+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x22>'+(_0x139568[_0x3748a8(0x1e4)]||'')+'</td>\x20-->\x20<!--\x20(ลบ)\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x22>'+(_0x139568[_0x3748a8(0x21b)]||'')+_0x3748a8(0x299)+(_0x159098?_0x3748a8(0x1c3):_0x3748a8(0x259))+_0x3748a8(0x26a),_0x2925d8[_0x3748a8(0x1bf)][0x4][_0x3748a8(0x224)](_0x4da7ea),employeeListTableBody[_0x3748a8(0x224)](_0x2925d8);});}function setActiveTab(_0x3d4bbc,_0x57f572){const _0xe7d93b=_0x5518bc;[tabDashboard,tabTeamList,tabGroupView,tabEmployeeList,tabRegister][_0xe7d93b(0x295)](_0x191a16=>{const _0x782893=_0xe7d93b;_0x191a16[_0x782893(0x214)][_0x782893(0x2c9)](_0x782893(0x251),_0x782893(0x211),_0x782893(0x257),_0x782893(0x1f6),_0x782893(0x1bd)),_0x191a16[_0x782893(0x214)]['remove'](_0x782893(0x20f),_0x782893(0x2ca),_0x782893(0x1e7));}),[dashboardContent,teamListContent,groupViewContent,employeeListContent,registerContent][_0xe7d93b(0x295)](_0x4d58e7=>{const _0x47c60c=_0xe7d93b;_0x4d58e7[_0x47c60c(0x214)]['add'](_0x47c60c(0x23e));}),_0x3d4bbc[_0xe7d93b(0x214)]['add'](_0xe7d93b(0x20f),'border-blue-600',_0xe7d93b(0x1e7)),_0x3d4bbc[_0xe7d93b(0x214)][_0xe7d93b(0x27f)](_0xe7d93b(0x251),'border-transparent',_0xe7d93b(0x257),_0xe7d93b(0x1f6),_0xe7d93b(0x1bd)),_0x57f572[_0xe7d93b(0x214)]['remove'](_0xe7d93b(0x23e));}function _0x3610(){const _0x15d7b8=['กำลังดำเนินการ...','<tr><td\x20colspan=\x227\x22\x20class=\x22p-6\x20text-center\x20text-gray-500\x22>ไม่พบสมาชิกในทีม\x20','getElementById','<tr><td\x20colspan=\x225\x22\x20class=\x22p-6\x20text-center\x20text-gray-500\x22>ไม่พบข้อมูลพนักงานสำหรับสังกัด:\x20','editEmployeeModal','Error\x20canceling\x20registration:','ไม่มีพนักงานที่ต้องจัดทีมใหม่','digit1','.\x20Remaining:\x20','text-white\x20bg-orange-500\x20hover:bg-orange-600\x20text-xs\x20py-1\x20px-3\x20rounded\x20shadow','datasets','33828tahCDt','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x22>','selectedTeamTableBody','teamCreationProgressContainer','กำลังรีเซ็ตข้อมูลทีมและสถานะลงทะเบียน...','confirmModal',']\x20หรือไม่?\x20(สถานะจะเปลี่ยนเป็น\x20\x27ยังไม่ลงทะเบียน\x27)','<tr><td\x20colspan=\x224\x22\x20class=\x22p-4\x20text-center\x20text-gray-500\x22>ยังไม่มีผู้ได้รับการสุ่ม</td></tr>','ลบรายการ','</p>\x20<!--\x20(แก้ไข)\x20\x22text-xl\x22\x20(เล็กลง)\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22text-xs\x20text-gray-500\x20text-center\x20mt-1\x22>สมาชิก</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','round','Error\x20updating\x20RandomTime:\x20','toFixed','Employee\x20data\x20updated\x20successfully.','hover:border-gray-300','parsed','cells','\x20เวลา\x20','Error\x20listening\x20to\x20snapshot:\x20','สำเร็จ','<span\x20class=\x22inline-flex\x20items-center\x20px-2\x20py-0.5\x20rounded-full\x20text-xs\x20font-medium\x20bg-green-100\x20text-green-800\x22>ลงทะเบียน</span>','Finished\x20Rule\x203\x20&\x204.\x20Final\x20team\x20assignments:','จำนวนผู้เข้าร่วม','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x22>','th-TH','FullName_th','ทีม:\x20','bar','editMemberEmpId','#3B82F6','style','error','Team\x20member\x20fields\x20blanked\x20successfully.','onclick','contains','addEventListener','ttb-register.firebaseapp.com','RandomTime','ยืนยันการลบ','Invalid\x20employee\x20data\x20for\x20cancel\x20registration.','Total\x20to\x20assign:\x20','attendeesCount','text-red-600\x20hover:text-red-800\x20text-xs\x20py-1\x20px-2\x20rounded','commit','กำลังเตรียมข้อมูล...','className','winnerName','2-digit','targetCount','editMemberTeamSelect','managerFilterSelect','Check_Manager','join','Position_th','คุณต้องการลบข้อมูลทีม\x20(Check_Place)\x20และสถานะการลงทะเบียน\x20(DateLogin)\x20ของพนักงานทั้งหมดหรือไม่?\x20(ข้อมูลพนักงานจะไม่ถูกลบ)','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','text-gray-700','\x20members)','toLocaleString','คุณต้องการยกเลิกการสุ่มของ\x20[','click','00000','currentDateTime','</td></tr>','deleteEditMemberModalButton','1263364aapaCX','คุณต้องการลบ\x20[','filter','createElement','คุณต้องการยกเลิกการลงทะเบียนของ\x20[','Error\x20updating\x20team\x20assignments:\x20','hover:text-gray-700','\x20from\x20','ยืนยันการยกเลิกการสุ่ม','Debug','305EgMNCY','employeeId','ลงทะเบียนแล้ว','G-9DJLWJ5LQ1','แก้ไข','rounded-lg\x20shadow-sm\x20border\x20border-gray-200\x20cursor-pointer\x20hover:shadow-md\x20transition-shadow\x20overflow-hidden\x20bg-white','#2563EB','winnerEmployeeId','#BFDBFE','Registration\x20canceled\x20successfully.',']\x20ออกจากทีมหรือไม่?\x20(ข้อมูล\x20Manager\x20และ\x20ทีม\x20จะถูกล้างค่า)','groupViewModalTitle','เกิดข้อผิดพลาดในการรีเซ็ต:\x20','textContent','toLocaleDateString','ไม่เหลือผู้เข้าร่วมกิจกรรมให้สุ่มแล้ว','numeric','getContext','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-2\x20whitespace-nowrap\x20text-center\x22></td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','--\x20ไม่ระบุทีม\x20--','UNKNOWN','bg-gray-300','Normal\x20group\x20employees\x20(final):\x20','border-transparent','tab-team-list','ยืนยันการ\x20Reset\x20Team','classList','div','toDate','targetCountOverall','1070273157855','Adding\x20remaining\x20','Could\x20not\x20assign\x20employee\x20(all\x20teams\x20full?):','Check_Place','Update\x20successful','Editing:','Editing\x20team\x20member:','option','update','members','</td>\x20<!--\x20(แก้ไข)\x20ใช้\x20FullName_th\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x22>','รหัส:\x20','appendChild','winnerDetailModal','push','width','managerEmployeeCount','Department_th','winnerBU','dataIndex','editMemberEmpName','teamBarChart1','function','bg-white','digit4','teamSelect','resetTeamButton','trim','Error\x20resetting\x20teams:\x20','toLocaleTimeString','1758281YcTtvm','teamCreationStatus','สายงาน:\x20','Error\x20setting\x20up\x20listener:\x20','log','.\x20Need\x20','3301218avTKoi','attendeesCountMoved','hidden','groupViewTableBody','max','AIzaSyAgWMzWcZPzyzoBu5eQzj2y59nKsxTWurQ','random','slice','ไม่','ยังไม่ลงทะเบียน','teamCreationProgressBar','Showing\x20Reset\x20Team\x20confirmation...','message','--\x20ไม่ระบุสังกัด\x20--','BU_th','ttb-register','DateLogin','ดำเนินการเสร็จแล้ว','#ffffff','floor','crsg','bg-gray-100','team-list-content','N/A','<span\x20class=\x22inline-flex\x20items-center\x20px-2\x20py-0.5\x20rounded-full\x20text-xs\x20font-medium\x20bg-green-100\x20text-green-800\x22>ลงทะเบียนแล้ว</span>','สร้างทีมสำเร็จบางส่วน\x20(','tab-group-view','text-gray-500','stringify','<span\x20class=\x22inline-flex\x20items-center\x20px-2\x20py-0.5\x20rounded-full\x20text-xs\x20font-medium\x20bg-gray-100\x20text-gray-800\x22>ยังไม่ลงทะเบียน</span>','register-content','set','randomizeError','Firebase\x20initialization\x20failed:','disabled','bold','option[value=\x22','saveEditModalButton','short','registered','querySelector','editEmpManager','teamMemberCountElem','cancelWinnerButton','</td>\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<!--\x20(เพิ่ม)\x20สถานะ\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','ไม่พบพนักงานที่เข้าเงื่อนไข\x20(มี\x20Manager\x20และยังไม่มีทีม)\x20สำหรับจัดทีม','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x20text-center\x22></td>\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','https://ttb-register-default-rtdb.asia-southeast1.firebasedate.app','teamBoxesContainer','modalDrawnCount','innerHTML','รีเซ็ตข้อมูลทีมและสถานะลงทะเบียนสำเร็จ!','querySelectorAll','modalParticipantsCount','dataset','option[value=\x22NO_MANAGER\x22]','total','data','667824lpStmi','<p\x20class=\x22text-gray-500\x22>ไม่พบข้อมูลทีม</p>','91413qFfQul','sort','teamBarChart2','closeRandomizeModalButton','ปิดหน้าต่าง','indexOf','กำลังบันทึกข้อมูลทีม...','remove','entries','<option\x20value=\x22\x22>--\x20กรุณาเลือก\x20--</option>','<tr><td\x20colspan=\x227\x22\x20class=\x22p-6\x20text-center\x20text-gray-500\x22>กรุณาเลือกทีม</td></tr>','text-white\x20bg-red-500\x20hover:bg-red-600\x20text-xs\x20py-1\x20px-3\x20rounded\x20shadow','Manager\x20counts:','tab-employee-list','saveEditMemberModalButton','winnerTeam','groupViewManagerFilter','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x20font-medium\x22>','editEmpId','Error\x20deleting\x20(blanking)\x20team\x20member:','\x20to\x20normal\x20group.','hover:bg-gray-50','ยกเลิกการลงทะเบียน','เกิดข้อผิดพลาด:\x20','value','editMemberError','closeConfirmButton','employee-list-content','reduce','forEach','กำลังจัดสรรกลุ่มปกติ\x20(Rule\x203)...','ยกเลิก','editEmpTeam','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','get','labels','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-2\x20whitespace-nowrap\x22>','NO_MANAGER','<p\x20class=\x22text-red-600\x20text-center\x20text-lg\x20mt-10\x22>เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล:\x20','Admin\x20Signed\x20in\x20anonymously','editError','length','body','keys','includes','\x20teams:\x20','214899YoARkt','has','เกิดข้อผิดพลาดในการอัปเดต:\x20','tab-dashboard','from','</p>\x20<!--\x20(แก้ไข)\x20เพิ่ม\x20\x22ทีม\x22,\x20\x22text-xl\x22\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22p-4\x20text-center\x20bg-white\x20rounded-b-lg\x22>\x20<!--\x20(แก้ไข)\x20พื้นหลังขาว\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22text-xl\x20font-bold\x20text-gray-900\x20text-center\x22>','Error\x20saving\x20team\x20member\x20changes:','managers','Updating\x20doc\x20','#93C5FD','</td>\x20<!--\x20(เพิ่ม)\x20ลำดับ\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x22>','confirmActionButton','กำลังจัดสรรกลุ่มใหญ่\x20(Rule\x202)...','Normal\x20group\x20employees\x20(initial):\x20','เกิดข้อผิดพลาด','Teams\x20and\x20login\x20status\x20reset\x20successfully.','center','editTeamMemberModal','change','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22p-3\x20text-center\x20bg-gray-100\x20rounded-t-lg\x22>\x20<!--\x20(แก้ไข)\x20พื้นหลังเทา\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22text-xl\x20font-bold\x20text-blue-700\x20text-center\x22>ทีม\x20','button',']\x20ใช่หรือไม่?\x20(พนักงานจะกลับเข้าไปอยู่ในกลุ่มที่สุ่มได้อีกครั้ง)','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x20text-center\x22>','localeCompare','groupViewModal','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x20text-center\x22></td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','Teams\x20assignment\x20updated\x20successfully.','latestRegistrationsTableBody','closeEditModalButton','docId','px-3\x20py-1.5\x20text-xs\x20bg-red-600\x20text-white\x20rounded-md\x20hover:bg-red-700','</p>','126AJRtce','createTeamButton','find','add','border-blue-600'];_0x3610=function(){return _0x15d7b8;};return _0x3610();}tabDashboard[_0x5518bc(0x1d2)]('click',()=>setActiveTab(tabDashboard,dashboardContent)),tabTeamList[_0x5518bc(0x1d2)]('click',()=>setActiveTab(tabTeamList,teamListContent)),tabGroupView[_0x5518bc(0x1d2)]('click',()=>setActiveTab(tabGroupView,groupViewContent)),tabEmployeeList[_0x5518bc(0x1d2)](_0x5518bc(0x1eb),()=>setActiveTab(tabEmployeeList,employeeListContent)),tabRegister[_0x5518bc(0x1d2)](_0x5518bc(0x1eb),()=>setActiveTab(tabRegister,registerContent));function shuffleArray(_0x59dc9d){const _0x2a7e2b=_0x5518bc;for(let _0x1f1d9b=_0x59dc9d['length']-0x1;_0x1f1d9b>0x0;_0x1f1d9b--){const _0x218af9=Math[_0x2a7e2b(0x24f)](Math['random']()*(_0x1f1d9b+0x1));[_0x59dc9d[_0x1f1d9b],_0x59dc9d[_0x218af9]]=[_0x59dc9d[_0x218af9],_0x59dc9d[_0x1f1d9b]];}return _0x59dc9d;}async function handleResetTeam(){const _0x3c5b39=_0x5518bc;console[_0x3c5b39(0x23a)](_0x3c5b39(0x247)),currentConfirmAction=async()=>{const _0x2a346b=_0x3c5b39;confirmTitle[_0x2a346b(0x207)]=_0x2a346b(0x2cb),confirmText[_0x2a346b(0x207)]='กำลังลบข้อมูล\x20....',confirmActionButton['disabled']=!![],closeConfirmButton[_0x2a346b(0x25e)]=!![],teamCreationStatus['textContent']=_0x2a346b(0x1b3),teamCreationProgressContainer['classList'][_0x2a346b(0x27f)](_0x2a346b(0x23e)),teamCreationProgressBar['style'][_0x2a346b(0x227)]='0%',teamCreationProgressBar[_0x2a346b(0x207)]='0%',resetTeamButton[_0x2a346b(0x25e)]=!![],createTeamButton[_0x2a346b(0x25e)]=!![];try{const _0x49bd7e=writeBatch(db),_0x1bed32=allEmployeesData[_0x2a346b(0x2a1)];let _0x1708a0=0x0;allEmployeesData['forEach'](_0x5b2770=>{const _0x5d95fb=_0x2a346b,_0x26c1ac=doc(db,_0x5d95fb(0x250),_0x5b2770['id']);_0x49bd7e[_0x5d95fb(0x220)](_0x26c1ac,{'Check_Place':'','DateLogin':null}),_0x1708a0++;const _0x309fd0=Math[_0x5d95fb(0x1b9)](_0x1708a0/_0x1bed32*0x64);teamCreationProgressBar[_0x5d95fb(0x1cd)][_0x5d95fb(0x227)]=_0x309fd0+'%',teamCreationProgressBar[_0x5d95fb(0x207)]=_0x309fd0+'%';}),await _0x49bd7e[_0x2a346b(0x1da)](),confirmTitle[_0x2a346b(0x207)]=_0x2a346b(0x1c2),confirmText[_0x2a346b(0x207)]=_0x2a346b(0x24d),confirmActionButton[_0x2a346b(0x214)]['add'](_0x2a346b(0x23e)),closeConfirmButton[_0x2a346b(0x207)]=_0x2a346b(0x27c),closeConfirmButton[_0x2a346b(0x25e)]=![],teamCreationStatus[_0x2a346b(0x207)]=_0x2a346b(0x26f),console[_0x2a346b(0x23a)](_0x2a346b(0x2b5));}catch(_0x4c6fe9){console[_0x2a346b(0x1ce)](_0x2a346b(0x234),_0x4c6fe9),confirmTitle[_0x2a346b(0x207)]=_0x2a346b(0x2b4),confirmText['textContent']=_0x2a346b(0x28f)+_0x4c6fe9[_0x2a346b(0x248)],closeConfirmButton[_0x2a346b(0x207)]=_0x2a346b(0x27c),closeConfirmButton[_0x2a346b(0x25e)]=![],teamCreationStatus['textContent']=_0x2a346b(0x206)+_0x4c6fe9['message'];}finally{resetTeamButton[_0x2a346b(0x25e)]=![],createTeamButton[_0x2a346b(0x25e)]=![];}},confirmTitle[_0x3c5b39(0x207)]=_0x3c5b39(0x213),confirmText['textContent']=_0x3c5b39(0x1e5),confirmActionButton[_0x3c5b39(0x207)]='ยืนยัน\x20Reset\x20Team',confirmActionButton[_0x3c5b39(0x1dc)]=_0x3c5b39(0x2c4),confirmActionButton['disabled']=![],confirmActionButton[_0x3c5b39(0x214)][_0x3c5b39(0x27f)](_0x3c5b39(0x23e)),confirmActionButton[_0x3c5b39(0x1d0)]=()=>{typeof currentConfirmAction==='function'&&currentConfirmAction();},closeConfirmButton['textContent']=_0x3c5b39(0x244),closeConfirmButton['disabled']=![],closeConfirmButton[_0x3c5b39(0x214)][_0x3c5b39(0x27f)](_0x3c5b39(0x23e)),confirmModal[_0x3c5b39(0x214)][_0x3c5b39(0x27f)](_0x3c5b39(0x23e));}async function handleCreateTeam(){const _0x61a435=_0x5518bc;console[_0x61a435(0x23a)]('Creating\x20teams\x20based\x20on\x20new\x20rules...'),teamCreationStatus[_0x61a435(0x207)]=_0x61a435(0x1db),teamCreationProgressContainer[_0x61a435(0x214)][_0x61a435(0x27f)](_0x61a435(0x23e)),teamCreationProgressBar[_0x61a435(0x1cd)][_0x61a435(0x227)]='0%',teamCreationProgressBar[_0x61a435(0x207)]='0%',resetTeamButton['disabled']=!![],createTeamButton[_0x61a435(0x25e)]=!![];const _0xad1d4b=allEmployeesData[_0x61a435(0x1f2)](_0x30e64c=>_0x30e64c[_0x61a435(0x1e2)]&&_0x30e64c[_0x61a435(0x1e2)][_0x61a435(0x233)]()!==''&&(!_0x30e64c[_0x61a435(0x21b)]||_0x30e64c[_0x61a435(0x21b)][_0x61a435(0x233)]()==='')),_0x387ca3=_0xad1d4b[_0x61a435(0x2a1)];if(_0x387ca3===0x0){teamCreationStatus[_0x61a435(0x207)]=_0x61a435(0x269),resetTeamButton[_0x61a435(0x25e)]=![],createTeamButton[_0x61a435(0x25e)]=![];return;}const _0x526ca6=Math['ceil'](_0x387ca3/teamSize),_0x209009=teamNames[_0x61a435(0x243)](0x0,_0x526ca6),_0x17f744=_0x209009[_0x209009[_0x61a435(0x2a1)]-0x1];console[_0x61a435(0x23a)](_0x61a435(0x1d7)+_0x387ca3+_0x61a435(0x23b)+_0x526ca6+_0x61a435(0x2a5)+_0x209009[_0x61a435(0x1e3)](',\x20'));const _0x311013=_0xad1d4b[_0x61a435(0x294)]((_0x3a4585,_0x4e552b)=>{const _0x496a90=_0x61a435,_0x4d1ad1=_0x4e552b[_0x496a90(0x1e2)]||_0x496a90(0x20e);return _0x3a4585[_0x4d1ad1]=(_0x3a4585[_0x4d1ad1]||0x0)+0x1,_0x3a4585;},{});console[_0x61a435(0x23a)](_0x61a435(0x284),_0x311013);const _0x5627a0=new Map(),_0x53e809=[];_0xad1d4b[_0x61a435(0x295)](_0x171cd4=>{const _0x5cd639=_0x61a435,_0x48626a=_0x171cd4[_0x5cd639(0x1e2)]||_0x5cd639(0x20e);_0x311013[_0x48626a]>_0x526ca6?(!_0x5627a0[_0x5cd639(0x2a7)](_0x48626a)&&_0x5627a0[_0x5cd639(0x25b)](_0x48626a,[]),_0x5627a0[_0x5cd639(0x29a)](_0x48626a)['push'](_0x171cd4)):_0x53e809[_0x5cd639(0x226)](_0x171cd4);}),console['log']('Large\x20group\x20managers:\x20'+_0x5627a0['size']),console[_0x61a435(0x23a)](_0x61a435(0x2b3)+_0x53e809['length']);const _0x1ae3f8={};_0x209009[_0x61a435(0x295)](_0x3fcdcb=>{_0x1ae3f8[_0x3fcdcb]={'members':[],'managers':{}};});const _0x2cfa6c={};let _0x19f374=0x0;teamCreationStatus[_0x61a435(0x207)]=_0x61a435(0x2b2);let _0x124ddb=0x0;for(const [_0x403aa3,_0x11b9ba]of _0x5627a0[_0x61a435(0x280)]()){console[_0x61a435(0x23a)]('Processing\x20Large\x20Group:\x20'+_0x403aa3+'\x20('+_0x11b9ba[_0x61a435(0x2a1)]+_0x61a435(0x1e8)),shuffleArray(_0x11b9ba);while(_0x11b9ba['length']>_0x526ca6){const _0x5022de=_0x11b9ba[_0x61a435(0x2a1)]>_0x526ca6*0x2?0x2:0x1;console[_0x61a435(0x23a)]('Distributing\x20N='+_0x5022de+'\x20for\x20'+_0x403aa3+_0x61a435(0x1ac)+_0x11b9ba['length']);for(let _0x499238=0x0;_0x499238<_0x526ca6*_0x5022de;_0x499238++){if(_0x11b9ba[_0x61a435(0x2a1)]===0x0)break;const _0x185960=_0x11b9ba['pop']();let _0x5342b6=_0x209009[_0x124ddb],_0x2ad407=_0x1ae3f8[_0x5342b6],_0x383970=0x0;while(_0x5342b6!==_0x17f744&&_0x2ad407[_0x61a435(0x221)][_0x61a435(0x2a1)]>=teamSize&&_0x383970<_0x526ca6){_0x124ddb=(_0x124ddb+0x1)%_0x526ca6,_0x5342b6=_0x209009[_0x124ddb],_0x2ad407=_0x1ae3f8[_0x5342b6],_0x383970++;}_0x5342b6!==_0x17f744&&_0x2ad407[_0x61a435(0x221)]['length']>=teamSize&&(_0x5342b6=_0x17f744,_0x2ad407=_0x1ae3f8[_0x17f744]);_0x2ad407[_0x61a435(0x221)][_0x61a435(0x226)](_0x185960),_0x2ad407[_0x61a435(0x2ad)][_0x185960[_0x61a435(0x1e2)]]=(_0x2ad407[_0x61a435(0x2ad)][_0x185960[_0x61a435(0x1e2)]]||0x0)+0x1,_0x2cfa6c[_0x185960['id']]=_0x5342b6,_0x19f374++;const _0x7b3d45=Math[_0x61a435(0x1b9)](_0x19f374/_0x387ca3*0x64);teamCreationProgressBar[_0x61a435(0x1cd)][_0x61a435(0x227)]=_0x7b3d45+'%',teamCreationProgressBar[_0x61a435(0x207)]=_0x7b3d45+'%',_0x124ddb=(_0x124ddb+0x1)%_0x526ca6;}}_0x11b9ba['length']>0x0&&(console[_0x61a435(0x23a)](_0x61a435(0x219)+_0x11b9ba[_0x61a435(0x2a1)]+_0x61a435(0x1f7)+_0x403aa3+_0x61a435(0x28c)),_0x53e809['push'](..._0x11b9ba));}console['log']('Finished\x20Rule\x202.\x20Teams\x20status:',JSON['parse'](JSON[_0x61a435(0x258)](_0x1ae3f8))),console[_0x61a435(0x23a)](_0x61a435(0x210)+_0x53e809[_0x61a435(0x2a1)]),teamCreationStatus[_0x61a435(0x207)]=_0x61a435(0x296),shuffleArray(_0x53e809);for(const _0x2f9264 of _0x53e809){let _0x5186ff=![];const _0x11ad8b=_0x2f9264[_0x61a435(0x1e2)]||_0x61a435(0x20e);for(const _0x4d14f5 of _0x209009){const _0x52e801=_0x1ae3f8[_0x4d14f5],_0x1d2c31=_0x4d14f5!==_0x17f744&&_0x52e801['members'][_0x61a435(0x2a1)]>=teamSize;if(!_0x1d2c31&&!_0x52e801[_0x61a435(0x2ad)][_0x11ad8b]){_0x52e801['members']['push'](_0x2f9264),_0x52e801[_0x61a435(0x2ad)][_0x11ad8b]=0x1,_0x2cfa6c[_0x2f9264['id']]=_0x4d14f5,_0x5186ff=!![];break;}}if(!_0x5186ff)for(const _0xc3c558 of _0x209009){const _0x56dea0=_0x1ae3f8[_0xc3c558],_0x45b478=_0xc3c558!==_0x17f744&&_0x56dea0[_0x61a435(0x221)][_0x61a435(0x2a1)]>=teamSize;if(!_0x45b478){_0x56dea0['members']['push'](_0x2f9264),_0x56dea0[_0x61a435(0x2ad)][_0x11ad8b]=(_0x56dea0[_0x61a435(0x2ad)][_0x11ad8b]||0x0)+0x1,_0x2cfa6c[_0x2f9264['id']]=_0xc3c558,_0x5186ff=!![];break;}}if(_0x5186ff){_0x19f374++;const _0x204f73=Math[_0x61a435(0x1b9)](_0x19f374/_0x387ca3*0x64);teamCreationProgressBar['style'][_0x61a435(0x227)]=_0x204f73+'%',teamCreationProgressBar['textContent']=_0x204f73+'%';}else console[_0x61a435(0x1ce)](_0x61a435(0x21a),_0x2f9264);}console[_0x61a435(0x23a)](_0x61a435(0x1c4),_0x2cfa6c),console[_0x61a435(0x23a)]('Final\x20teams\x20status:',_0x1ae3f8);if(Object['keys'](_0x2cfa6c)['length']>0x0){teamCreationStatus[_0x61a435(0x207)]=_0x61a435(0x27e);try{const _0x4540c9=writeBatch(db);Object['keys'](_0x2cfa6c)[_0x61a435(0x295)](_0x4b6859=>{const _0x56cdf9=_0x61a435,_0x26c88e=_0x2cfa6c[_0x4b6859],_0xebe4aa=doc(db,_0x56cdf9(0x250),_0x4b6859);_0x4540c9['update'](_0xebe4aa,{'Check_Place':_0x26c88e});}),await _0x4540c9['commit'](),_0x19f374<_0x387ca3?(teamCreationStatus[_0x61a435(0x207)]=_0x61a435(0x255)+_0x19f374+'/'+_0x387ca3+').',console['error']('Mismatch\x20in\x20assigned\x20count!')):teamCreationStatus[_0x61a435(0x207)]='สร้างทีมสำเร็จ!',console[_0x61a435(0x23a)](_0x61a435(0x2c0)),displaySelectedTeamMembers();}catch(_0x5d2269){console[_0x61a435(0x1ce)](_0x61a435(0x1f5),_0x5d2269),teamCreationStatus[_0x61a435(0x207)]='เกิดข้อผิดพลาดในการบันทึก:\x20'+_0x5d2269[_0x61a435(0x248)];}finally{resetTeamButton[_0x61a435(0x25e)]=![],createTeamButton[_0x61a435(0x25e)]=![];}}else teamCreationStatus[_0x61a435(0x207)]=_0x61a435(0x2d1),resetTeamButton[_0x61a435(0x25e)]=![],createTeamButton[_0x61a435(0x25e)]=![];}function displaySelectedTeamMembers(){const _0x5b694b=_0x5518bc,_0x27c635=teamSelect['value'];selectedTeamTableBody[_0x5b694b(0x26e)]='';if(!_0x27c635){selectedTeamTableBody[_0x5b694b(0x26e)]=_0x5b694b(0x282);return;}const _0x17f39c=allEmployeesData[_0x5b694b(0x1f2)](_0x3b6c9b=>_0x3b6c9b[_0x5b694b(0x21b)]===_0x27c635);if(_0x17f39c['length']===0x0){selectedTeamTableBody['innerHTML']=_0x5b694b(0x2cc)+_0x27c635+_0x5b694b(0x1ee);return;}_0x17f39c[_0x5b694b(0x279)]((_0x5072a7,_0x2104a6)=>(_0x5072a7[_0x5b694b(0x1c8)]||'')['localeCompare'](_0x2104a6[_0x5b694b(0x1c8)]||'')),_0x17f39c[_0x5b694b(0x295)]((_0x59dbd0,_0x445582)=>{const _0x468606=_0x5b694b,_0xa41870=document['createElement']('tr');_0xa41870['className']=_0x445582%0x2===0x0?'bg-white':_0x468606(0x251);const _0x3d3060=!!_0x59dbd0[_0x468606(0x24c)];_0xa41870[_0x468606(0x26e)]='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x20text-center\x22>'+(_0x445582+0x1)+_0x468606(0x2b0)+(_0x59dbd0['employeeId']||'')+_0x468606(0x289)+(_0x59dbd0[_0x468606(0x1c8)]||'')+_0x468606(0x1b0)+(_0x59dbd0['BU_th']||'')+_0x468606(0x1b0)+(_0x59dbd0[_0x468606(0x1e2)]||'')+'</td>\x20<!--\x20(เพิ่ม)\x20สังกัด\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+(_0x3d3060?_0x468606(0x254):'<span\x20class=\x22inline-flex\x20items-center\x20px-2\x20py-0.5\x20rounded-full\x20text-xs\x20font-medium\x20bg-gray-100\x20text-gray-800\x22>ยังไม่ลงทะเบียน</span>')+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x20text-center\x22></td>\x20<!--\x20(เพิ่ม)\x20Cell\x20ใหม่สำหรับปุ่ม\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20';const _0xd46c1e=document[_0x468606(0x1f3)](_0x468606(0x2ba));_0xd46c1e[_0x468606(0x207)]=_0x468606(0x1fe),_0xd46c1e[_0x468606(0x1dc)]='text-white\x20bg-orange-500\x20hover:bg-orange-600\x20text-xs\x20py-1\x20px-3\x20rounded\x20shadow',_0xd46c1e['onclick']=()=>showEditTeamMemberModal(_0x59dbd0),_0xa41870[_0x468606(0x1bf)][0x6][_0x468606(0x224)](_0xd46c1e),selectedTeamTableBody[_0x468606(0x224)](_0xa41870);});}function showEditTeamMemberModal(_0x1c0ef0){const _0x2783f8=_0x5518bc;console['log'](_0x2783f8(0x21e),_0x1c0ef0),currentEditingDocId=_0x1c0ef0['id'],editMemberEmpId[_0x2783f8(0x207)]=_0x1c0ef0[_0x2783f8(0x1fb)]||_0x2783f8(0x253),editMemberEmpName[_0x2783f8(0x207)]=_0x1c0ef0[_0x2783f8(0x1c8)]||_0x2783f8(0x253),editMemberError[_0x2783f8(0x207)]='',editMemberTeamSelect[_0x2783f8(0x26e)]='';const _0x1b3a51=document[_0x2783f8(0x1f3)](_0x2783f8(0x21f));_0x1b3a51['value']='',_0x1b3a51[_0x2783f8(0x207)]=_0x2783f8(0x20d),editMemberTeamSelect[_0x2783f8(0x224)](_0x1b3a51),teamNames[_0x2783f8(0x295)](_0x57012b=>{const _0x414d34=_0x2783f8,_0x16f02f=document[_0x414d34(0x1f3)](_0x414d34(0x21f));_0x16f02f[_0x414d34(0x290)]=_0x57012b,_0x16f02f['textContent']=_0x57012b,editMemberTeamSelect[_0x414d34(0x224)](_0x16f02f);}),editMemberTeamSelect[_0x2783f8(0x290)]=_0x1c0ef0['Check_Place']||'',editTeamMemberModal[_0x2783f8(0x214)][_0x2783f8(0x27f)](_0x2783f8(0x23e));}function closeEditTeamMemberModal(){const _0xb2f035=_0x5518bc;editTeamMemberModal[_0xb2f035(0x214)][_0xb2f035(0x2c9)](_0xb2f035(0x23e)),currentEditingDocId=null;}async function saveEditTeamMemberChanges(){const _0x4f2ce4=_0x5518bc;if(!currentEditingDocId)return;const _0x5bc36c=editMemberTeamSelect['value'];editMemberError[_0x4f2ce4(0x207)]='',saveEditMemberModalButton[_0x4f2ce4(0x25e)]=!![],deleteEditMemberModalButton['disabled']=!![],closeEditMemberModalButton['disabled']=!![];try{const _0x4d9efa=doc(db,'crsg',currentEditingDocId);await updateDoc(_0x4d9efa,{'Check_Place':_0x5bc36c}),console[_0x4f2ce4(0x23a)]('Team\x20member\x20team\x20updated\x20successfully.'),closeEditTeamMemberModal();}catch(_0x2e3709){console['error'](_0x4f2ce4(0x2ac),_0x2e3709),editMemberError[_0x4f2ce4(0x207)]=_0x4f2ce4(0x28f)+_0x2e3709[_0x4f2ce4(0x248)];}finally{saveEditMemberModalButton[_0x4f2ce4(0x25e)]=![],deleteEditMemberModalButton['disabled']=![],closeEditMemberModalButton[_0x4f2ce4(0x25e)]=![];}}function handleShowConfirmDeleteMember(){const _0x3343bc=_0x5518bc;if(!currentEditingDocId)return;currentConfirmAction=async()=>{const _0x2dbd21=_0x4a77;console['log']('Deleting\x20(blanking)\x20member:',currentEditingDocId),saveEditMemberModalButton[_0x2dbd21(0x25e)]=!![],deleteEditMemberModalButton[_0x2dbd21(0x25e)]=!![],closeEditMemberModalButton[_0x2dbd21(0x25e)]=!![];try{const _0x2d0d12=doc(db,_0x2dbd21(0x250),currentEditingDocId);await updateDoc(_0x2d0d12,{'Check_Manager':'','Check_Place':''}),console['log'](_0x2dbd21(0x1cf)),closeEditTeamMemberModal(),confirmModal[_0x2dbd21(0x214)][_0x2dbd21(0x2c9)](_0x2dbd21(0x23e));}catch(_0x7089d){console['error'](_0x2dbd21(0x28b),_0x7089d),editMemberError['textContent']=_0x2dbd21(0x28f)+_0x7089d[_0x2dbd21(0x248)],confirmModal[_0x2dbd21(0x214)][_0x2dbd21(0x2c9)]('hidden');}finally{saveEditMemberModalButton[_0x2dbd21(0x25e)]=![],deleteEditMemberModalButton[_0x2dbd21(0x25e)]=![],closeEditMemberModalButton[_0x2dbd21(0x25e)]=![],currentConfirmAction=null;}},confirmTitle['textContent']='ยืนยันการลบรายการ',confirmText['textContent']=_0x3343bc(0x1f1)+editMemberEmpName[_0x3343bc(0x207)]+_0x3343bc(0x204),confirmActionButton[_0x3343bc(0x207)]=_0x3343bc(0x1d5),confirmActionButton[_0x3343bc(0x1dc)]='px-3\x20py-1.5\x20text-xs\x20bg-red-600\x20text-white\x20rounded-md\x20hover:bg-red-700',confirmActionButton[_0x3343bc(0x25e)]=![],confirmActionButton[_0x3343bc(0x214)][_0x3343bc(0x27f)](_0x3343bc(0x23e)),confirmActionButton[_0x3343bc(0x1d0)]=()=>{typeof currentConfirmAction==='function'&&currentConfirmAction();},closeConfirmButton['textContent']='ไม่',closeConfirmButton[_0x3343bc(0x25e)]=![],closeConfirmButton[_0x3343bc(0x214)][_0x3343bc(0x27f)](_0x3343bc(0x23e)),confirmModal[_0x3343bc(0x214)][_0x3343bc(0x27f)]('hidden');}function setupEditTeamMemberModalListeners(){const _0x371b47=_0x5518bc;closeEditMemberModalButton['addEventListener']('click',closeEditTeamMemberModal),saveEditMemberModalButton[_0x371b47(0x1d2)](_0x371b47(0x1eb),saveEditTeamMemberChanges),deleteEditMemberModalButton[_0x371b47(0x1d2)](_0x371b47(0x1eb),handleShowConfirmDeleteMember);}function updateGroupView(_0x33aa14){const _0x320473=_0x5518bc;teamBoxesContainer['innerHTML']='';const _0x87174a=groupViewManagerFilter[_0x320473(0x290)],_0x4c102a=_0x87174a?_0x33aa14[_0x320473(0x1f2)](_0x28f327=>{const _0x2f1b3a=_0x320473;if(_0x87174a===_0x2f1b3a(0x29d))return!_0x28f327[_0x2f1b3a(0x1e2)]||_0x28f327[_0x2f1b3a(0x1e2)][_0x2f1b3a(0x233)]()==='';return _0x28f327[_0x2f1b3a(0x1e2)]===_0x87174a;}):_0x33aa14,_0x291753=teamNames[_0x320473(0x294)]((_0x341215,_0x25c948)=>{return _0x341215[_0x25c948]=0x0,_0x341215;},{});let _0x41c1d9=0x0;_0x4c102a[_0x320473(0x295)](_0x3b1aa7=>{const _0x4333ce=_0x320473,_0x159602=_0x3b1aa7[_0x4333ce(0x21b)];if(_0x159602&&teamNames[_0x4333ce(0x2a4)](_0x159602))_0x291753[_0x159602]++;else(!_0x159602||_0x159602[_0x4333ce(0x233)]()==='')&&_0x41c1d9++;}),teamNames[_0x320473(0x295)](_0x48fc08=>{const _0x354406=_0x320473,_0x4bf2b6=_0x291753[_0x48fc08],_0x15459a=document['createElement'](_0x354406(0x215));_0x15459a[_0x354406(0x1dc)]=_0x354406(0x1ff),_0x15459a['innerHTML']=_0x354406(0x2b9)+_0x48fc08+_0x354406(0x2ab)+_0x4bf2b6+_0x354406(0x1b8),_0x15459a['addEventListener'](_0x354406(0x1eb),()=>showGroupViewModal(_0x48fc08,_0x33aa14)),teamBoxesContainer[_0x354406(0x224)](_0x15459a);}),teamNames[_0x320473(0x2a1)]===0x0&&(teamBoxesContainer[_0x320473(0x26e)]=_0x320473(0x277));}function showGroupViewModal(_0x2841d9,_0x27df1d){const _0x93edbc=_0x5518bc;groupViewModalTitle['textContent']='สมาชิกในทีม\x20'+_0x2841d9,groupViewTableBody[_0x93edbc(0x26e)]='';const _0x13a20c=_0x27df1d[_0x93edbc(0x1f2)](_0x5a8b40=>_0x5a8b40[_0x93edbc(0x21b)]===_0x2841d9);if(_0x13a20c[_0x93edbc(0x2a1)]===0x0){groupViewTableBody[_0x93edbc(0x26e)]='<tr><td\x20colspan=\x227\x22\x20class=\x22p-6\x20text-center\x20text-gray-500\x22>ไม่พบสมาชิกในทีม\x20'+_0x2841d9+_0x93edbc(0x1ee),groupViewModal[_0x93edbc(0x214)][_0x93edbc(0x27f)]('hidden');return;}_0x13a20c['sort']((_0x521a69,_0x182c61)=>{const _0x47a647=_0x93edbc,_0x4e9c8c=_0x521a69['Check_Manager']||'',_0x57270a=_0x182c61[_0x47a647(0x1e2)]||'',_0x3b394b=_0x521a69[_0x47a647(0x1c8)]||'',_0x3d148a=_0x182c61['FullName_th']||'';if(_0x4e9c8c<_0x57270a)return-0x1;if(_0x4e9c8c>_0x57270a)return 0x1;return _0x3b394b[_0x47a647(0x2bd)](_0x3d148a);}),_0x13a20c['forEach']((_0x5cd14d,_0x497cd8)=>{const _0x4a33a8=_0x93edbc,_0x5b702e=document[_0x4a33a8(0x1f3)]('tr');_0x5b702e[_0x4a33a8(0x1dc)]=_0x497cd8%0x2===0x0?_0x4a33a8(0x22f):_0x4a33a8(0x251);const _0x312c1c=!!_0x5cd14d[_0x4a33a8(0x24c)];_0x5b702e[_0x4a33a8(0x26e)]=_0x4a33a8(0x2bc)+(_0x497cd8+0x1)+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-3\x20whitespace-nowrap\x22>'+(_0x5cd14d['employeeId']||'')+_0x4a33a8(0x289)+(_0x5cd14d[_0x4a33a8(0x1c8)]||'')+_0x4a33a8(0x1b0)+(_0x5cd14d[_0x4a33a8(0x24a)]||'')+_0x4a33a8(0x1b0)+(_0x5cd14d['Check_Manager']||'')+_0x4a33a8(0x1e6)+(_0x312c1c?_0x4a33a8(0x254):_0x4a33a8(0x259))+_0x4a33a8(0x2bf);const _0x462363=document[_0x4a33a8(0x1f3)](_0x4a33a8(0x2ba));_0x462363['textContent']='แก้ไข',_0x462363['className']=_0x4a33a8(0x1ad),_0x462363[_0x4a33a8(0x1d0)]=()=>showEditTeamMemberModal(_0x5cd14d),_0x5b702e[_0x4a33a8(0x1bf)][0x6][_0x4a33a8(0x224)](_0x462363),groupViewTableBody[_0x4a33a8(0x224)](_0x5b702e);}),groupViewModal[_0x93edbc(0x214)][_0x93edbc(0x27f)](_0x93edbc(0x23e));}function setupGroupViewListeners(){const _0x1cc658=_0x5518bc;closeGroupViewModalButton[_0x1cc658(0x1d2)](_0x1cc658(0x1eb),()=>{const _0x130a62=_0x1cc658;groupViewModal['classList'][_0x130a62(0x2c9)](_0x130a62(0x23e));}),groupViewManagerFilter['addEventListener'](_0x1cc658(0x2b8),()=>updateGroupView(allEmployeesData));}function showConfirmCancelRegistration(_0x12f35d){const _0x3f72bc=_0x5518bc;if(!_0x12f35d||!_0x12f35d['id']){console[_0x3f72bc(0x1ce)](_0x3f72bc(0x1d6));return;}currentConfirmAction=async()=>{const _0x3018a1=_0x3f72bc;console[_0x3018a1(0x23a)]('Canceling\x20registration\x20for:',_0x12f35d[_0x3018a1(0x1c8)]),confirmActionButton['disabled']=!![],closeConfirmButton['disabled']=!![];try{const _0x40963c=doc(db,_0x3018a1(0x250),_0x12f35d['id']);await updateDoc(_0x40963c,{'DateLogin':null}),console[_0x3018a1(0x23a)](_0x3018a1(0x203)),confirmModal[_0x3018a1(0x214)][_0x3018a1(0x2c9)](_0x3018a1(0x23e));}catch(_0x4f4fd3){console[_0x3018a1(0x1ce)](_0x3018a1(0x2d0),_0x4f4fd3),confirmText[_0x3018a1(0x207)]=_0x3018a1(0x28f)+_0x4f4fd3[_0x3018a1(0x248)],confirmActionButton[_0x3018a1(0x25e)]=![],closeConfirmButton[_0x3018a1(0x25e)]=![];}finally{currentConfirmAction=null;}},confirmTitle[_0x3f72bc(0x207)]='ยืนยันการยกเลิกการลงทะเบียน',confirmText[_0x3f72bc(0x207)]=_0x3f72bc(0x1f4)+_0x12f35d[_0x3f72bc(0x1c8)]+_0x3f72bc(0x1b5),confirmActionButton['textContent']=_0x3f72bc(0x28e),confirmActionButton[_0x3f72bc(0x1dc)]=_0x3f72bc(0x2c4),confirmActionButton[_0x3f72bc(0x25e)]=![],confirmActionButton[_0x3f72bc(0x214)][_0x3f72bc(0x27f)](_0x3f72bc(0x23e)),confirmActionButton[_0x3f72bc(0x1d0)]=()=>{const _0x13767b=_0x3f72bc;typeof currentConfirmAction===_0x13767b(0x22e)&&currentConfirmAction();},closeConfirmButton['textContent']=_0x3f72bc(0x27c),closeConfirmButton[_0x3f72bc(0x25e)]=![],closeConfirmButton[_0x3f72bc(0x214)][_0x3f72bc(0x27f)](_0x3f72bc(0x23e)),confirmModal[_0x3f72bc(0x214)][_0x3f72bc(0x27f)]('hidden');}function updateRandomizerDataBasedOnAllEmployees(){const _0x428673=_0x5518bc;currentParticipants=allEmployeesData['filter'](_0x5f0970=>_0x5f0970[_0x428673(0x24c)]&&_0x5f0970[_0x428673(0x21b)]&&_0x5f0970[_0x428673(0x21b)]['trim']()!==''),availableToDraw=currentParticipants['filter'](_0x221dea=>!_0x221dea['RandomTime']),alreadyDrawn=currentParticipants[_0x428673(0x1f2)](_0x426e2b=>_0x426e2b[_0x428673(0x1d4)]),randomizeError[_0x428673(0x207)]='';}function updateModalUI(){const _0x541e96=_0x5518bc;modalParticipantsCount[_0x541e96(0x207)]=availableToDraw['length'],modalDrawnCount[_0x541e96(0x207)]=alreadyDrawn[_0x541e96(0x2a1)],renderDrawnWinnersTable(),startRandomizeButton[_0x541e96(0x25e)]=availableToDraw[_0x541e96(0x2a1)]===0x0;}function renderDrawnWinnersTable(){const _0x348598=_0x5518bc;drawnWinnersTableBody[_0x348598(0x26e)]='';if(alreadyDrawn[_0x348598(0x2a1)]===0x0){drawnWinnersTableBody[_0x348598(0x26e)]=_0x348598(0x1b6);return;}alreadyDrawn[_0x348598(0x279)]((_0x375a1e,_0x55281f)=>(_0x55281f[_0x348598(0x1d4)]?_0x55281f[_0x348598(0x1d4)][_0x348598(0x216)]():0x0)-(_0x375a1e['RandomTime']?_0x375a1e[_0x348598(0x1d4)][_0x348598(0x216)]():0x0)),alreadyDrawn[_0x348598(0x295)](_0x211144=>{const _0x2b69a8=_0x348598,_0x8803a0=document[_0x2b69a8(0x1f3)]('tr');_0x8803a0[_0x2b69a8(0x1dc)]=_0x2b69a8(0x28d);const _0x10b81f=document[_0x2b69a8(0x1f3)](_0x2b69a8(0x2ba));_0x10b81f[_0x2b69a8(0x207)]=_0x2b69a8(0x297),_0x10b81f[_0x2b69a8(0x1dc)]=_0x2b69a8(0x1d9),_0x10b81f[_0x2b69a8(0x1d0)]=()=>handleShowConfirmCancelRandom(_0x211144['id'],_0x211144[_0x2b69a8(0x1c8)]),_0x8803a0[_0x2b69a8(0x26e)]='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-2\x20whitespace-nowrap\x22>'+(_0x211144[_0x2b69a8(0x1fb)]||'')+_0x2b69a8(0x29c)+(_0x211144[_0x2b69a8(0x1c8)]||'')+_0x2b69a8(0x29c)+(_0x211144[_0x2b69a8(0x24a)]||'')+_0x2b69a8(0x20c),_0x8803a0['cells'][0x3][_0x2b69a8(0x224)](_0x10b81f),drawnWinnersTableBody[_0x2b69a8(0x224)](_0x8803a0);});}async function updateRandomTime(_0x32be94,_0x1eb828){const _0x155c71=_0x5518bc;if(!_0x32be94)return;console[_0x155c71(0x23a)](_0x155c71(0x2ae)+_0x32be94+'\x20with\x20RandomTime:',_0x1eb828);try{const _0x28d579=doc(db,'crsg',_0x32be94);await updateDoc(_0x28d579,{'RandomTime':_0x1eb828}),console[_0x155c71(0x23a)](_0x155c71(0x21c));}catch(_0x491e99){console[_0x155c71(0x1ce)](_0x155c71(0x1ba),_0x491e99),randomizeError['textContent']=_0x155c71(0x2a8)+_0x491e99[_0x155c71(0x248)];}}function handleShowConfirmCancelRandom(_0x28755a,_0x5f2973){const _0x540baf=_0x5518bc;docIdToCancel=_0x28755a,currentConfirmAction=async()=>{const _0x592e13=_0x4a77;await updateRandomTime(docIdToCancel,null),docIdToCancel=null,confirmModal[_0x592e13(0x214)]['add']('hidden'),!winnerDetailModal['classList'][_0x592e13(0x1d1)](_0x592e13(0x23e))&&winnerDetailModal[_0x592e13(0x214)][_0x592e13(0x2c9)](_0x592e13(0x23e));},confirmTitle['textContent']=_0x540baf(0x1f8),confirmText['textContent']=_0x540baf(0x1ea)+_0x5f2973+_0x540baf(0x2bb),confirmActionButton[_0x540baf(0x207)]='ใช่,\x20ยืนยันยกเลิก',confirmActionButton['className']=_0x540baf(0x2c4),confirmActionButton['disabled']=![],confirmActionButton[_0x540baf(0x214)][_0x540baf(0x27f)]('hidden'),confirmActionButton[_0x540baf(0x1d0)]=()=>{const _0x62ecd2=_0x540baf;typeof currentConfirmAction===_0x62ecd2(0x22e)&&currentConfirmAction();},closeConfirmButton[_0x540baf(0x207)]='ไม่',closeConfirmButton[_0x540baf(0x25e)]=![],closeConfirmButton[_0x540baf(0x214)][_0x540baf(0x27f)](_0x540baf(0x23e)),confirmModal[_0x540baf(0x214)]['remove'](_0x540baf(0x23e));}async function handleRandomization(){const _0x35df06=_0x5518bc;if(availableToDraw['length']===0x0){randomizeError[_0x35df06(0x207)]=_0x35df06(0x209);return;}startRandomizeButton[_0x35df06(0x25e)]=!![],randomizeError['textContent']='';let _0x211763=0x0;randomizationInterval=setInterval(()=>{const _0xc9cb62=_0x35df06;digits[_0xc9cb62(0x295)](_0xfdb42d=>{const _0x317662=_0xc9cb62;_0xfdb42d[_0x317662(0x207)]=Math[_0x317662(0x24f)](Math[_0x317662(0x242)]()*0xa);}),_0x211763++;if(_0x211763>0x14){clearInterval(randomizationInterval);const _0x4f60bb=availableToDraw[Math[_0xc9cb62(0x24f)](Math[_0xc9cb62(0x242)]()*availableToDraw['length'])],_0xf14571=(_0x4f60bb[_0xc9cb62(0x1fb)]||_0xc9cb62(0x1ec))['slice'](-0x5)['padStart'](0x5,'0');digits[_0xc9cb62(0x295)]((_0x528d26,_0x1cdcd1)=>_0x528d26[_0xc9cb62(0x207)]=_0xf14571[_0x1cdcd1]),updateRandomTime(_0x4f60bb['id'],serverTimestamp())['then'](()=>{const _0x458cca=_0xc9cb62;winnerName[_0x458cca(0x207)]=_0x4f60bb[_0x458cca(0x1c8)]||_0x458cca(0x253),winnerEmployeeId['textContent']=_0x458cca(0x223)+(_0x4f60bb[_0x458cca(0x1fb)]||_0x458cca(0x253)),winnerTeam[_0x458cca(0x207)]=_0x458cca(0x1c9)+(_0x4f60bb[_0x458cca(0x21b)]||_0x458cca(0x253)),winnerBU[_0x458cca(0x207)]=_0x458cca(0x238)+(_0x4f60bb[_0x458cca(0x24a)]||_0x458cca(0x253)),cancelWinnerButton[_0x458cca(0x272)][_0x458cca(0x2c3)]=_0x4f60bb['id'],winnerDetailModal[_0x458cca(0x214)]['remove'](_0x458cca(0x23e)),startRandomizeButton[_0x458cca(0x25e)]=![];});}},0x64);}async function handleCancelWinner(){const _0x253b48=_0x5518bc,_0x1fe69c=cancelWinnerButton[_0x253b48(0x272)]['docId'],_0x17b35a=alreadyDrawn[_0x253b48(0x2c8)](_0x578dbe=>_0x578dbe['id']===_0x1fe69c);handleShowConfirmCancelRandom(_0x1fe69c,_0x17b35a?.[_0x253b48(0x1c8)]||_0x253b48(0x253));}function setupModalListeners(){const _0x4b7403=_0x5518bc;randomizeButton['addEventListener'](_0x4b7403(0x1eb),()=>{const _0xd3703d=_0x4b7403;updateRandomizerDataBasedOnAllEmployees(),updateModalUI(),randomizeModal[_0xd3703d(0x214)][_0xd3703d(0x27f)]('hidden');}),closeRandomizeModalButton[_0x4b7403(0x1d2)](_0x4b7403(0x1eb),()=>{const _0x2d86e2=_0x4b7403;randomizeModal[_0x2d86e2(0x214)][_0x2d86e2(0x2c9)]('hidden');}),startRandomizeButton[_0x4b7403(0x1d2)](_0x4b7403(0x1eb),handleRandomization),closeWinnerModalButton[_0x4b7403(0x1d2)](_0x4b7403(0x1eb),()=>{const _0x4c8fce=_0x4b7403;winnerDetailModal[_0x4c8fce(0x214)][_0x4c8fce(0x2c9)]('hidden');}),cancelWinnerButton[_0x4b7403(0x1d2)]('click',handleCancelWinner),closeConfirmButton[_0x4b7403(0x1d2)]('click',()=>{const _0x130829=_0x4b7403;confirmModal[_0x130829(0x214)][_0x130829(0x2c9)](_0x130829(0x23e)),confirmTitle[_0x130829(0x207)]='ยืนยัน',confirmText[_0x130829(0x207)]='',confirmActionButton[_0x130829(0x25e)]=![],confirmActionButton[_0x130829(0x214)][_0x130829(0x27f)](_0x130829(0x23e)),closeConfirmButton['textContent']=_0x130829(0x244),closeConfirmButton['disabled']=![],currentConfirmAction=null,docIdToCancel=null;});}function setupTeamTabListeners(){const _0x28d9ba=_0x5518bc;resetTeamButton[_0x28d9ba(0x1d2)](_0x28d9ba(0x1eb),handleResetTeam),createTeamButton[_0x28d9ba(0x1d2)](_0x28d9ba(0x1eb),handleCreateTeam),teamSelect[_0x28d9ba(0x1d2)]('change',displaySelectedTeamMembers);}function setupEmployeeListListeners(){const _0x520714=_0x5518bc;managerFilterSelect[_0x520714(0x1d2)](_0x520714(0x2b8),()=>{updateEmployeeListTable(allEmployeesData);}),closeEditModalButton[_0x520714(0x1d2)](_0x520714(0x1eb),closeEditModal),saveEditModalButton['addEventListener'](_0x520714(0x1eb),saveEmployeeChanges);}function populateManagerFilter(_0x1d8c6e){const _0x2cdcbb=_0x5518bc,_0x430706=managerFilterSelect[_0x2cdcbb(0x290)],_0x232e99=managerFilterSelect[_0x2cdcbb(0x270)]('option');_0x232e99[_0x2cdcbb(0x295)](_0xf6f560=>{const _0x3ac616=_0x2cdcbb;_0xf6f560[_0x3ac616(0x290)]!==''&&_0xf6f560[_0x3ac616(0x27f)]();});if(!managerFilterSelect['querySelector'](_0x2cdcbb(0x273))){const _0x29fd31=document[_0x2cdcbb(0x1f3)](_0x2cdcbb(0x21f));_0x29fd31[_0x2cdcbb(0x290)]=_0x2cdcbb(0x29d),_0x29fd31['textContent']='--\x20ไม่ระบุสังกัด\x20--',managerFilterSelect[_0x2cdcbb(0x224)](_0x29fd31);}const _0x28a834=Array[_0x2cdcbb(0x2aa)](_0x1d8c6e)[_0x2cdcbb(0x279)]();_0x28a834[_0x2cdcbb(0x295)](_0x4f063f=>{const _0x76e0fa=_0x2cdcbb;if(_0x4f063f&&_0x4f063f[_0x76e0fa(0x233)]()!==''){const _0x4a4fca=document[_0x76e0fa(0x1f3)]('option');_0x4a4fca[_0x76e0fa(0x290)]=_0x4f063f,_0x4a4fca[_0x76e0fa(0x207)]=_0x4f063f,managerFilterSelect[_0x76e0fa(0x224)](_0x4a4fca);}});if(_0x430706&&managerFilterSelect[_0x2cdcbb(0x264)](_0x2cdcbb(0x260)+CSS['escape'](_0x430706)+'\x22]'))managerFilterSelect[_0x2cdcbb(0x290)]=_0x430706;else _0x430706===''&&(managerFilterSelect[_0x2cdcbb(0x290)]='');const _0x4ecae5=groupViewManagerFilter[_0x2cdcbb(0x290)],_0x446307=groupViewManagerFilter[_0x2cdcbb(0x270)]('option');_0x446307[_0x2cdcbb(0x295)](_0x4d6659=>{const _0x3e59fd=_0x2cdcbb;_0x4d6659['value']!==''&&_0x4d6659[_0x3e59fd(0x27f)]();});if(!groupViewManagerFilter[_0x2cdcbb(0x264)](_0x2cdcbb(0x273))){const _0x339df7=document[_0x2cdcbb(0x1f3)](_0x2cdcbb(0x21f));_0x339df7[_0x2cdcbb(0x290)]=_0x2cdcbb(0x29d),_0x339df7[_0x2cdcbb(0x207)]=_0x2cdcbb(0x249),groupViewManagerFilter[_0x2cdcbb(0x224)](_0x339df7);}_0x28a834[_0x2cdcbb(0x295)](_0x2fc966=>{const _0x346273=_0x2cdcbb;if(_0x2fc966&&_0x2fc966['trim']()!==''){const _0xdb93b9=document[_0x346273(0x1f3)]('option');_0xdb93b9[_0x346273(0x290)]=_0x2fc966,_0xdb93b9[_0x346273(0x207)]=_0x2fc966,groupViewManagerFilter[_0x346273(0x224)](_0xdb93b9);}});if(_0x4ecae5&&groupViewManagerFilter[_0x2cdcbb(0x264)](_0x2cdcbb(0x260)+CSS['escape'](_0x4ecae5)+'\x22]'))groupViewManagerFilter[_0x2cdcbb(0x290)]=_0x4ecae5;else _0x4ecae5===''&&(groupViewManagerFilter[_0x2cdcbb(0x290)]='');}function showEditModal(_0x41813a){const _0x5d6614=_0x5518bc;console[_0x5d6614(0x23a)](_0x5d6614(0x21d),_0x41813a),currentEditingDocId=_0x41813a['id'],editEmpId['textContent']=_0x41813a[_0x5d6614(0x1fb)]||_0x5d6614(0x253),editEmpName['textContent']=_0x41813a['FullName_th']||_0x5d6614(0x253),editEmpManager['value']=_0x41813a['Check_Manager']||'',editEmpTeam[_0x5d6614(0x290)]=_0x41813a[_0x5d6614(0x21b)]||'',editError[_0x5d6614(0x207)]='',editEmployeeModal[_0x5d6614(0x214)][_0x5d6614(0x27f)](_0x5d6614(0x23e));}function closeEditModal(){const _0x4ff83a=_0x5518bc;editEmployeeModal[_0x4ff83a(0x214)][_0x4ff83a(0x2c9)](_0x4ff83a(0x23e)),currentEditingDocId=null;}async function saveEmployeeChanges(){const _0x3ceb7a=_0x5518bc;if(!currentEditingDocId)return;const _0x1233f7=editEmpManager[_0x3ceb7a(0x290)],_0xcfcbe1=editEmpTeam[_0x3ceb7a(0x290)];editError['textContent']='',saveEditModalButton[_0x3ceb7a(0x25e)]=!![];try{const _0x34d05d=doc(db,_0x3ceb7a(0x250),currentEditingDocId);await updateDoc(_0x34d05d,{'Check_Manager':_0x1233f7,'Check_Place':_0xcfcbe1}),console[_0x3ceb7a(0x23a)](_0x3ceb7a(0x1bc)),closeEditModal();}catch(_0x550cfe){console[_0x3ceb7a(0x1ce)]('Error\x20saving\x20employee\x20changes:',_0x550cfe),editError[_0x3ceb7a(0x207)]=_0x3ceb7a(0x28f)+_0x550cfe[_0x3ceb7a(0x248)];}finally{saveEditModalButton[_0x3ceb7a(0x25e)]=![];}}
+        
+    </script>
+</body>
+</html>
+
