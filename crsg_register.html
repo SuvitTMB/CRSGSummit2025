@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ลงทะเบียนพนักงาน</title>
+    <!-- โหลด Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Sarabun', sans-serif; }
+    </style>
+</head>
+<body class="bg-white flex flex-col items-center justify-center min-h-screen py-10" style="background-color: #dee1e1;">
+
+    <!-- กล่องลงทะเบียน -->
+    <div id="registrationFormContainer" class="w-[95%] max-w-md p-8 space-y-6 bg-gray-50 rounded-lg shadow-md transition-colors duration-300">
+        <h1 class="text-2xl font-bold text-center text-gray-900">CRSG Summit 2025</h1>
+        <!-- *** แก้ไข: เพิ่ม id="eventDate" *** -->
+        <p id="eventDate" class="text-sm font-medium text-gray-700 text-center" style="margin-top: 2px;">วันที่ 24 พฤศจิกายน 2568</p>
+
+        <!-- *** แก้ไข: เพิ่ม id="eventImageContainer" *** -->
+        <div id="eventImageContainer" class="mt-6 w-[70%] mx-auto">
+            <img src="./images/crsg.png">
+        </div>  
+              
+        <!-- *** เพิ่ม: ส่วนแสดงข้อมูลพนักงาน (ซ่อนไว้ตอนเริ่ม) *** -->
+        <div id="employeeInfoDisplay" class="hidden text-center space-y-2 py-4">
+            <p id="infoFullName" class="text-lg font-bold text-gray-900"></p>
+            <p id="infoPosition" class="text-sm text-gray-700"></p>
+            <p id="infoDepartment" class="text-sm text-gray-700"></p>
+            <p id="infoBU" class="text-sm text-gray-700"></p>
+        </div>
+
+        <!-- ฟอร์มลงทะเบียน -->
+        <form id="registrationForm" class="space-y-4">
+            <div>
+                <label for="employeeId" class="block text-sm font-medium text-gray-700">รหัสพนักงาน</label>
+                <input type="text" id="employeeId" name="employeeId" required
+                       class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors duration-150">
+            </div>
+            
+            <div>
+                <!-- (แก้ไข) เปลี่ยน "ชื่อ - นามสกุล" เป็น "ชื่อเล่นของคุณ" -->
+                <label for="nickname" class="block text-sm font-medium text-gray-700">ชื่อเล่นของคุณ</label>
+                <!-- (แก้ไข) เปลี่ยน id และ name -->
+                <input type="text" id="nickname" name="nickname" required
+                       class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors duration-150">
+            </div>
+            
+            <button type="button" id="registerButton"
+                    class="w-full px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out disabled:bg-gray-400">
+                ลงทะเบียน
+            </button>
+        </form>
+        
+        <!-- พื้นที่แสดงข้อความ (สำหรับข้อผิดพลาดหลัก) --><div id="message" class="text-center text-sm"></div>
+
+        <div id="teamDisplay" class="hidden text-center border-t pt-4 mt-4">
+            <h2 id="teamNameDisplay" class="text-8xl font-bold text-[#0056ff]"></h2> 
+            <p class="text-sm font-medium text-gray-700 mt-1">ทีมของคุณ</p>
+            
+            <p id="registrationStatusMessage" class="text-sm mt-4"></p>
+            <p id="registrationTimestamp" class="text-xs text-gray-500"></p>
+        </div>
+    </div>
+
+    <!-- (เพิ่ม) ส่วนแสดงสมาชิกในทีม (ซ่อนไว้ตอนเริ่ม) -->
+    <div id="teamMembersDisplay" class="hidden w-[95%] max-w-4xl p-6 bg-white rounded-lg shadow-md mt-6">
+        <div class="flex justify-between items-center mb-4">
+            <h3 id="teamMembersHeader" class="text-lg font-semibold text-gray-800">สมาชิกทีม : ...</h3>
+            <span id="teamMembersCount" class="text-sm font-medium text-gray-600">สมาชิก ... คน</span>
+        </div>
+        <div class="overflow-x-auto border rounded-lg">
+            <table class="min-w-full text-sm">
+                <!-- (แก้ไข) ปรับปรุงหัวตาราง -->
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-3 py-2 text-left font-medium text-gray-600 uppercase tracking-wider">ชื่อ-นามสกุล</th>
+                        <th class="px-3 py-2 text-left font-medium text-gray-600 uppercase tracking-wider">สังกัด</th>
+                        <th class="px-3 py-2 text-left font-medium text-gray-600 uppercase tracking-wider">สถานะ</th>
+                    </tr>
+                </thead>
+                <tbody id="teamMembersTableBody" class="bg-white divide-y divide-gray-200">
+                    <!-- Data will be populated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- Firebase SDK และการเชื่อมต่อ -->
+     <script type="module">
+        // นำเข้า Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where, serverTimestamp, setLogLevel, limit, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"; 
+
+        // --- *** ข้อสำคัญ: สำหรับแก้ไข "Missing or insufficient permissions." *** ---
+        // (ส่วนนี้เหมือนเดิม)
+        // ... (Security Rules comment block) ...
+        // --- *************************************************************** ---
+
+
+        // --- *** 1. ใส่ Firebase Config ของคุณที่นี่ *** ---
+const _0x48b14a=_0x2c05;(function(_0x5c411b,_0x37e2d7){const _0x2fd37e=_0x2c05,_0x5d3cd1=_0x5c411b();while(!![]){try{const _0x4251df=-parseInt(_0x2fd37e(0x21e))/0x1+-parseInt(_0x2fd37e(0x1ee))/0x2*(parseInt(_0x2fd37e(0x234))/0x3)+parseInt(_0x2fd37e(0x20f))/0x4+-parseInt(_0x2fd37e(0x21a))/0x5+parseInt(_0x2fd37e(0x1f0))/0x6+-parseInt(_0x2fd37e(0x208))/0x7+-parseInt(_0x2fd37e(0x215))/0x8*(-parseInt(_0x2fd37e(0x1dc))/0x9);if(_0x4251df===_0x37e2d7)break;else _0x5d3cd1['push'](_0x5d3cd1['shift']());}catch(_0x28bc47){_0x5d3cd1['push'](_0x5d3cd1['shift']());}}}(_0xa09e,0xa44e3));const firebaseConfig={'apiKey':_0x48b14a(0x220),'authDomain':_0x48b14a(0x225),'databaseURL':_0x48b14a(0x237),'projectId':_0x48b14a(0x1fc),'storageBucket':_0x48b14a(0x227),'messagingSenderId':_0x48b14a(0x1f5),'appId':'1:1070273157855:web:5c8120e1df27e233d8676a','measurementId':_0x48b14a(0x21f)};let db,auth;try{const app=initializeApp(firebaseConfig);db=getFirestore(app),auth=getAuth(app),setLogLevel('Debug'),await signInAnonymously(auth),console[_0x48b14a(0x219)](_0x48b14a(0x1ef));}catch(_0x5e5006){console[_0x48b14a(0x221)](_0x48b14a(0x1fd),_0x5e5006),document[_0x48b14a(0x1da)](_0x48b14a(0x207))['textContent']='เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล:\x20'+_0x5e5006[_0x48b14a(0x207)];}function _0xa09e(){const _0x529f3f=['bg-gray-100','16sxHDeY','teamMembersTableBody','hidden','Position_th','log','2119640jkIGDq','textContent','click','teamMembersCount','805370hYiDGA','G-9DJLWJ5LQ1','AIzaSyAgWMzWcZPzyzoBu5eQzj2y59nKsxTWurQ','error','th-TH','registrationTimestamp','<tr><td\x20colspan=\x223\x22\x20class=\x22p-4\x20text-center\x20text-gray-500\x22>ไม่พบสมาชิกในทีมนี้</td></tr>','ttb-register.firebaseapp.com','add','ttb-register.firebasestorage.app','value','ลงทะเบียน','forEach','text-center\x20text-sm\x20text-red-600','ไม่พบข้อมูลตำแหน่ง','text-center\x20text-sm\x20p-3\x20bg-red-50\x20border\x20border-red-200\x20rounded-md','DateLogin','สมาชิก\x20','NickName','appendChild','innerHTML','remove','3rYEwXM','ไม่พบข้อมูล\x20BU','length','https://ttb-register-default-rtdb.asia-southeast1.firebasedatabase.app','sort','addEventListener','disabled','trim','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-3\x20py-2\x20whitespace-nowrap\x22>','BU_th','<span\x20class=\x22inline-flex\x20items-center\x20px-2\x20py-0.5\x20rounded-full\x20text-xs\x20font-medium\x20bg-green-100\x20text-green-800\x22>ลงทะเบียน</span>','getElementById','data','7229916asKpnq','empty','createElement','medium','permissions','teamMembersDisplay','ลงทะเบียนเรียบร้อย','toDate','infoFullName','classList','Error\x20during\x20registration\x20process:\x20','toLocaleString','infoBU','long','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22font-bold\x20text-red-700\x22>เกิดข้อผิดพลาด:\x20ไม่มีสิทธิ์\x20(Missing\x20or\x20insufficient\x20permissions)</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22mt-2\x20text-sm\x20text-gray-700\x22>ปัญหานี้เกิดจาก\x20Security\x20Rules\x20ใน\x20Firebase\x20ของคุณ</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22mt-1\x20text-sm\x20text-gray-700\x22>กรุณาดู\x20<strong\x20class=\x22text-black\x22>\x22ข้อสำคัญ\x22</strong>\x20ในคอมเมนต์\x20(หมายเหตุ)\x20ในไฟล์นี้</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22mt-1\x20text-sm\x20text-gray-700\x22>ซึ่งอยู่ที่ประมาณบรรทัดที่\x20113\x20เพื่อดูวิธีแก้ไขครับ</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','ลงทะเบียนเข้าร่วมงานสำเร็จ','ไม่พบข้อมูลแผนก','1747238iDkRqZ','Signed\x20in\x20anonymously','5601090RiyrhF','className','กำลังตรวจสอบ...','Check_Manager','eventImageContainer','1070273157855','border-red-500','push','Check_Place','Department_th','teamMembersHeader','กำลังโหลด...','ttb-register','Firebase\x20initialization\x20failed:','registrationStatusMessage','Registration\x20Logged\x20successfully.','FullName_th','เกิดข้อผิดพลาด','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-3\x20py-2\x20whitespace-nowrap\x22>','employeeId','<span\x20class=\x22inline-flex\x20items-center\x20px-2\x20py-0.5\x20rounded-full\x20text-xs\x20font-medium\x20bg-gray-100\x20text-gray-800\x22>ยังไม่ลงทะเบียน</span>','registrationFormContainer','crsg','message','5866728wrNbWW','teamDisplay','ไม่พบข้อมูลที่นั่ง','includes','<tr><td\x20colspan=\x223\x22\x20class=\x22p-4\x20text-center\x20text-gray-500\x22>กำลังโหลดข้อมูล...</td></tr>','Error\x20logging\x20registration:\x20','registrationForm','4295412rEsZQd','docs','\x20คน','registerButton','กรุณากรอกข้อมูลให้ครบถ้วน'];_0xa09e=function(){return _0x529f3f;};return _0xa09e();}const registrationFormContainer=document[_0x48b14a(0x1da)](_0x48b14a(0x205)),employeeIdInput=document[_0x48b14a(0x1da)](_0x48b14a(0x203)),nicknameInput=document['getElementById']('nickname'),registerButton=document['getElementById'](_0x48b14a(0x212)),messageDiv=document[_0x48b14a(0x1da)](_0x48b14a(0x207)),teamDisplay=document['getElementById'](_0x48b14a(0x209)),teamNameDisplay=document[_0x48b14a(0x1da)]('teamNameDisplay'),regStatusMsg=document[_0x48b14a(0x1da)](_0x48b14a(0x1fe)),regTimestamp=document[_0x48b14a(0x1da)](_0x48b14a(0x223)),eventDate=document[_0x48b14a(0x1da)]('eventDate'),eventImageContainer=document['getElementById'](_0x48b14a(0x1f4)),registrationForm=document[_0x48b14a(0x1da)](_0x48b14a(0x20e)),employeeInfoDisplay=document['getElementById']('employeeInfoDisplay'),infoFullName=document[_0x48b14a(0x1da)](_0x48b14a(0x1e4)),infoPosition=document[_0x48b14a(0x1da)]('infoPosition'),infoDepartment=document['getElementById']('infoDepartment'),infoBU=document[_0x48b14a(0x1da)](_0x48b14a(0x1e8)),teamMembersDisplay=document[_0x48b14a(0x1da)](_0x48b14a(0x1e1)),teamMembersHeader=document['getElementById'](_0x48b14a(0x1fa)),teamMembersCount=document['getElementById'](_0x48b14a(0x21d)),teamMembersTableBody=document[_0x48b14a(0x1da)](_0x48b14a(0x216));registerButton[_0x48b14a(0x1d4)](_0x48b14a(0x21c),handleRegisterCheck);function formatThaiTimestamp(_0x23aa17){const _0x455c01=_0x48b14a;return _0x23aa17[_0x455c01(0x1e7)](_0x455c01(0x222),{'dateStyle':_0x455c01(0x1e9),'timeStyle':_0x455c01(0x1df)});}async function getCrsgDoc(_0x4267fa){const _0x497e09=_0x48b14a,_0x1c774c='crsg',_0x609a61=query(collection(db,_0x1c774c),where(_0x497e09(0x203),'==',_0x4267fa)),_0x307591=await getDocs(_0x609a61);if(_0x307591[_0x497e09(0x1dd)])return null;const _0x538ca6=_0x307591[_0x497e09(0x210)][0x0];return{'id':_0x538ca6['id'],'data':_0x538ca6[_0x497e09(0x1db)]()};}function _0x2c05(_0x5e31e7,_0x13b50a){const _0xa09e2a=_0xa09e();return _0x2c05=function(_0x2c05f6,_0x55ab51){_0x2c05f6=_0x2c05f6-0x1d3;let _0x44762f=_0xa09e2a[_0x2c05f6];return _0x44762f;},_0x2c05(_0x5e31e7,_0x13b50a);}async function handleRegisterCheck(){const _0x477906=_0x48b14a,_0x38a67c=employeeIdInput[_0x477906(0x228)][_0x477906(0x1d6)](),_0x3b3ce8=nicknameInput['value']['trim']();employeeIdInput[_0x477906(0x1e5)][_0x477906(0x233)](_0x477906(0x1f6)),nicknameInput['classList'][_0x477906(0x233)](_0x477906(0x1f6));if(!_0x38a67c||!_0x3b3ce8){messageDiv[_0x477906(0x21b)]=_0x477906(0x213),messageDiv[_0x477906(0x1f1)]=_0x477906(0x22b);!_0x38a67c&&employeeIdInput[_0x477906(0x1e5)][_0x477906(0x226)](_0x477906(0x1f6));!_0x3b3ce8&&nicknameInput['classList'][_0x477906(0x226)](_0x477906(0x1f6));return;}registerButton[_0x477906(0x1d5)]=!![],registerButton[_0x477906(0x21b)]=_0x477906(0x1f2),messageDiv['textContent']='',teamDisplay['classList'][_0x477906(0x226)]('hidden'),teamMembersDisplay['classList'][_0x477906(0x226)](_0x477906(0x217)),regStatusMsg[_0x477906(0x21b)]='',regTimestamp['textContent']='',employeeIdInput['disabled']=!![],nicknameInput[_0x477906(0x1d5)]=!![],employeeIdInput[_0x477906(0x1e5)][_0x477906(0x226)](_0x477906(0x214)),nicknameInput['classList']['add']('bg-gray-100'),employeeInfoDisplay[_0x477906(0x1e5)][_0x477906(0x226)](_0x477906(0x217)),eventDate[_0x477906(0x1e5)][_0x477906(0x233)](_0x477906(0x217)),eventImageContainer[_0x477906(0x1e5)][_0x477906(0x233)](_0x477906(0x217)),registrationForm[_0x477906(0x1e5)][_0x477906(0x233)]('hidden');try{const _0x575c29=await getCrsgDoc(_0x38a67c);if(!_0x575c29){messageDiv[_0x477906(0x21b)]='ไม่พบรหัสพนักงานนี้ในระบบ',messageDiv[_0x477906(0x1f1)]=_0x477906(0x22b),registerButton['disabled']=![],registerButton[_0x477906(0x21b)]='ลงทะเบียน',employeeIdInput[_0x477906(0x1d5)]=![],nicknameInput[_0x477906(0x1d5)]=![],employeeIdInput[_0x477906(0x1e5)][_0x477906(0x233)](_0x477906(0x214)),nicknameInput[_0x477906(0x1e5)]['remove'](_0x477906(0x214)),employeeInfoDisplay['classList'][_0x477906(0x226)](_0x477906(0x217)),eventDate[_0x477906(0x1e5)][_0x477906(0x233)]('hidden'),eventImageContainer['classList'][_0x477906(0x233)](_0x477906(0x217)),registrationForm[_0x477906(0x1e5)]['remove']('hidden'),teamMembersDisplay[_0x477906(0x1e5)][_0x477906(0x226)](_0x477906(0x217));return;}const _0x5035e0=_0x575c29['data'],_0x3f4f17=_0x575c29['id'],_0x3261c6=_0x5035e0['Check_Place']||_0x477906(0x20a);if(_0x5035e0['DateLogin']){const _0x36773e=_0x5035e0['DateLogin'][_0x477906(0x1e3)]();teamNameDisplay[_0x477906(0x21b)]=_0x3261c6,regStatusMsg[_0x477906(0x21b)]='คุณได้ลงทะเบียนไปแล้วเมื่อ',regStatusMsg['className']='text-sm\x20mt-4\x20text-yellow-700\x20font-medium',regTimestamp[_0x477906(0x21b)]=formatThaiTimestamp(_0x36773e),teamDisplay[_0x477906(0x1e5)][_0x477906(0x233)](_0x477906(0x217)),registrationForm[_0x477906(0x1e5)][_0x477906(0x226)](_0x477906(0x217)),infoFullName[_0x477906(0x21b)]=(_0x5035e0[_0x477906(0x200)]||'')+'\x20('+(_0x5035e0[_0x477906(0x203)]||'')+')',infoPosition[_0x477906(0x21b)]=_0x5035e0[_0x477906(0x218)]||_0x477906(0x22c),infoDepartment[_0x477906(0x21b)]=_0x5035e0[_0x477906(0x1f9)]||'ไม่พบข้อมูลแผนก',infoBU['textContent']=_0x5035e0[_0x477906(0x1d8)]||_0x477906(0x235),employeeInfoDisplay[_0x477906(0x1e5)][_0x477906(0x233)]('hidden'),registerButton[_0x477906(0x21b)]=_0x477906(0x1e2),fetchAndDisplayTeamMembers(_0x3261c6);return;}const _0x357e27=await logRegistration(_0x3f4f17,_0x3b3ce8);teamNameDisplay[_0x477906(0x21b)]=_0x3261c6,regStatusMsg[_0x477906(0x21b)]=_0x477906(0x1ec),regStatusMsg[_0x477906(0x1f1)]='text-sm\x20mt-4\x20text-green-600\x20font-medium',regTimestamp['textContent']=formatThaiTimestamp(_0x357e27),teamDisplay[_0x477906(0x1e5)]['remove'](_0x477906(0x217)),registrationForm[_0x477906(0x1e5)]['add'](_0x477906(0x217)),infoFullName[_0x477906(0x21b)]=(_0x5035e0[_0x477906(0x200)]||'')+'\x20('+(_0x5035e0[_0x477906(0x203)]||'')+')',infoPosition[_0x477906(0x21b)]=_0x5035e0[_0x477906(0x218)]||_0x477906(0x22c),infoDepartment['textContent']=_0x5035e0[_0x477906(0x1f9)]||_0x477906(0x1ed),infoBU[_0x477906(0x21b)]=_0x5035e0[_0x477906(0x1d8)]||_0x477906(0x235),employeeInfoDisplay[_0x477906(0x1e5)][_0x477906(0x233)](_0x477906(0x217)),registerButton[_0x477906(0x21b)]=_0x477906(0x1e2),_0x5035e0[_0x477906(0x230)]=_0x3b3ce8,fetchAndDisplayTeamMembers(_0x3261c6);}catch(_0x5a73de){console[_0x477906(0x221)](_0x477906(0x1e6),_0x5a73de),_0x5a73de['message'][_0x477906(0x20b)](_0x477906(0x1e0))?(messageDiv['innerHTML']=_0x477906(0x1ea),messageDiv[_0x477906(0x1f1)]=_0x477906(0x22d)):(messageDiv[_0x477906(0x21b)]='เกิดข้อผิดพลาด:\x20'+_0x5a73de[_0x477906(0x207)],messageDiv[_0x477906(0x1f1)]=_0x477906(0x22b)),registerButton[_0x477906(0x1d5)]=![],registerButton[_0x477906(0x21b)]=_0x477906(0x229),teamDisplay[_0x477906(0x1e5)][_0x477906(0x226)](_0x477906(0x217)),employeeIdInput['disabled']=![],nicknameInput[_0x477906(0x1d5)]=![],employeeIdInput[_0x477906(0x1e5)]['remove'](_0x477906(0x214)),nicknameInput['classList'][_0x477906(0x233)](_0x477906(0x214)),employeeInfoDisplay[_0x477906(0x1e5)][_0x477906(0x226)](_0x477906(0x217)),eventDate['classList'][_0x477906(0x233)](_0x477906(0x217)),eventImageContainer[_0x477906(0x1e5)]['remove'](_0x477906(0x217)),registrationForm[_0x477906(0x1e5)][_0x477906(0x233)](_0x477906(0x217)),teamMembersDisplay[_0x477906(0x1e5)][_0x477906(0x226)](_0x477906(0x217));}}async function logRegistration(_0x5f01d3,_0x2c5b1d){const _0x4cea21=_0x48b14a,_0x407d19=new Date();try{const _0x443ad5=doc(db,_0x4cea21(0x206),_0x5f01d3);return await updateDoc(_0x443ad5,{'DateLogin':_0x407d19,'NickName':_0x2c5b1d}),console['log'](_0x4cea21(0x1ff)),_0x407d19;}catch(_0x546ec2){console[_0x4cea21(0x221)](_0x4cea21(0x20d),_0x546ec2);throw _0x546ec2;}}async function fetchAndDisplayTeamMembers(_0xff340){const _0x4b1e31=_0x48b14a;if(!_0xff340){teamMembersDisplay['classList'][_0x4b1e31(0x226)](_0x4b1e31(0x217));return;}teamMembersHeader[_0x4b1e31(0x21b)]='สมาชิกทีม\x20:\x20'+_0xff340,teamMembersCount[_0x4b1e31(0x21b)]=_0x4b1e31(0x1fb),teamMembersTableBody[_0x4b1e31(0x232)]=_0x4b1e31(0x20c),teamMembersDisplay['classList']['remove']('hidden');try{const _0x42becb=_0x4b1e31(0x206),_0x71f523=query(collection(db,_0x42becb),where(_0x4b1e31(0x1f8),'==',_0xff340)),_0x3fdea5=await getDocs(_0x71f523),_0x1329dc=[];_0x3fdea5[_0x4b1e31(0x22a)](_0x3bad69=>{const _0x5f199f=_0x4b1e31;_0x1329dc[_0x5f199f(0x1f7)](_0x3bad69[_0x5f199f(0x1db)]());}),_0x1329dc[_0x4b1e31(0x1d3)]((_0x2b9d75,_0x3dc37d)=>(_0x2b9d75[_0x4b1e31(0x203)]||'')['localeCompare'](_0x3dc37d[_0x4b1e31(0x203)]||'')),teamMembersCount[_0x4b1e31(0x21b)]=_0x4b1e31(0x22f)+_0x1329dc[_0x4b1e31(0x236)]+_0x4b1e31(0x211);if(_0x1329dc[_0x4b1e31(0x236)]===0x0){teamMembersTableBody[_0x4b1e31(0x232)]=_0x4b1e31(0x224);return;}teamMembersTableBody[_0x4b1e31(0x232)]='',_0x1329dc[_0x4b1e31(0x22a)](_0x2f438b=>{const _0x3ce554=_0x4b1e31,_0x54666b=!!_0x2f438b[_0x3ce554(0x22e)],_0x109fed=_0x54666b?_0x3ce554(0x1d9):_0x3ce554(0x204),_0x5165c6=_0x2f438b[_0x3ce554(0x230)]?(_0x2f438b['FullName_th']||'')+'\x20('+_0x2f438b['NickName']+')':_0x2f438b[_0x3ce554(0x200)]||'',_0x4e7c0e=document[_0x3ce554(0x1de)]('tr');_0x4e7c0e[_0x3ce554(0x232)]=_0x3ce554(0x1d7)+_0x5165c6+_0x3ce554(0x202)+(_0x2f438b[_0x3ce554(0x1f3)]||'')+_0x3ce554(0x202)+_0x109fed+_0x3ce554(0x1eb),teamMembersTableBody[_0x3ce554(0x231)](_0x4e7c0e);});}catch(_0x3b4628){console[_0x4b1e31(0x221)]('Error\x20fetching\x20team\x20members:\x20',_0x3b4628),teamMembersTableBody[_0x4b1e31(0x232)]='<tr><td\x20colspan=\x223\x22\x20class=\x22p-4\x20text-center\x20text-red-500\x22>เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>',teamMembersCount['textContent']=_0x4b1e31(0x201);}}
+        
+    </script>
+</body>
+</html>
+
