@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game : Refer-Friend</title>
+    <!-- โหลด Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Sarabun', sans-serif; }
+        /* (เพิ่ม) สไตล์สำหรับช่อง OTP Input */
+        .otp-input {
+            transition: all 0.15s ease-in-out;
+        }
+        .otp-input:disabled {
+            background-color: #f3f4f6; /* bg-gray-100 */
+        }
+        .img {
+              margin: 15px auto !important;
+        }
+    </style>
+</head>
+<!-- (แก้ไข) ปรับ margin-top (pt-8 = 2rem) -->
+<body class="bg-white flex flex-col items-center justify-center min-h-screen pt-8 pb-10" style="background-color: #dee1e1;">
+
+    <!-- กล่องลงทะเบียน -->
+    <!-- (แก้ไข) เปลี่ยน bg-gray-50 เป็น bg-white และเพิ่ม 'relative' สำหรับ Overlay -->
+    <div id="registrationFormContainer" class="w-[95%] max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md transition-colors duration-300 relative">
+        <h1 class="text-2xl font-bold text-center text-gray-900">Game : Refer-Friend</h1>
+        <!-- *** แก้ไข: เพิ่ม id="eventDate" *** -->
+        <p id="eventDate" class="text-sm font-medium text-gray-700 text-center" style="margin-top: 2px;">วันที่ 24 พฤศจิกายน 2568</p>
+
+        <!-- *** แก้ไข: เพิ่ม id="eventImageContainer" *** -->
+        <!-- (แก้ไข) เปลี่ยน mt-6 เป็น my-4 (margin top/bottom 16px) -->
+        <div style="height:3px;"></div>
+        <div id="eventImageContainer" class="my-4 w-[70%] mx-auto">
+            <img src="./images/refer_friend.jpg">
+        </div>
+        <div style="height:3px;"></div>
+              
+        <!-- *** (แก้ไข) ปรับปรุงโครงสร้างการแสดงข้อมูลพนักงาน *** -->
+        <div id="employeeInfoDisplay" class="hidden text-center space-y-2 py-4" style="padding-top:0rem;">
+            <!-- 1. ชื่อ-นามสกุล (Name) (รหัสพนักงาน) (EmpID) -->
+            <p id="infoFullName" class="text-lg font-bold text-gray-900"></p> 
+            
+            <!-- 2. (EmpZone) -->
+            <p id="infoEmpZone" class="text-sm text-gray-700"></p> 
+            
+            <!-- 3. (EmpRH) -->
+            <p id="infoEmpRH" class="text-sm text-gray-700" style="line-height:0.6rem;"></p> 
+
+            <!-- 4. เพิ่มเส้นกั้น (แก้ไข) ปรับ margin เป็น my-4 (16px) -->
+            <hr class="my-4 border-gray-300" style="margin:25px auto;"> 
+
+            <!-- 5. ให้คุณไปหาสมาชิกทีม -->
+            <p class="text-md font-semibold text-blue-600">ให้คุณไปหาสมาชิกทีม</p> 
+
+            <!-- 6. (MapZone) (แก้ไข) ปรับขนาด font เป็น text-sm และลบ space-y-2 -->
+            <p id="infoMapZone" class="text-sm text-gray-700 mt-2"></p> 
+
+            <!-- 7. (MapRH) (แก้ไข) ปรับขนาด font เป็น text-sm และ mt-0.5 เพื่อให้ชิด MapZone มากขึ้น -->
+            <p id="infoMapRH" class="text-sm text-gray-700 mt-0.5" style="line-height:0.6rem;"></p> 
+
+            <!-- (เพิ่ม) ปุ่ม Refer Friend สำเร็จ (แก้ไข) ลบ w-full เพื่อลดขนาดปุ่ม -->
+            <div class="text-center">
+                <button type="button" id="referralSuccessButton" class="px-6 py-2 mt-6 font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out disabled:bg-gray-400 disabled:cursor-not-allowed">
+                    Refer Friend สำเร็จ
+                </button>
+            </div>
+        </div>
+
+        <!-- ฟอร์มลงทะเบียน -->
+        <form id="registrationForm" class="space-y-4">
+            
+            <!-- (แก้ไข) เปลี่ยนเป็นช่อง OTP 5 ช่อง -->
+            <div>
+                <!-- (ลบ) ลบ Label "รหัสพนักงาน" -->
+                <div id="otpContainer" class="flex justify-center gap-1 sm:gap-2">
+                    <!-- (แก้ไข) เพิ่มขนาดตัวอักษรเป็น text-2xl -->
+                    <input type="tel" maxlength="1" class="otp-input w-9 h-11 sm:w-10 sm:h-12 text-center text-2xl font-semibold border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    <input type="tel" maxlength="1" class="otp-input w-9 h-11 sm:w-10 sm:h-12 text-center text-2xl font-semibold border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    <input type="tel" maxlength="1" class="otp-input w-9 h-11 sm:w-10 sm:h-12 text-center text-2xl font-semibold border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    <input type="tel" maxlength="1" class="otp-input w-9 h-11 sm:w-10 sm:h-12 text-center text-2xl font-semibold border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    <input type="tel" maxlength="1" class="otp-input w-9 h-11 sm:w-10 sm:h-12 text-center text-2xl font-semibold border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <!-- (เพิ่ม) Helper text และเว้นช่องว่างด้านล่าง (mb-4) -->
+                <div style="height:5px;"></div>
+                <p class="text-xs text-gray-500 text-center mt-2 mb-4">ใส่รหัสพนักงานของคุณให้ถูกต้องก่อนกด ลงทะเบียน</p>
+            </div>
+                       
+            <button type="button" id="registerButton"
+                    class="w-full px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out disabled:bg-gray-400"
+                    disabled> <!-- (เพิ่ม) disabled ปุ่มไว้ตอนเริ่ม -->
+                ลงทะเบียน
+            </button>
+        </form>
+        
+        <!-- พื้นที่แสดงข้อความ (สำหรับข้อผิดพลาดหลัก) -->
+         <div id="message" class="text-center text-sm"></div>
+
+        <!-- (ลบ) ลบส่วนแสดงข้อความลงทะเบียนสำเร็จ (teamDisplay) -->
+        <div id="teamDisplay" class="hidden text-center border-t pt-4 mt-4">
+            <h2 id="teamNameDisplay" class="text-8xl font-bold text-[#0056ff]"></h2> 
+            <p class="text-sm font-medium text-gray-700 mt-1">ทีมของคุณ</p>
+            
+            <p id="registrationStatusMessage" class="text-sm mt-4"></p>
+            <p id="registrationTimestamp" class="text-xs text-gray-500"></p>
+        </div>
+
+        <!-- (เพิ่ม) Loading Overlay สำหรับ Spinner -->
+        <div id="loadingOverlay" class="hidden absolute inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center space-y-4 rounded-lg z-20">
+            <svg class="animate-spin h-12 w-12 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <!-- (แก้ไข) ปรับเลข Countdown เริ่มต้นเป็น 3 -->
+            <p class="text-lg font-medium text-gray-700">กำลังตรวจสอบข้อมูล... <span id="spinnerCountdown">3</span></p>
+        </div>
+    </div>
+
+    <!-- (เพิ่ม) Lightbox (Modal) สำหรับแจ้งเตือน Error -->
+    <div id="errorLightbox" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-sm p-6 text-center">
+            <!-- (แก้ไข) ปรับขนาด Font จาก text-base เป็น text-sm -->
+            <p id="errorLightboxMessage" class="text-sm text-gray-800 mb-6">ไม่พบรหัสพนักงานนี้ในระบบ<br>กรุณากรอกรหัสพนักงานใหม่อีกครั้ง</p>
+            <button id="closeLightboxButton" class="w-full px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                ปิด
+            </button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK และการเชื่อมต่อ --><script type="module">
+        // นำเข้า Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        // (แก้ไข) เพิ่ม 'or'
+        import { getFirestore, collection, getDocs, query, where, serverTimestamp, setLogLevel, limit, doc, updateDoc, or } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"; 
+
+        // --- *** ข้อสำคัญ: สำหรับแก้ไข "Missing or insufficient permissions." *** ---
+        // (ส่วนนี้เหมือนเดิม)
+        // ... (Security Rules comment block) ...
+        // --- *************************************************************** ---
+
+
+        // --- *** 1. ใส่ Firebase Config ของคุณที่นี่ *** ---
+function _0x1497(){const _0x522e03=['docs','add','text','200292AqPrgw','trim','medium','1070273157855','input','clipboardData','teamNameDisplay','click','522cBNeOl','className','Backspace','เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล:\x20','DateLogin','Signed\x20in\x20anonymously','getElementById','loadingOverlay','addEventListener','referfriend','referralSuccessButton','replace','hidden','Referral\x20timestamp\x20saved.','remove','border-red-500','infoMapZone','EmpID','length','กำลังตรวจสอบ...','otpContainer','MapRH','registrationStatusMessage','focus','bg-gray-100','เกิดข้อผิดพลาด:\x20','text-center\x20text-sm\x20p-3\x20bg-red-50\x20border\x20border-red-200\x20rounded-md','137664XrqrZk','Registration\x20Logged\x20successfully.','hover:bg-green-700','spinnerCountdown','ลงทะเบียนเรียบร้อย','classList','ลงทะเบียน','บันทึกเวลาสำเร็จ','error','textContent','Error\x20saving\x20referral\x20timestamp:\x20','https://ttb-register-default-rtdb.asia-southeast1.firebasedatabase.app','bg-green-600','FullName_th','querySelectorAll','bg-gray-500','614488KXyIOa','log','data','key','long','registrationFormContainer','getData','preventDefault','from','message','value','Refer\x20Friend\x20สำเร็จ','select','.otp-input','EmpZone','empty','No\x20employee\x20doc\x20ID\x20found.','ttb-register','1:1070273157855:web:5c8120e1df27e233d8676a','G-9DJLWJ5LQW','810461eDnhej','4621650oRtmkl','infoEmpRH','bg-blue-200','EmpRH','keydown','th-TH','permissions','บันทึกการจับคู่แล้ว','320348JyyXxq','text-center\x20text-sm\x20text-red-600','infoEmpZone','disabled','75IfqkGx','infoFullName','MapZone','Debug','กรุณากรอกรหัสพนักงานให้ครบ\x205\x20หลัก','paste','N/A','forEach','3ORElwm','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22font-bold\x20text-red-700\x22>เกิดข้อผิดพลาด:\x20ไม่มีสิทธิ์\x20(Missing\x20or\x20insufficient\x20permissions)</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22mt-2\x20text-sm\x20text-gray-700\x22>ปัญหานี้เกิดจาก\x20Security\x20Rules\x20ใน\x20Firebase\x20ของคุณ</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22mt-1\x20text-sm\x20text-gray-700\x22>กรุณาดู\x20<strong\x20class=\x22text-black\x22>\x22ข้อสำคัญ\x22</strong>\x20ในคอมเมนต์\x20(หมายเหตุ)\x20ในไฟล์นี้</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22mt-1\x20text-sm\x20text-gray-700\x22>ซึ่งอยู่ที่ประมาณบรรทัดที่\x20113\x20เพื่อดูวิธีแก้ไขครับ</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','Name','635600vCbdfv','ttb-register.firebasestorage.app'];_0x1497=function(){return _0x522e03;};return _0x1497();}const _0x254538=_0x2f66;(function(_0x2499ff,_0xcf29c7){const _0x2c3e81=_0x2f66,_0x5890ce=_0x2499ff();while(!![]){try{const _0x4689bf=-parseInt(_0x2c3e81(0xd5))/0x1+parseInt(_0x2c3e81(0xed))/0x2+-parseInt(_0x2c3e81(0xea))/0x3*(-parseInt(_0x2c3e81(0xde))/0x4)+-parseInt(_0x2c3e81(0xe2))/0x5*(-parseInt(_0x2c3e81(0xf2))/0x6)+parseInt(_0x2c3e81(0x125))/0x7+parseInt(_0x2c3e81(0x115))/0x8*(parseInt(_0x2c3e81(0xfa))/0x9)+-parseInt(_0x2c3e81(0xd6))/0xa;if(_0x4689bf===_0xcf29c7)break;else _0x5890ce['push'](_0x5890ce['shift']());}catch(_0x58541b){_0x5890ce['push'](_0x5890ce['shift']());}}}(_0x1497,0xadc9f));const firebaseConfig={'apiKey':'AIzaSyAgWMzWcZPzyzoBu5eQzj2y59nKsxTWurQ','authDomain':'ttb-register.firebaseapp.com','databaseURL':_0x254538(0x120),'projectId':_0x254538(0xd2),'storageBucket':_0x254538(0xee),'messagingSenderId':_0x254538(0xf5),'appId':_0x254538(0xd3),'measurementId':_0x254538(0xd4)};function _0x2f66(_0x43b3ce,_0x5240d6){const _0x149790=_0x1497();return _0x2f66=function(_0x2f66a0,_0x35f25b){_0x2f66a0=_0x2f66a0-0xd2;let _0x4369a2=_0x149790[_0x2f66a0];return _0x4369a2;},_0x2f66(_0x43b3ce,_0x5240d6);}let db,auth,currentEmployeeDocId=null;const registrationFormContainer=document['getElementById'](_0x254538(0x12a)),otpContainer=document[_0x254538(0x100)](_0x254538(0x10e)),otpInputs=otpContainer?Array[_0x254538(0x12d)](otpContainer[_0x254538(0x123)](_0x254538(0x132))):[],registerButton=document[_0x254538(0x100)]('registerButton'),messageDiv=document[_0x254538(0x100)]('message'),teamDisplay=document[_0x254538(0x100)]('teamDisplay'),teamNameDisplay=document[_0x254538(0x100)](_0x254538(0xf8)),regStatusMsg=document[_0x254538(0x100)](_0x254538(0x110)),regTimestamp=document['getElementById']('registrationTimestamp'),eventDate=document['getElementById']('eventDate'),eventImageContainer=document[_0x254538(0x100)]('eventImageContainer'),registrationForm=document['getElementById']('registrationForm'),employeeInfoDisplay=document[_0x254538(0x100)]('employeeInfoDisplay'),infoFullName=document['getElementById'](_0x254538(0xe3)),infoEmpZone=document[_0x254538(0x100)](_0x254538(0xe0)),infoEmpRH=document[_0x254538(0x100)](_0x254538(0xd7)),infoMapZone=document[_0x254538(0x100)](_0x254538(0x10a)),infoMapRH=document[_0x254538(0x100)]('infoMapRH'),referralSuccessButton=document['getElementById'](_0x254538(0x104)),loadingOverlay=document[_0x254538(0x100)](_0x254538(0x101)),spinnerCountdown=document[_0x254538(0x100)](_0x254538(0x118)),errorLightbox=document['getElementById']('errorLightbox'),closeLightboxButton=document[_0x254538(0x100)]('closeLightboxButton');let countdownInterval;function checkOtpCompleteness(){const _0x26aa0d=_0x254538;let _0x17dcf1=!![];otpInputs[_0x26aa0d(0xe9)](_0x6478f8=>{const _0x15fafa=_0x26aa0d;_0x6478f8[_0x15fafa(0x12f)][_0x15fafa(0xf3)]()[_0x15fafa(0x10c)]===0x0&&(_0x17dcf1=![]);}),registerButton[_0x26aa0d(0xe1)]=!_0x17dcf1;}try{const app=initializeApp(firebaseConfig);db=getFirestore(app),auth=getAuth(app),setLogLevel(_0x254538(0xe5)),signInAnonymously(auth),console[_0x254538(0x126)](_0x254538(0xff)),otpInputs['length']>0x0&&otpInputs[0x0][_0x254538(0x111)](),closeLightboxButton['addEventListener'](_0x254538(0xf9),()=>{const _0x22ffd2=_0x254538;errorLightbox[_0x22ffd2(0x11a)][_0x22ffd2(0xf0)](_0x22ffd2(0x106)),registerButton['disabled']=![],registerButton[_0x22ffd2(0x11e)]=_0x22ffd2(0x11b),otpInputs['forEach'](_0x19f02b=>{const _0x58ef26=_0x22ffd2;_0x19f02b['disabled']=![],_0x19f02b['classList'][_0x58ef26(0x108)](_0x58ef26(0x112)),_0x19f02b['classList'][_0x58ef26(0x108)]('bg-blue-200'),_0x19f02b[_0x58ef26(0x12f)]='';}),otpInputs[_0x22ffd2(0x10c)]>0x0&&otpInputs[0x0][_0x22ffd2(0x111)](),checkOtpCompleteness();}),referralSuccessButton[_0x254538(0x102)](_0x254538(0xf9),handleReferralSuccess);}catch(_0x7d3a46){console[_0x254538(0x11d)]('Firebase\x20initialization\x20failed:',_0x7d3a46),document[_0x254538(0x100)](_0x254538(0x12e))[_0x254538(0x11e)]=_0x254538(0xfd)+_0x7d3a46[_0x254538(0x12e)];}registerButton[_0x254538(0x102)](_0x254538(0xf9),handleRegisterCheck);otpContainer&&otpInputs[_0x254538(0xe9)]((_0x222034,_0x30be14)=>{const _0x59aa97=_0x254538;_0x222034[_0x59aa97(0x102)](_0x59aa97(0xf6),_0x19f26=>{const _0x1a7c98=_0x59aa97;_0x222034[_0x1a7c98(0x12f)]=_0x222034[_0x1a7c98(0x12f)][_0x1a7c98(0x105)](/[^0-9]/g,'');const _0xd1b940=_0x222034[_0x1a7c98(0x12f)];if(_0xd1b940['length']===0x1)_0x222034[_0x1a7c98(0x11a)][_0x1a7c98(0xf0)]('bg-blue-200'),_0x30be14<otpInputs[_0x1a7c98(0x10c)]-0x1&&otpInputs[_0x30be14+0x1]['focus']();else _0xd1b940['length']===0x0&&_0x222034['classList'][_0x1a7c98(0x108)](_0x1a7c98(0xd8));checkOtpCompleteness();}),_0x222034['addEventListener'](_0x59aa97(0xda),_0x9536b2=>{const _0x4bfa81=_0x59aa97;_0x9536b2[_0x4bfa81(0x128)]===_0x4bfa81(0xfc)&&_0x222034[_0x4bfa81(0x12f)]===''&&_0x30be14>0x0&&(_0x9536b2[_0x4bfa81(0x12c)](),otpInputs[_0x30be14-0x1][_0x4bfa81(0x111)](),otpInputs[_0x30be14-0x1][_0x4bfa81(0x131)]());}),_0x222034[_0x59aa97(0x102)](_0x59aa97(0xe7),_0x35e716=>{const _0x1eced2=_0x59aa97;_0x35e716[_0x1eced2(0x12c)]();const _0x2c3830=_0x35e716[_0x1eced2(0xf7)][_0x1eced2(0x12b)](_0x1eced2(0xf1))['trim']()[_0x1eced2(0x105)](/[^0-9]/g,'');if(_0x2c3830['length']===otpInputs['length'])otpInputs[_0x1eced2(0xe9)]((_0x4a27d2,_0x58a26d)=>{const _0x192964=_0x1eced2;_0x4a27d2['value']=_0x2c3830[_0x58a26d]||'',_0x4a27d2[_0x192964(0x12f)]?_0x4a27d2['classList'][_0x192964(0xf0)](_0x192964(0xd8)):_0x4a27d2['classList'][_0x192964(0x108)]('bg-blue-200');}),otpInputs[otpInputs['length']-0x1][_0x1eced2(0x111)]();else{if(_0x2c3830[_0x1eced2(0x10c)]>0x0){let _0x2175d6=_0x30be14;for(let _0x7100e7=0x0;_0x7100e7<_0x2c3830[_0x1eced2(0x10c)]&&_0x2175d6<otpInputs['length'];_0x7100e7++){otpInputs[_0x2175d6]['value']=_0x2c3830[_0x7100e7],otpInputs[_0x2175d6][_0x1eced2(0x11a)]['add']('bg-blue-200'),_0x2175d6<otpInputs[_0x1eced2(0x10c)]-0x1&&otpInputs[_0x2175d6+0x1][_0x1eced2(0x111)](),_0x2175d6++;}}}setTimeout(checkOtpCompleteness,0x0);}),_0x222034[_0x59aa97(0x102)](_0x59aa97(0x111),_0x1b1ae8=>{const _0xec34d1=_0x59aa97;_0x1b1ae8['target'][_0xec34d1(0x131)]();});});function formatThaiTimestamp(_0x5a3691){const _0x123268=_0x254538;return _0x5a3691['toLocaleString'](_0x123268(0xdb),{'dateStyle':_0x123268(0x129),'timeStyle':_0x123268(0xf4)});}function handleRegisterCheck(){const _0x210292=_0x254538;let _0x1f6820='';otpInputs[_0x210292(0xe9)](_0x240049=>{const _0x52cffb=_0x210292;_0x1f6820+=_0x240049[_0x52cffb(0x12f)][_0x52cffb(0xf3)]();}),otpInputs['forEach'](_0x4d7396=>_0x4d7396[_0x210292(0x11a)][_0x210292(0x108)](_0x210292(0x109)));if(_0x1f6820[_0x210292(0x10c)]<0x5){messageDiv[_0x210292(0x11e)]=_0x210292(0xe6),messageDiv[_0x210292(0xfb)]='text-center\x20text-sm\x20text-red-600',otpInputs[_0x210292(0xe9)](_0x549dcc=>{const _0x55dd3c=_0x210292;!_0x549dcc[_0x55dd3c(0x12f)]&&_0x549dcc[_0x55dd3c(0x11a)][_0x55dd3c(0xf0)](_0x55dd3c(0x109));});return;}registerButton[_0x210292(0xe1)]=!![],registerButton[_0x210292(0x11e)]=_0x210292(0x10d),otpInputs[_0x210292(0xe9)](_0x1a9780=>{const _0x592dbf=_0x210292;_0x1a9780[_0x592dbf(0xe1)]=!![],_0x1a9780[_0x592dbf(0x11a)][_0x592dbf(0xf0)]('bg-gray-100');}),messageDiv[_0x210292(0x11e)]='',loadingOverlay[_0x210292(0x11a)][_0x210292(0x108)](_0x210292(0x106));let _0x4b005c=0x3;spinnerCountdown[_0x210292(0x11e)]=''+_0x4b005c,countdownInterval&&clearInterval(countdownInterval),countdownInterval=setInterval(()=>{const _0x129469=_0x210292;_0x4b005c--,spinnerCountdown[_0x129469(0x11e)]=''+_0x4b005c,_0x4b005c<=0x0&&clearInterval(countdownInterval);},0x3e8),setTimeout(()=>{performFirebaseCheck(_0x1f6820);},0xbb8);}async function performFirebaseCheck(_0x414223){const _0x18d08b=_0x254538;loadingOverlay[_0x18d08b(0x11a)][_0x18d08b(0xf0)](_0x18d08b(0x106));countdownInterval&&clearInterval(countdownInterval);try{const _0x21cdde=await getCrsgDoc(_0x414223);if(!_0x21cdde){errorLightbox['classList']['remove']('hidden');return;}const _0x3efa9e=_0x21cdde[_0x18d08b(0x127)],_0x4f21ac=_0x21cdde['id'];currentEmployeeDocId=_0x4f21ac;if(_0x3efa9e[_0x18d08b(0xfe)]){registrationForm[_0x18d08b(0x11a)][_0x18d08b(0xf0)](_0x18d08b(0x106)),infoFullName[_0x18d08b(0x11e)]=(_0x3efa9e[_0x18d08b(0xec)]||_0x3efa9e[_0x18d08b(0x122)]||'')+'\x20('+_0x414223+')',infoEmpZone['textContent']=''+(_0x3efa9e[_0x18d08b(0x133)]||_0x18d08b(0xe8)),infoEmpRH[_0x18d08b(0x11e)]=''+(_0x3efa9e[_0x18d08b(0xd9)]||_0x18d08b(0xe8)),infoMapZone['textContent']=''+(_0x3efa9e[_0x18d08b(0xe4)]||_0x18d08b(0xe8)),infoMapRH[_0x18d08b(0x11e)]=''+(_0x3efa9e[_0x18d08b(0x10f)]||_0x18d08b(0xe8));_0x3efa9e['ReferralTimestamp']?(referralSuccessButton[_0x18d08b(0xe1)]=!![],referralSuccessButton[_0x18d08b(0x11e)]=_0x18d08b(0xdd),referralSuccessButton['classList'][_0x18d08b(0x108)](_0x18d08b(0x121),_0x18d08b(0x117)),referralSuccessButton[_0x18d08b(0x11a)]['add']('bg-gray-500')):(referralSuccessButton[_0x18d08b(0xe1)]=![],referralSuccessButton['textContent']=_0x18d08b(0x130),referralSuccessButton[_0x18d08b(0x11a)][_0x18d08b(0xf0)](_0x18d08b(0x121),_0x18d08b(0x117)),referralSuccessButton[_0x18d08b(0x11a)][_0x18d08b(0x108)](_0x18d08b(0x124)));employeeInfoDisplay[_0x18d08b(0x11a)][_0x18d08b(0x108)](_0x18d08b(0x106)),registerButton[_0x18d08b(0x11e)]=_0x18d08b(0x119);return;}logRegistration(_0x4f21ac),registrationForm[_0x18d08b(0x11a)][_0x18d08b(0xf0)]('hidden'),infoFullName[_0x18d08b(0x11e)]=(_0x3efa9e[_0x18d08b(0xec)]||_0x3efa9e[_0x18d08b(0x122)]||'')+'\x20('+_0x414223+')',infoEmpZone['textContent']=''+(_0x3efa9e[_0x18d08b(0x133)]||_0x18d08b(0xe8)),infoEmpRH[_0x18d08b(0x11e)]=''+(_0x3efa9e[_0x18d08b(0xd9)]||_0x18d08b(0xe8)),infoMapZone[_0x18d08b(0x11e)]=''+(_0x3efa9e[_0x18d08b(0xe4)]||_0x18d08b(0xe8)),infoMapRH[_0x18d08b(0x11e)]=''+(_0x3efa9e[_0x18d08b(0x10f)]||_0x18d08b(0xe8)),referralSuccessButton['disabled']=![],referralSuccessButton['textContent']='Refer\x20Friend\x20สำเร็จ',referralSuccessButton[_0x18d08b(0x11a)][_0x18d08b(0xf0)](_0x18d08b(0x121),'hover:bg-green-700'),referralSuccessButton[_0x18d08b(0x11a)][_0x18d08b(0x108)]('bg-gray-500'),employeeInfoDisplay[_0x18d08b(0x11a)][_0x18d08b(0x108)](_0x18d08b(0x106)),registerButton[_0x18d08b(0x11e)]=_0x18d08b(0x119);}catch(_0x3f309d){console[_0x18d08b(0x11d)]('Error\x20during\x20registration\x20process:\x20',_0x3f309d),_0x3f309d['message']['includes'](_0x18d08b(0xdc))?(messageDiv['innerHTML']=_0x18d08b(0xeb),messageDiv[_0x18d08b(0xfb)]=_0x18d08b(0x114)):(messageDiv[_0x18d08b(0x11e)]=_0x18d08b(0x113)+_0x3f309d[_0x18d08b(0x12e)],messageDiv[_0x18d08b(0xfb)]=_0x18d08b(0xdf)),registerButton[_0x18d08b(0xe1)]=![],registerButton[_0x18d08b(0x11e)]=_0x18d08b(0x11b),teamDisplay[_0x18d08b(0x11a)][_0x18d08b(0xf0)](_0x18d08b(0x106)),otpInputs[_0x18d08b(0xe9)](_0x216def=>{const _0x2bef57=_0x18d08b;_0x216def[_0x2bef57(0xe1)]=![],_0x216def[_0x2bef57(0x11a)][_0x2bef57(0x108)](_0x2bef57(0x112));}),employeeInfoDisplay[_0x18d08b(0x11a)]['add'](_0x18d08b(0x106)),eventDate[_0x18d08b(0x11a)]['remove'](_0x18d08b(0x106)),eventImageContainer[_0x18d08b(0x11a)][_0x18d08b(0x108)]('hidden'),registrationForm[_0x18d08b(0x11a)]['remove']('hidden');}}async function getCrsgDoc(_0x54d81a){const _0x53945e=_0x254538,_0x375ba6=_0x53945e(0x103),_0x519cc6=query(collection(db,_0x375ba6),or(where(_0x53945e(0x10b),'==',_0x54d81a),where('employeeId','==',_0x54d81a)),limit(0x1)),_0x2cc600=await getDocs(_0x519cc6);if(_0x2cc600[_0x53945e(0x134)])return null;const _0x28536b=_0x2cc600[_0x53945e(0xef)][0x0];return{'id':_0x28536b['id'],'data':_0x28536b[_0x53945e(0x127)]()};}async function logRegistration(_0x216951){const _0x13a562=_0x254538,_0x30f443=new Date();try{const _0x44ccd0=doc(db,'referfriend',_0x216951);return await updateDoc(_0x44ccd0,{'DateLogin':_0x30f443}),console[_0x13a562(0x126)](_0x13a562(0x116)),_0x30f443;}catch(_0x479708){console[_0x13a562(0x11d)]('Error\x20logging\x20registration:\x20',_0x479708);throw _0x479708;}}async function handleReferralSuccess(){const _0x211628=_0x254538;if(!currentEmployeeDocId){console[_0x211628(0x11d)](_0x211628(0x135)),referralSuccessButton[_0x211628(0xe1)]=!![],referralSuccessButton[_0x211628(0x11e)]='เกิดข้อผิดพลาด';return;}referralSuccessButton[_0x211628(0xe1)]=!![],referralSuccessButton[_0x211628(0x11e)]='กำลังบันทึก...';try{const _0xd1bf15=doc(db,_0x211628(0x103),currentEmployeeDocId);await updateDoc(_0xd1bf15,{'ReferralTimestamp':serverTimestamp()}),console['log'](_0x211628(0x107)),referralSuccessButton[_0x211628(0x11e)]=_0x211628(0x11c),referralSuccessButton[_0x211628(0x11a)]['remove']('bg-green-600',_0x211628(0x117)),referralSuccessButton[_0x211628(0x11a)][_0x211628(0xf0)](_0x211628(0x124));}catch(_0x2c5a96){console[_0x211628(0x11d)](_0x211628(0x11f),_0x2c5a96),referralSuccessButton['textContent']='บันทึกไม่สำเร็จ\x20(ลองอีกครั้ง)',referralSuccessButton[_0x211628(0xe1)]=![];}}
+        
+    </script>
+</body>
+</html>
