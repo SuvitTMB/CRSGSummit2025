@@ -60,7 +60,7 @@
 
         <div id="teamDisplay" class="hidden text-center border-t pt-4 mt-4">
             <h2 id="teamNameDisplay" class="text-8xl font-bold text-[#0056ff]"></h2> 
-            <p class="text-sm font-medium text-gray-700 mt-1">ทีมของคุณ</p>
+            <p class="text-sm font-medium text-gray-700 mt-1">แถวที่นั่งของคุณ</p>
             
             <p id="registrationStatusMessage" class="text-sm mt-4"></p>
             <p id="registrationTimestamp" class="text-xs text-gray-500"></p>
@@ -72,11 +72,11 @@
     <div id="teamMembersDisplay" class="hidden w-[95%] max-w-4xl p-6 bg-white rounded-lg shadow-md mt-8">
         <!-- (แก้ไข) ปรับโครงสร้าง header ของกล่องสมาชิก -->
         <div class="flex flex-col md:flex-row justify-between md:items-center mb-4 gap-3">
-            <h3 id="teamMembersHeader" class="text-lg font-semibold text-gray-800">สมาชิกทีม : ...</h3>
+            <h3 id="teamMembersHeader" class="text-lg font-semibold text-gray-800">สมาชิกแถวที่นั่ง : ...</h3>
             <div class="flex items-center gap-4">
                 <!-- (เพิ่ม) Dropdown เลือกทีม -->
                 <div>
-                    <label for="teamSelect" class="text-sm font-medium mr-2">เลือกทีม:</label>
+                    <label for="teamSelect" class="text-sm font-medium mr-2">เลือกแถว:</label>
                     <select id="teamSelect" class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm py-2 px-3">
                         <!-- Options will be populated by JS -->
                     </select>
