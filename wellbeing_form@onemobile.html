@@ -268,7 +268,313 @@
     </nav>
 
     <script type="module">
-const _0x5b0c32=_0x1455;(function(_0x65edd3,_0xdebd75){const _0x1be5f8=_0x1455,_0xec7175=_0x65edd3();while(!![]){try{const _0x405d37=-parseInt(_0x1be5f8(0x139))/0x1*(-parseInt(_0x1be5f8(0x142))/0x2)+-parseInt(_0x1be5f8(0x194))/0x3+parseInt(_0x1be5f8(0x141))/0x4+parseInt(_0x1be5f8(0x19f))/0x5*(parseInt(_0x1be5f8(0x15d))/0x6)+-parseInt(_0x1be5f8(0x19c))/0x7*(-parseInt(_0x1be5f8(0x178))/0x8)+parseInt(_0x1be5f8(0x183))/0x9+-parseInt(_0x1be5f8(0x15a))/0xa;if(_0x405d37===_0xdebd75)break;else _0xec7175['push'](_0xec7175['shift']());}catch(_0x307790){_0xec7175['push'](_0xec7175['shift']());}}}(_0x3a0c,0x7c399));import{initializeApp}from'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';import{getFirestore,collection,getDocs,query,where,doc,updateDoc,limit,onSnapshot}from'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';import{getAuth,signInAnonymously}from'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';const firebaseConfig={'apiKey':_0x5b0c32(0x140),'authDomain':'ttb-register.firebaseapp.com','databaseURL':'https://ttb-register-default-rtdb.asia-southeast1.firebasedatabase.app','projectId':_0x5b0c32(0x18f),'storageBucket':_0x5b0c32(0x186),'messagingSenderId':_0x5b0c32(0x11a),'appId':_0x5b0c32(0x144),'measurementId':_0x5b0c32(0x17e)},teamNames=Array['from']({'length':0x30},(_0x9ef42a,_0x1eeb59)=>(_0x1eeb59+0x1)[_0x5b0c32(0x181)]());let db,auth,userData=null;const generateStableId=()=>{const _0x11c3c1=_0x5b0c32,_0xfa053f=navigator[_0x11c3c1(0x196)]+screen[_0x11c3c1(0x17a)]+screen[_0x11c3c1(0x17b)]+navigator[_0x11c3c1(0x175)];let _0x30bbca=0x0;for(let _0x208daa=0x0;_0x208daa<_0xfa053f[_0x11c3c1(0x148)];_0x208daa++){_0x30bbca=(_0x30bbca<<0x5)-_0x30bbca+_0xfa053f[_0x11c3c1(0x12d)](_0x208daa),_0x30bbca|=0x0;}return'BROWSER-'+Math[_0x11c3c1(0x190)](_0x30bbca)['toString'](0x10)['toUpperCase']();},deviceId=generateStableId(),otpInputs=document[_0x5b0c32(0x15e)](_0x5b0c32(0x13a)),registerButton=document[_0x5b0c32(0x158)]('registerButton'),messageDiv=document[_0x5b0c32(0x158)]('message'),instructionText=document[_0x5b0c32(0x158)](_0x5b0c32(0x195)),teamSelect=document[_0x5b0c32(0x158)](_0x5b0c32(0x130));window[_0x5b0c32(0x149)]=_0x4dfb05=>{const _0x5a9b5c=_0x5b0c32;document[_0x5a9b5c(0x15e)]('.tab-pane')[_0x5a9b5c(0x191)](_0xde5b74=>_0xde5b74['classList'][_0x5a9b5c(0x125)](_0x5a9b5c(0x168))),document[_0x5a9b5c(0x158)](_0x5a9b5c(0x159)+_0x4dfb05)[_0x5a9b5c(0x17d)][_0x5a9b5c(0x13c)](_0x5a9b5c(0x168));const _0x114d89=document[_0x5a9b5c(0x15e)](_0x5a9b5c(0x192));_0x114d89[_0x5a9b5c(0x191)]((_0x200ddf,_0x38947c)=>{const _0x4e0a74=_0x5a9b5c;_0x200ddf[_0x4e0a74(0x11e)][_0x4e0a74(0x14f)]=_0x38947c+0x1===_0x4dfb05?'1':_0x4e0a74(0x16d);});};try{const app=initializeApp(firebaseConfig);db=getFirestore(app),auth=getAuth(app),await signInAnonymously(auth);const today=new Date();document['getElementById']('eventDate')[_0x5b0c32(0x170)]=_0x5b0c32(0x14d)+today[_0x5b0c32(0x199)](_0x5b0c32(0x180),{'year':_0x5b0c32(0x134),'month':_0x5b0c32(0x154),'day':_0x5b0c32(0x134)}),populateTeamDropdown(),setupOtpInputs(),otpInputs[0x0]['focus']();}catch(_0x2ea461){console['error'](_0x2ea461);}function setupOtpInputs(){const _0x132160=_0x5b0c32;otpInputs[_0x132160(0x191)]((_0xc220b1,_0x525ca9)=>{const _0x398dbc=_0x132160;_0xc220b1[_0x398dbc(0x14a)](_0x398dbc(0x157),_0x2c506a=>{const _0xa81862=_0x398dbc;_0x2c506a[_0xa81862(0x176)]['value']=_0x2c506a[_0xa81862(0x176)][_0xa81862(0x12e)][_0xa81862(0x150)](/[^0-9]/g,'');if(_0x2c506a[_0xa81862(0x176)][_0xa81862(0x12e)])_0xc220b1['classList'][_0xa81862(0x125)](_0xa81862(0x131));else _0xc220b1[_0xa81862(0x17d)]['remove'](_0xa81862(0x131));if(_0x2c506a[_0xa81862(0x176)][_0xa81862(0x12e)][_0xa81862(0x148)]===0x1&&_0x525ca9<otpInputs[_0xa81862(0x148)]-0x1)otpInputs[_0x525ca9+0x1][_0xa81862(0x155)]();const _0x55b569=Array['from'](otpInputs)[_0xa81862(0x16f)](_0x28b1fc=>_0x28b1fc[_0xa81862(0x12e)])[_0xa81862(0x189)]('');if(_0x55b569['length']===0x5)validateEmployeeId(_0x55b569);else userData=null,registerButton[_0xa81862(0x177)]=!![],instructionText[_0xa81862(0x170)]=_0xa81862(0x19a),instructionText['className']=_0xa81862(0x18b),messageDiv[_0xa81862(0x184)]='';}),_0xc220b1[_0x398dbc(0x14a)](_0x398dbc(0x15c),_0x2fdd72=>{const _0x25a975=_0x398dbc;if(_0x2fdd72[_0x25a975(0x12b)]===_0x25a975(0x126)&&!_0x2fdd72[_0x25a975(0x176)][_0x25a975(0x12e)]&&_0x525ca9>0x0)otpInputs[_0x525ca9-0x1][_0x25a975(0x155)]();});});}async function validateEmployeeId(_0x169b00){const _0x5a53b9=_0x5b0c32;document[_0x5a53b9(0x158)](_0x5a53b9(0x19b))[_0x5a53b9(0x17d)][_0x5a53b9(0x13c)](_0x5a53b9(0x168));try{const _0x25505b=query(collection(db,_0x5a53b9(0x18a)),where(_0x5a53b9(0x185),'==',String(_0x169b00)),limit(0x1)),_0x1578cb=await getDocs(_0x25505b);if(!_0x1578cb[_0x5a53b9(0x11d)]){const _0x4e9554=_0x1578cb['docs'][0x0],_0x4c2ce8=_0x4e9554[_0x5a53b9(0x19e)]();if(_0x4c2ce8[_0x5a53b9(0x15f)]&&String(_0x4c2ce8[_0x5a53b9(0x15f)])!==String(deviceId)){instructionText[_0x5a53b9(0x184)]=_0x5a53b9(0x122),instructionText[_0x5a53b9(0x124)]=_0x5a53b9(0x145),messageDiv[_0x5a53b9(0x184)]=_0x5a53b9(0x172),registerButton[_0x5a53b9(0x177)]=!![];return;}userData={'id':_0x4e9554['id'],..._0x4c2ce8},registerButton[_0x5a53b9(0x177)]=![],instructionText[_0x5a53b9(0x184)]=_0x5a53b9(0x182)+userData[_0x5a53b9(0x169)]+_0x5a53b9(0x13b),instructionText[_0x5a53b9(0x124)]='block\x20font-bold\x20mt-4\x20text-center\x20drop-shadow-md\x20fade-in',messageDiv['innerHTML']='';}else instructionText['textContent']=_0x5a53b9(0x19a),instructionText[_0x5a53b9(0x124)]='block\x20text-sm\x20font-bold\x20text-gray-800\x20mt-4\x20text-center\x20drop-shadow-md',messageDiv[_0x5a53b9(0x184)]=_0x5a53b9(0x16c),registerButton[_0x5a53b9(0x177)]=!![];}catch(_0x58a4bb){console[_0x5a53b9(0x120)](_0x58a4bb);}finally{document['getElementById'](_0x5a53b9(0x19b))[_0x5a53b9(0x17d)][_0x5a53b9(0x125)](_0x5a53b9(0x168));}}registerButton[_0x5b0c32(0x14a)](_0x5b0c32(0x165),async()=>{const _0x27a0f1=_0x5b0c32;if(!userData)return;registerButton[_0x27a0f1(0x177)]=!![],registerButton[_0x27a0f1(0x170)]=_0x27a0f1(0x16a);try{const _0x4db817=typeof __app_id!==_0x27a0f1(0x14b)?__app_id:_0x27a0f1(0x138),_0x50aea9=query(collection(db,_0x27a0f1(0x18a)),where('MobileId','==',String(deviceId)),limit(0xa)),_0x32b863=await getDocs(_0x50aea9),_0x779f9f=_0x32b863[_0x27a0f1(0x17c)][_0x27a0f1(0x188)](_0x27c5b8=>String(_0x27c5b8[_0x27a0f1(0x19e)]()[_0x27a0f1(0x185)])!==String(userData[_0x27a0f1(0x185)]));if(_0x779f9f){messageDiv['innerHTML']=_0x27a0f1(0x179),registerButton['disabled']=!![],registerButton[_0x27a0f1(0x170)]=_0x27a0f1(0x14c);return;}const _0x2d7920=new Date(),_0x2c4089=doc(db,_0x27a0f1(0x18a),userData['id']);await updateDoc(_0x2c4089,{'DateLogin':_0x2d7920,'MobileId':deviceId}),userData[_0x27a0f1(0x132)]=_0x2d7920,userData[_0x27a0f1(0x15f)]=deviceId,showDashboard();}catch(_0x12bf84){console[_0x27a0f1(0x120)](_0x12bf84),registerButton[_0x27a0f1(0x177)]=![],registerButton[_0x27a0f1(0x170)]=_0x27a0f1(0x14c),messageDiv['innerHTML']=_0x27a0f1(0x152);}});function _0x3a0c(){const _0x49e96f=['crsg','block\x20text-sm\x20font-bold\x20text-gray-800\x20mt-4\x20text-center\x20drop-shadow-md','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-gray-400\x20opacity-60\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<svg\x20class=\x22w-16\x20h-16\x20mx-auto\x20mb-4\x22\x20fill=\x22currentColor\x22\x20viewBox=\x220\x200\x2020\x2020\x22><path\x20fill-rule=\x22evenodd\x22\x20d=\x22M5\x205a3\x203\x200\x20015-2.236A3\x203\x200\x200114.83\x206H16a2\x202\x200\x20110\x204h-5V9a1\x201\x200\x2010-2\x200v1H4a2\x202\x200\x20110-4h1.17C5.06\x205.687\x205\x205.35\x205\x205zm4\x201V5a1\x201\x200\x2010-1\x201h1zm3\x200a1\x201\x200\x2010-1-1v1h1z\x22\x20clip-rule=\x22evenodd\x22></path><path\x20d=\x22M9\x2011H3v5a2\x202\x200\x20002\x202h4v-7zM11\x2018h4a2\x202\x200\x20002-2v-5h-6v7z\x22></path></svg>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22font-bold\x20text-lg\x22>รอลุ้นรางวัลช่วง\x20Lucky\x20Draw...</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22text-xs\x20mt-2\x22>หากได้รับรางวัล\x20รายละเอียดจะปรากฏที่นี่ทันที</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','<option\x20value=\x22','ลงทะเบียนสำเร็จ!','ttb-register','abs','forEach','#bottomNav\x20button','กำลังบันทึก...','2401767NioRtS','instructionText','userAgent','trim','registrationStatusMessage','toLocaleDateString','กรุณากรอกรหัสพนักงานของท่าน','checkingIdIndicator','7LftVwr','toLocaleString','data','2268960wmNpEa','Check_Place','<tr><td\x20colspan=\x222\x22\x20class=\x22p-4\x20text-center\x20animate-pulse\x20text-gray-400\x22>กำลังโหลด...</td></tr>','1070273157855','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','tab2Header','empty','style','\x22>โต๊ะที่\x20','error','registrationTimestamp','<span\x20class=\x22text-red-600\x22>รหัสนี้ลงทะเบียนกับเครื่องอื่นแล้ว</span>','bottomNav','className','add','Backspace','change','loginSection','</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22claimPrize()\x22\x20id=\x22claimBtn\x22\x20class=\x22block\x20mx-auto\x20w-[80%]\x20px-4\x20py-3\x20font-bold\x20text-white\x20bg-[#f68b1f]\x20rounded-xl\x20hover:bg-opacity-95\x20transition\x20duration-150\x20shadow-xm\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20ยืนยันการรับรางวัล\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22text-[11px]\x20text-red-400\x20mt-4\x20uppercase\x20tracking-tighter\x20font-bold\x22>*\x20กรุณากดเพื่อยืนยันการรับสิทธิ์กับเจ้าหน้าที่\x20*</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','teamNameDisplay','key','dashboardSection','charCodeAt','value','infoDept','teamSelect','otp-active','DateLogin','infoChief','numeric','ผู้ร่วมโต๊ะ','เมื่อ:\x20','infoBranch','default-app-id','1163Hdolxn','.otp-input','</span>','remove','</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','sort','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-2\x20text-center\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','AIzaSyAgWMzWcZPzyzoBu5eQzj2y59nKsxTWurQ','1488488tnEXkz','174GmSKMQ','push','1:1070273157855:web:5c8120e1df27e233d8676a','block\x20font-bold\x20mt-4\x20text-center\x20drop-shadow-md','AwardedGift','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22fade-in\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-6xl\x20mb-4\x20text-orange-500\x22>🎁</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h3\x20class=\x22text-xm\x20font-black\x20text-blue-900\x22>ยินดีด้วย!\x20คุณได้รับรางวัล</h3>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22my-6\x20p-6\x20bg-yellow-100\x20border-2\x20border-yellow-400\x20rounded-2xl\x20shadow-inner\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22text-xm\x20font-bold\x20text-gray-800\x22>','length','switchTab','addEventListener','undefined','ลงทะเบียน','วันที่\x20','toDate','opacity','replace','โต๊ะที่\x201-48','<span\x20class=\x22text-red-600\x20text-xs\x22>เกิดข้อผิดพลาดในการบันทึกข้อมูล\x20กรุณาลองใหม่อีกครั้ง</span>','claimBtn','long','focus','ยืนยันการรับรางวัล','input','getElementById','tab','8478680ORbLUN','Chief','keydown','6ehBgRR','querySelectorAll','MobileId','</option>','teamMembersTableBody','<tr><td\x20colspan=\x222\x22\x20class=\x22p-4\x20text-center\x20text-gray-400\x22>ไม่พบรายชื่อในโต๊ะนี้</td></tr>','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr\x20class=\x22','bg-blue-50','click','localeCompare','seatingMapContainer','hidden','FullName_th','กำลังตรวจสอบฐานข้อมูล...','ReceivedTime','<span\x20class=\x22text-red-600\x22>ไม่พบรหัสพนักงานนี้</span>','0.5','\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-2\x20font-bold\x20text-gray-800\x22>','map','textContent','<span\x20class=\x22text-gray-300\x22>รอ</span>','<span\x20class=\x22text-xs\x20text-red-500\x20font-medium\x22>กรุณาติดต่อเจ้าหน้าที่หากต้องการเปลี่ยนเครื่องใช้งาน</span>','Branch_eng','tab2NavText','language','target','disabled','4567960ztuEmE','<span\x20class=\x22text-red-600\x20font-bold\x22>เครื่องนี้ถูกใช้ลงทะเบียนโดยรหัสอื่นไปแล้ว</span>','width','height','docs','classList','G-9DJLWJ5LQ1','claimPrize','th-TH','toString','<span\x20class=\x22text-lg\x20text-blue-900\x22>คุณ','5932728DOApep','innerHTML','employeeId','ttb-register.firebasestorage.app','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-green-600\x20fade-in\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<svg\x20class=\x22w-20\x20h-20\x20mx-auto\x20mb-4\x22\x20fill=\x22none\x22\x20stroke=\x22currentColor\x22\x20viewBox=\x220\x200\x2024\x2024\x22><path\x20stroke-linecap=\x22round\x22\x20stroke-linejoin=\x22round\x22\x20stroke-width=\x222\x22\x20d=\x22M9\x2012l2\x202\x204-4m6\x202a9\x209\x200\x2011-18\x200\x209\x209\x200\x200118\x200z\x22></path></svg>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h3\x20class=\x22text-xl\x20font-bold\x22>ยืนยันรับรางวัลเรียบร้อยแล้ว!</h3>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22my-4\x20p-4\x20bg-green-50\x20rounded-xl\x20border\x20border-green-200\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22text-lg\x20font-bold\x20text-gray-800\x22>','some','join'];_0x3a0c=function(){return _0x49e96f;};return _0x3a0c();}function _0x1455(_0x1334a7,_0x326488){_0x1334a7=_0x1334a7-0x11a;const _0x3a0c07=_0x3a0c();let _0x14559c=_0x3a0c07[_0x1334a7];return _0x14559c;}function showDashboard(){const _0x8c313=_0x5b0c32;document['getElementById'](_0x8c313(0x128))[_0x8c313(0x17d)]['add'](_0x8c313(0x168)),document[_0x8c313(0x158)](_0x8c313(0x12c))[_0x8c313(0x17d)]['remove']('hidden'),document[_0x8c313(0x158)](_0x8c313(0x123))[_0x8c313(0x17d)][_0x8c313(0x13c)](_0x8c313(0x168)),document[_0x8c313(0x158)]('infoFullName')[_0x8c313(0x170)]=userData[_0x8c313(0x169)]+'\x20('+userData[_0x8c313(0x185)]+')',document['getElementById'](_0x8c313(0x137))[_0x8c313(0x170)]=''+(userData[_0x8c313(0x173)]||'-'),document[_0x8c313(0x158)](_0x8c313(0x12f))['textContent']=''+(userData['Department_eng']||'-'),document[_0x8c313(0x158)](_0x8c313(0x133))[_0x8c313(0x170)]=''+(userData[_0x8c313(0x15b)]||'-');const _0x5e702d=(userData['Check_Place']||'')[_0x8c313(0x197)](),_0x437216=_0x5e702d!=='',_0x11b963=document[_0x8c313(0x158)](_0x8c313(0x12a)),_0x3a65cf=document[_0x8c313(0x158)](_0x8c313(0x167));_0x437216?(_0x11b963[_0x8c313(0x170)]=isNaN(_0x5e702d)?_0x5e702d:'โต๊ะที่\x20'+_0x5e702d,_0x3a65cf[_0x8c313(0x17d)]['remove'](_0x8c313(0x168))):(_0x11b963[_0x8c313(0x170)]='ผู้ร่วมงาน',_0x3a65cf[_0x8c313(0x17d)]['add'](_0x8c313(0x168)));document[_0x8c313(0x158)](_0x8c313(0x198))['textContent']=_0x8c313(0x18e);const _0x32fef5=userData[_0x8c313(0x132)]?.[_0x8c313(0x14e)]?userData[_0x8c313(0x132)][_0x8c313(0x14e)]():new Date(userData[_0x8c313(0x132)]);document[_0x8c313(0x158)](_0x8c313(0x121))[_0x8c313(0x170)]=_0x8c313(0x136)+_0x32fef5['toLocaleString'](_0x8c313(0x180));const _0x1a8056=document['getElementById'](_0x8c313(0x174)),_0x36fa29=document[_0x8c313(0x158)](_0x8c313(0x11c));_0x437216?(_0x1a8056[_0x8c313(0x170)]='ผู้ร่วมโต๊ะ',_0x36fa29['textContent']=_0x8c313(0x135),teamSelect[_0x8c313(0x12e)]=_0x5e702d,fetchTeamMembers(_0x5e702d)):(_0x1a8056['textContent']='โต๊ะที่\x201-48',_0x36fa29[_0x8c313(0x170)]=_0x8c313(0x151),teamSelect[_0x8c313(0x12e)]=teamNames[0x0],fetchTeamMembers(teamNames[0x0])),listenForPrize(),switchTab(0x1);}function populateTeamDropdown(){const _0x2283b4=_0x5b0c32;teamSelect[_0x2283b4(0x184)]=teamNames[_0x2283b4(0x16f)](_0x3f779f=>_0x2283b4(0x18d)+_0x3f779f+_0x2283b4(0x11f)+_0x3f779f+_0x2283b4(0x160))[_0x2283b4(0x189)](''),teamSelect[_0x2283b4(0x14a)](_0x2283b4(0x127),_0xc50016=>fetchTeamMembers(_0xc50016[_0x2283b4(0x176)]['value']));}async function fetchTeamMembers(_0x2d5673){const _0x3f3e1a=_0x5b0c32,_0xf31bb2=document['getElementById'](_0x3f3e1a(0x161));_0xf31bb2[_0x3f3e1a(0x184)]=_0x3f3e1a(0x1a1);try{const _0x102e63=query(collection(db,_0x3f3e1a(0x18a)),where(_0x3f3e1a(0x1a0),'==',_0x2d5673)),_0x1ed770=await getDocs(_0x102e63),_0x116aad=[];_0x1ed770[_0x3f3e1a(0x191)](_0x43f961=>_0x116aad[_0x3f3e1a(0x143)](_0x43f961[_0x3f3e1a(0x19e)]())),_0x116aad[_0x3f3e1a(0x13e)]((_0xebf40c,_0xbc2eec)=>(_0xebf40c[_0x3f3e1a(0x169)]||'')[_0x3f3e1a(0x166)](_0xbc2eec['FullName_th']||'')),_0xf31bb2['innerHTML']=_0x116aad['map'](_0x25ce14=>_0x3f3e1a(0x163)+(_0x25ce14[_0x3f3e1a(0x132)]?_0x3f3e1a(0x164):'')+_0x3f3e1a(0x16e)+_0x25ce14[_0x3f3e1a(0x169)]+_0x3f3e1a(0x13f)+(_0x25ce14['DateLogin']?'<span\x20class=\x22text-green-600\x20font-bold\x22>✓</span>':_0x3f3e1a(0x171))+_0x3f3e1a(0x11b))[_0x3f3e1a(0x189)]('');if(_0x116aad[_0x3f3e1a(0x148)]===0x0)_0xf31bb2[_0x3f3e1a(0x184)]=_0x3f3e1a(0x162);}catch(_0x8f93f2){console[_0x3f3e1a(0x120)](_0x8f93f2);}}function listenForPrize(){const _0x187685=_0x5b0c32,_0x2f9972=document[_0x187685(0x158)]('prizeContainer');onSnapshot(doc(db,'crsg',userData['id']),_0x1f9c41=>{const _0x53af27=_0x187685,_0x3b83d3=_0x1f9c41[_0x53af27(0x19e)]();if(!_0x3b83d3)return;const _0x35842a=_0x3b83d3[_0x53af27(0x146)]?String(_0x3b83d3[_0x53af27(0x146)])['trim']():'';if(_0x35842a!==''){const _0x5e6624=_0x3b83d3[_0x53af27(0x16b)]&&_0x3b83d3['ReceivedTime']!==null&&_0x3b83d3['ReceivedTime']!=='';if(_0x5e6624){const _0x272de6=_0x3b83d3[_0x53af27(0x16b)][_0x53af27(0x14e)]?_0x3b83d3[_0x53af27(0x16b)][_0x53af27(0x14e)]():new Date(_0x3b83d3[_0x53af27(0x16b)]);_0x2f9972[_0x53af27(0x184)]=_0x53af27(0x187)+_0x35842a+'</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22text-xs\x20text-gray-500\x20font-bold\x22>ยืนยันเมื่อ:\x20'+_0x272de6[_0x53af27(0x19d)]('th-TH')+_0x53af27(0x13d);}else _0x2f9972[_0x53af27(0x184)]=_0x53af27(0x147)+_0x35842a+_0x53af27(0x129);}else _0x2f9972[_0x53af27(0x184)]=_0x53af27(0x18c);});}window[_0x5b0c32(0x17f)]=async()=>{const _0x4a6d15=_0x5b0c32,_0x21598f=document[_0x4a6d15(0x158)](_0x4a6d15(0x153));if(!_0x21598f||_0x21598f[_0x4a6d15(0x177)])return;_0x21598f[_0x4a6d15(0x177)]=!![],_0x21598f[_0x4a6d15(0x170)]=_0x4a6d15(0x193);try{await updateDoc(doc(db,'crsg',userData['id']),{'ReceivedTime':new Date(),'PrizeClaimed':!![]});}catch(_0x451522){console[_0x4a6d15(0x120)](_0x451522),_0x21598f[_0x4a6d15(0x177)]=![],_0x21598f[_0x4a6d15(0x170)]=_0x4a6d15(0x156);}};
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where, doc, updateDoc, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"; 
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgWMzWcZPzyzoBu5eQzj2y59nKsxTWurQ",
+            authDomain: "ttb-register.firebaseapp.com",
+            databaseURL: "https://ttb-register-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "ttb-register",
+            storageBucket: "ttb-register.firebasestorage.app",
+            messagingSenderId: "1070273157855",
+            appId: "1:1070273157855:web:5c8120e1df27e233d8676a",
+            measurementId: "G-9DJLWJ5LQ1"
+        };
+
+        const teamNames = Array.from({length: 48}, (_, i) => (i + 1).toString());
+
+        let db, auth;
+        let userData = null;
+        
+        // ฟังก์ชันสร้าง Device ID แบบคงที่สำหรับเซสชั่นปัจจุบัน (Fingerprinting)
+        // โดยใช้ข้อมูลเบราว์เซอร์ร่วมกับความกว้างหน้าจอ เพื่อความแม่นยำแทน localStorage
+        const generateStableId = () => {
+            const fingerprint = navigator.userAgent + screen.width + screen.height + navigator.language;
+            let hash = 0;
+            for (let i = 0; i < fingerprint.length; i++) {
+                hash = ((hash << 5) - hash) + fingerprint.charCodeAt(i);
+                hash |= 0; 
+            }
+            return 'BROWSER-' + Math.abs(hash).toString(16).toUpperCase();
+        };
+        const deviceId = generateStableId();
+
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const registerButton = document.getElementById("registerButton");
+        const messageDiv = document.getElementById("message");
+        const instructionText = document.getElementById("instructionText");
+        const teamSelect = document.getElementById("teamSelect");
+
+        window.switchTab = (tabIndex) => {
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab${tabIndex}`).classList.remove('hidden');
+            const buttons = document.querySelectorAll('#bottomNav button');
+            buttons.forEach((btn, idx) => {
+                btn.style.opacity = (idx + 1 === tabIndex) ? "1" : "0.5";
+            });
+        };
+
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            await signInAnonymously(auth);
+            
+            const today = new Date();
+            document.getElementById("eventDate").textContent = "วันที่ " + today.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+            
+            populateTeamDropdown(); 
+            setupOtpInputs(); 
+            otpInputs[0].focus();
+        } catch (error) {
+            console.error(error);
+        }
+
+        function setupOtpInputs() {
+            otpInputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                    if (e.target.value) input.classList.add('otp-active');
+                    else input.classList.remove('otp-active');
+                    if (e.target.value.length === 1 && index < otpInputs.length - 1) otpInputs[index + 1].focus();
+                    
+                    const code = Array.from(otpInputs).map(i => i.value).join('');
+                    if (code.length === 5) validateEmployeeId(code);
+                    else {
+                        userData = null;
+                        registerButton.disabled = true;
+                        instructionText.textContent = "กรุณากรอกรหัสพนักงานของท่าน";
+                        instructionText.className = "block text-sm font-bold text-gray-800 mt-4 text-center drop-shadow-md";
+                        messageDiv.innerHTML = "";
+                    }
+                });
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value && index > 0) otpInputs[index - 1].focus();
+                });
+            });
+        }
+
+        async function validateEmployeeId(empId) {
+            document.getElementById('checkingIdIndicator').classList.remove('hidden');
+            try {
+                // ค้นหาพนักงานโดยตรงจาก Firestore
+                const q = query(collection(db, "crsg"), where("employeeId", "==", String(empId)), limit(1));
+                const snap = await getDocs(q);
+                
+                if (!snap.empty) {
+                    const docSnap = snap.docs[0];
+                    const data = docSnap.data();
+
+                    // ตรวจสอบความถูกต้องของสิทธิ์เครื่องผ่านข้อมูลใน Database เท่านั้น
+                    // 1. ตรวจสอบว่ารหัสพนักงานนี้ถูกผูกไว้กับเครื่องอื่นที่ไม่ใช่เครื่องปัจจุบันหรือไม่
+                    if (data.MobileId && String(data.MobileId) !== String(deviceId)) {
+                        instructionText.innerHTML = `<span class="text-red-600">รหัสนี้ลงทะเบียนกับเครื่องอื่นแล้ว</span>`;
+                        instructionText.className = "block font-bold mt-4 text-center drop-shadow-md";
+                        messageDiv.innerHTML = `<span class="text-xs text-red-500 font-medium">กรุณาติดต่อเจ้าหน้าที่หากต้องการเปลี่ยนเครื่องใช้งาน</span>`;
+                        registerButton.disabled = true;
+                        return;
+                    }
+
+                    // 2. เก็บข้อมูลไว้เพื่อเตรียมใช้ในขั้นตอน Register Click (เพื่อเช็คซ้ำว่าเครื่องนี้มีใครใช้อยู่ไหม)
+                    userData = { id: docSnap.id, ...data };
+                    registerButton.disabled = false;
+                    instructionText.innerHTML = `<span class="text-lg text-blue-900">คุณ${userData.FullName_th}</span>`;
+                    instructionText.className = "block font-bold mt-4 text-center drop-shadow-md fade-in";
+                    messageDiv.innerHTML = "";
+                } else {
+                    instructionText.textContent = "กรุณากรอกรหัสพนักงานของท่าน";
+                    instructionText.className = "block text-sm font-bold text-gray-800 mt-4 text-center drop-shadow-md";
+                    messageDiv.innerHTML = `<span class="text-red-600">ไม่พบรหัสพนักงานนี้</span>`;
+                    registerButton.disabled = true;
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                document.getElementById('checkingIdIndicator').classList.add('hidden');
+            }
+        }
+
+        registerButton.addEventListener("click", async () => {
+            if (!userData) return;
+            registerButton.disabled = true;
+            registerButton.textContent = "กำลังตรวจสอบฐานข้อมูล...";
+            
+            try {
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                
+                // ตรวจสอบเครื่อง (Database Check): เครื่องนี้ถูก "พนักงานรหัสอื่น" ใช้อยู่หรือไม่
+                const qDeviceCheck = query(collection(db, "crsg"), where("MobileId", "==", String(deviceId)), limit(10));
+                const deviceSnap = await getDocs(qDeviceCheck);
+                
+                const deviceInUseByOther = deviceSnap.docs.some(d => String(d.data().employeeId) !== String(userData.employeeId));
+                
+                if (deviceInUseByOther) {
+                    messageDiv.innerHTML = `<span class="text-red-600 font-bold">เครื่องนี้ถูกใช้ลงทะเบียนโดยรหัสอื่นไปแล้ว</span>`;
+                    registerButton.disabled = true;
+                    registerButton.textContent = "ลงทะเบียน";
+                    return;
+                }
+
+                // ดำเนินการบันทึกการ Login และ MobileId ลง Database
+                const now = new Date();
+                const docRef = doc(db, "crsg", userData.id);
+                
+                await updateDoc(docRef, { 
+                    DateLogin: now,
+                    MobileId: deviceId 
+                });
+                
+                userData.DateLogin = now;
+                userData.MobileId = deviceId;
+                showDashboard();
+            } catch (err) {
+                console.error(err);
+                registerButton.disabled = false;
+                registerButton.textContent = "ลงทะเบียน";
+                messageDiv.innerHTML = `<span class="text-red-600 text-xs">เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง</span>`;
+            }
+        });
+
+        function showDashboard() {
+            document.getElementById("loginSection").classList.add("hidden");
+            document.getElementById("dashboardSection").classList.remove("hidden");
+            document.getElementById("bottomNav").classList.remove("hidden");
+            
+            document.getElementById("infoFullName").textContent = `${userData.FullName_th} (${userData.employeeId})`;
+            document.getElementById("infoBranch").textContent = `${userData.Branch_eng || '-'}`;
+            document.getElementById("infoDept").textContent = `${userData.Department_eng || '-'}`;
+            document.getElementById("infoChief").textContent = `${userData.Chief || '-'}`;
+            
+            const checkPlaceRaw = (userData.Check_Place || "").trim();
+            const hasPlace = checkPlaceRaw !== "";
+            
+            const teamNameDisplay = document.getElementById("teamNameDisplay");
+            const seatingMapContainer = document.getElementById("seatingMapContainer");
+            
+            if (hasPlace) {
+                teamNameDisplay.textContent = isNaN(checkPlaceRaw) ? checkPlaceRaw : "โต๊ะที่ " + checkPlaceRaw;
+                seatingMapContainer.classList.remove("hidden");
+            } else {
+                teamNameDisplay.textContent = "ผู้ร่วมงาน";
+                seatingMapContainer.classList.add("hidden");
+            }
+
+            document.getElementById("registrationStatusMessage").textContent = "ลงทะเบียนสำเร็จ!";
+            const loginTime = userData.DateLogin?.toDate ? userData.DateLogin.toDate() : new Date(userData.DateLogin);
+            document.getElementById("registrationTimestamp").textContent = `เมื่อ: ${loginTime.toLocaleString('th-TH')}`;
+            
+            const tab2NavText = document.getElementById("tab2NavText");
+            const tab2Header = document.getElementById("tab2Header");
+            
+            if (hasPlace) {
+                tab2NavText.textContent = "ผู้ร่วมโต๊ะ";
+                tab2Header.textContent = "ผู้ร่วมโต๊ะ";
+                teamSelect.value = checkPlaceRaw;
+                fetchTeamMembers(checkPlaceRaw);
+            } else {
+                tab2NavText.textContent = "โต๊ะที่ 1-48";
+                tab2Header.textContent = "โต๊ะที่ 1-48";
+                teamSelect.value = teamNames[0];
+                fetchTeamMembers(teamNames[0]);
+            }
+            
+            listenForPrize();
+            switchTab(1);
+        }
+
+        function populateTeamDropdown() {
+            teamSelect.innerHTML = teamNames.map(t => `<option value="${t}">โต๊ะที่ ${t}</option>`).join('');
+            teamSelect.addEventListener("change", (e) => fetchTeamMembers(e.target.value));
+        }
+
+        async function fetchTeamMembers(teamName) {
+            const tbody = document.getElementById("teamMembersTableBody");
+            tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center animate-pulse text-gray-400">กำลังโหลด...</td></tr>`;
+            try {
+                const q = query(collection(db, "crsg"), where("Check_Place", "==", teamName));
+                const snap = await getDocs(q);
+                const members = [];
+                snap.forEach(d => members.push(d.data()));
+                members.sort((a,b) => (a.FullName_th || '').localeCompare(b.FullName_th || ''));
+                
+                tbody.innerHTML = members.map(m => `
+                    <tr class="${m.DateLogin ? 'bg-blue-50' : ''}">
+                        <td class="px-4 py-2 font-bold text-gray-800">${m.FullName_th}</td>
+                        <td class="px-4 py-2 text-center">
+                            ${m.DateLogin ? '<span class="text-green-600 font-bold">✓</span>' : '<span class="text-gray-300">รอ</span>'}
+                        </td>
+                    </tr>
+                `).join('');
+                if (members.length === 0) tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-gray-400">ไม่พบรายชื่อในโต๊ะนี้</td></tr>`;
+            } catch (err) { console.error(err); }
+        }
+
+        function listenForPrize() {
+            const prizeDiv = document.getElementById("prizeContainer");
+            onSnapshot(doc(db, "crsg", userData.id), (docSnapshot) => {
+                const data = docSnapshot.data();
+                if (!data) return;
+                const awardedGift = data.AwardedGift ? String(data.AwardedGift).trim() : "";
+                
+                if (awardedGift !== "") {
+                    const hasReceived = data.ReceivedTime && data.ReceivedTime !== null && data.ReceivedTime !== "";
+                    if (hasReceived) {
+                        const receiveTime = data.ReceivedTime.toDate ? data.ReceivedTime.toDate() : new Date(data.ReceivedTime);
+                        prizeDiv.innerHTML = `
+                            <div class="text-green-600 fade-in">
+                                <svg class="w-20 h-20 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <h3 class="text-xl font-bold">ยืนยันรับรางวัลเรียบร้อยแล้ว!</h3>
+                                <div class="my-4 p-4 bg-green-50 rounded-xl border border-green-200">
+                                    <p class="text-lg font-bold text-gray-800">${awardedGift}</p>
+                                </div>
+                                <p class="text-xs text-gray-500 font-bold">ยืนยันเมื่อ: ${receiveTime.toLocaleString('th-TH')}</p>
+                            </div>
+                        `;
+                    } else {
+                        prizeDiv.innerHTML = `
+                            <div class="fade-in">
+                                <div class="text-6xl mb-4 text-orange-500">🎁</div>
+                                <h3 class="text-xm font-black text-blue-900">ยินดีด้วย! คุณได้รับรางวัล</h3>
+                                <div class="my-6 p-6 bg-yellow-100 border-2 border-yellow-400 rounded-2xl shadow-inner">
+                                    <p class="text-xm font-bold text-gray-800">${awardedGift}</p>
+                                </div>
+                                <button onclick="claimPrize()" id="claimBtn" class="block mx-auto w-[80%] px-4 py-3 font-bold text-white bg-[#f68b1f] rounded-xl hover:bg-opacity-95 transition duration-150 shadow-xm">
+                                    ยืนยันการรับรางวัล
+                                </button>
+                                <p class="text-[11px] text-red-400 mt-4 uppercase tracking-tighter font-bold">* กรุณากดเพื่อยืนยันการรับสิทธิ์กับเจ้าหน้าที่ *</p>
+                            </div>
+                        `;
+                    }
+                } else {
+                    prizeDiv.innerHTML = `
+                        <div class="text-gray-400 opacity-60">
+                            <svg class="w-16 h-16 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 5a3 3 0 015-2.236A3 3 0 0114.83 6H16a2 2 0 110 4h-5V9a1 1 0 10-2 0v1H4a2 2 0 110-4h1.17C5.06 5.687 5 5.35 5 5zm4 1V5a1 1 0 10-1 1h1zm3 0a1 1 0 10-1-1v1h1z" clip-rule="evenodd"></path><path d="M9 11H3v5a2 2 0 002 2h4v-7zM11 18h4a2 2 0 002-2v-5h-6v7z"></path></svg>
+                            <p class="font-bold text-lg">รอลุ้นรางวัลช่วง Lucky Draw...</p>
+                            <p class="text-xs mt-2">หากได้รับรางวัล รายละเอียดจะปรากฏที่นี่ทันที</p>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        window.claimPrize = async () => {
+            const btn = document.getElementById("claimBtn");
+            if (!btn || btn.disabled) return;
+            btn.disabled = true;
+            btn.textContent = "กำลังบันทึก...";
+            try {
+                await updateDoc(doc(db, "crsg", userData.id), { 
+                    ReceivedTime: new Date(),
+                    PrizeClaimed: true
+                });
+            } catch (err) {
+                console.error(err);
+                btn.disabled = false;
+                btn.textContent = "ยืนยันการรับรางวัล";
+            }
+        };
 
     </script>
 </body>

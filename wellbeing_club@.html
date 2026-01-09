@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONE Retail Club</title>
+    <!-- โหลด Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            background-color: #ffffff;
+            letter-spacing: normal !important;
+            font-size: 1.125rem;
+        }
+        * {
+            font-family: 'Sarabun', sans-serif !important;
+            letter-spacing: normal !important;
+            text-transform: none !important;
+        }
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            margin-top: 0.25rem;
+            /* ปรับ font dropdown และ input ลง 1 ขั้น */
+            font-size: 1rem;
+        }
+        thead.table-header-gray {
+             background-color: #e5e7eb;
+        }
+        table thead th {
+            font-weight: bold !important;
+            font-size: 1rem !important;
+            /* หัวตารางจัด font-align center */
+            text-align: center !important;
+        }
+        table tbody tr {
+            height: 30px !important;
+        }
+        .winner-row-animate {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        button:disabled {
+            background-color: #d1d5db !important;
+            cursor: not-allowed !allowed;
+            box-shadow: none !important;
+            transform: none !important;
+        }
+        .loading-gif {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0); }
+            100% { transform: rotate(360deg); }
+        }
+        .sortable-header {
+            cursor: pointer;
+            user-select: none;
+        }
+        .sortable-header:hover {
+            background-color: #d1d5db;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body class="flex flex-col items-center min-h-screen py-10 bg-white">
+
+    <div class="w-[95%] max-w-7xl p-0 bg-white rounded-lg">
+        <!-- Header -->
+        <div class="flex flex-col items-center mb-6 pt-6 px-8">
+            <div class="text-center">
+                <h1 class="text-2xl font-bold" style="color: #0056ff;">Recog Night White Elegance</h1>
+            </div>
+            <div class="text-center mt-2">
+                <p id="currentDateTime" class="text-sm text-gray-400 font-medium"></p>
+            </div>
+        </div>
+        
+        <!-- Tab Navigation -->
+        <div class="mb-6 border-b border-gray-200 px-8">
+            <nav class="-mb-px flex space-x-1 overflow-x-auto" aria-label="Tabs">
+                <button id="tab-dashboard" class="whitespace-nowrap py-3 px-4 border-b-2 font-medium text-base text-gray-700 bg-gray-300 border-blue-600">
+                    ข้อมูล Dashboard
+                </button>
+                <button id="tab-team-list" class="whitespace-nowrap py-3 px-4 border-b-2 font-medium text-base text-gray-500 bg-gray-100 border-transparent hover:text-gray-700 hover:border-gray-300">
+                    ข้อมูลสมาชิกทีม
+                </button>
+                <button id="tab-group-view" class="whitespace-nowrap py-3 px-4 border-b-2 font-medium text-base text-gray-500 bg-gray-100 border-transparent hover:text-gray-700 hover:border-gray-300">
+                    ข้อมูลจัดกลุ่ม
+                </button>
+                <button id="tab-employee-list" class="whitespace-nowrap py-3 px-4 border-b-2 font-medium text-base text-gray-500 bg-gray-100 border-transparent hover:text-gray-700 hover:border-gray-300">
+                    ข้อมูลสมาชิก
+                </button>
+                <button id="tab-gift-management" class="whitespace-nowrap py-3 px-4 border-b-2 font-medium text-base text-gray-500 bg-gray-100 border-transparent hover:text-gray-700 hover:border-gray-300">
+                    จัดการของรางวัล
+                </button>
+                <button id="tab-register" class="whitespace-nowrap py-3 px-4 border-b-2 font-medium text-base text-gray-500 bg-gray-100 border-transparent hover:text-gray-700 hover:border-gray-300">
+                    QR Code
+                </button>
+                <button id="tab-group-random" class="whitespace-nowrap py-3 px-4 border-b-2 font-medium text-base text-gray-500 bg-gray-100 border-transparent hover:text-gray-700 hover:border-gray-300">
+                    ระบบสุ่มแบบกลุ่ม
+                </button>
+                <button id="tab-winners-list" class="whitespace-nowrap py-3 px-4 border-b-2 font-medium text-base text-gray-500 bg-gray-100 border-transparent hover:text-gray-700 hover:border-gray-300">
+                    รายชื่อผู้ได้รับรางวัล
+                </button>
+            </nav>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboard-content" class="px-8 pb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 font-bold">ภาพรวมผู้ลงทะเบียน</h2>
+            <div class="flex flex-col lg:flex-row gap-6 mb-8">
+                <div class="lg:w-2/5">
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center justify-center h-full">
+                         <p class="text-gray-600 text-base mb-4 font-bold">ภาพรวมการลงทะเบียนทั้งหมด</p>
+                         <div class="relative w-64 h-64">
+                             <canvas id="registrationBreakdownChart"></canvas>
+                             <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                 <span id="breakdownCenterTotal" class="text-2xl font-bold text-gray-900">0</span>
+                                 <span class="text-base text-gray-500 font-bold">ผู้ลงทะเบียน</span>
+                             </div>
+                         </div>
+                     </div>
+                </div>
+                <div class="lg:w-3/5">
+                    <div class="flex gap-6 h-full">
+                         <div class="w-2/3 bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center justify-center">
+                            <p class="text-gray-600 text-base mb-4 font-bold">จำนวนสมาชิกที่มีสถานะ Invite</p>
+                            <div class="relative w-64 h-64">
+                                <canvas id="registrationDonutChart"></canvas>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                    <span id="donutPercentage" class="text-2xl font-bold text-gray-900">0%</span>
+                                    <span class="text-base text-gray-500 font-bold">%ลงทะเบียนแล้ว</span>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="w-1/3 flex flex-col justify-between space-y-2">
+                            <div class="h-1/4 bg-blue-50 p-3 rounded-lg flex flex-col justify-center items-center text-center">
+                                <p class="text-blue-700 text-sm font-bold">เป้าหมายทั้งหมด (Invite)</p>
+                                <p id="targetCount" class="text-2xl font-bold text-blue-800 mt-1">0</p>
+                            </div>
+                            <div class="h-1/4 bg-green-50 p-3 rounded-lg flex flex-col justify-center items-center text-center font-bold">
+                                <p class="text-green-700 text-sm">ลงทะเบียนแล้ว (Invite)</p>
+                                <p id="participantsCountBox" class="text-2xl font-bold text-green-800 mt-1">0</p>
+                            </div>
+                            <div class="h-1/4 bg-red-50 p-3 rounded-lg flex flex-col justify-center items-center text-center font-bold">
+                                <p class="text-red-700 text-sm">ยังไม่ลงทะเบียน</p>
+                                <p id="remainingCount" class="text-2xl font-bold text-red-800 mt-1">0</p>
+                            </div>
+                            <div class="h-1/4 bg-yellow-50 p-3 rounded-lg flex flex-col justify-center items-center text-center font-bold">
+                                <p class="text-yellow-700 text-sm">ผู้ร่วมงาน (Non-Invite)</p>
+                                <p id="attendeesCount" class="text-2xl font-bold text-yellow-800 mt-1">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-8">
+                <div class="flex justify-between items-center mb-4">
+                     <h2 class="text-xl font-semibold text-gray-800 font-bold">สรุปข้อมูลผู้ลงทะเบียนตามผังที่นั่ง</h2>
+                     <button id="randomizeButton" class="px-6 py-3 text-base font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 shadow active:scale-95 transition-all font-bold">
+                         สุ่มเลือกผู้โชคดี (รายคน)
+                     </button>
+                 </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <p class="text-gray-600 text-base mb-4 font-bold text-center">ผังที่นั่ง (A1 - A24)</p>
+                        <div class="h-[35rem]"><canvas id="teamBarChart1"></canvas></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                         <p class="text-gray-600 text-base mb-4 font-bold text-center">ผังที่นั่ง (B1 - B24)</p>
+                        <div class="h-[35rem]"><canvas id="teamBarChart2"></canvas></div>
+                    </div>
+                </div>
+            </div>
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 font-bold">รายชื่อผู้ลงทะเบียนล่าสุด (30 อันดับ)</h2>
+            <div class="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm">
+                        <thead class="table-header-gray">
+                            <tr>
+                                <th class="px-4 py-4 text-center font-bold text-gray-600">รหัสพนักงาน</th>
+                                <th class="px-4 py-4 text-center font-bold text-gray-600">ชื่อ-นามสกุล</th>
+                                <th class="px-4 py-4 text-center font-bold text-gray-600">สาขา</th>
+                                <th class="px-4 py-4 text-center font-bold text-gray-600">สังกัด</th>
+                                <th class="px-4 py-4 text-center font-bold text-gray-600">สถานะ</th>
+                                <th class="px-4 py-4 text-center font-bold text-gray-600">รายการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="latestRegistrationsTableBody" class="bg-white divide-y divide-gray-200 text-sm">
+                            <tr><td colspan="6" class="p-6 text-center text-gray-500 font-bold text-sm">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <button id="downloadCsvButton" class="px-8 py-3 text-base font-bold text-white bg-[#1f2937] rounded-md hover:bg-black shadow transition-all">
+                    📥 Download CSV Report
+                </button>
+            </div>
+        </div>
+
+        <!-- Team List Content -->
+        <div id="team-list-content" class="hidden pb-8 px-0">
+            <div class="bg-white overflow-hidden">
+                <div class="px-6 py-4 border-b grid grid-cols-1 md:grid-cols-3 gap-4 items-center bg-gray-50">
+                    <div class="bg-white p-4 rounded-xl text-center border shadow-sm">
+                        <p class="text-base text-blue-700 font-bold">พนักงานที่มี สังกัด</p>
+                        <p id="managerEmployeeCount" class="text-2xl font-bold text-blue-900 mt-1">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl text-center border shadow-sm font-bold">
+                        <p class="text-base text-green-700">พนักงานที่มี ทีม</p>
+                        <p id="teamMemberCountElem" class="text-2xl font-bold text-green-900 mt-1">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border shadow-sm font-bold flex flex-col"> 
+                        <p class="text-sm text-gray-400 font-bold mb-1 uppercase tracking-tight">รายชื่อทีมที่กำหนด:</p>
+                        <textarea id="definedTeamNamesInput" class="!text-xs h-16 resize-none bg-blue-50 border-blue-100 font-mono" placeholder="A,B,C..."></textarea>
+                        <button id="updateTeamNamesBtn" class="mt-1 text-[10px] bg-blue-600 text-white py-1 rounded uppercase">บันทึกรายชื่อทีม</button>
+                    </div>
+                </div>
+                <div class="px-6 py-4 border-b flex flex-col md:flex-row gap-4 justify-center">
+                     <button id="resetTeamButton" class="w-full md:w-auto px-8 py-3 text-base font-bold text-white bg-red-600 rounded-md hover:bg-red-700 shadow transition-all">Reset System Data</button>
+                </div>
+                 <div class="p-6">
+                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+                         <div>
+                             <h3 class="text-xl font-bold border-l-4 border-blue-600 pl-3">จำนวนสมาชิก</h3>
+                             <div id="teamStatsContainer" class="hidden flex flex-wrap gap-2 mt-2">
+                                 <span class="px-3 py-1 rounded-md bg-gray-100 text-gray-700 text-sm font-bold border">Total: <span id="teamStatsTotal">0</span></span>
+                                 <span class="px-3 py-1 rounded-md bg-green-50 text-green-700 text-sm font-bold border border-green-200">Reg: <span id="teamStatsRegistered">0</span></span>
+                             </div>
+                         </div>
+                         <div class="flex items-center">
+                             <label for="teamSelect" class="text-base font-bold text-gray-600 mr-2">เลือกที่นั่ง:</label>
+                             <select id="teamSelect" class="rounded-md border-gray-300 text-sm py-2 px-6 bg-[#f97316] text-white font-bold w-56 focus:ring-0">
+                                 <option value="">-- เลือกทีม --</option>
+                             </select>
+                         </div>
+                     </div>
+                     <div class="overflow-x-auto border rounded-xl shadow-sm">
+                        <table class="min-w-full text-lg">
+                            <thead class="table-header-gray">
+                                <tr>
+                                    <th class="px-4 py-4 text-center font-bold">#</th>
+                                    <th class="px-4 py-4 text-left font-bold">Employee ID</th>
+                                    <th class="px-4 py-4 text-left font-bold">Full Name</th>
+                                    <th class="px-4 py-4 text-left font-bold">สาขา</th>
+                                    <th class="px-4 py-4 text-left font-bold">สังกัด</th>
+                                    <th class="px-4 py-4 text-left font-bold">Status</th>
+                                    <th class="px-4 py-4 font-bold text-center">แก้ไข</th>
+                                </tr>
+                            </thead>
+                            <tbody id="selectedTeamTableBody" class="divide-y divide-gray-100 bg-white"></tbody>
+                        </table>
+                    </div>
+                 </div>
+            </div>
+        </div>
+        
+        <!-- Group View Content -->
+        <div id="group-view-content" class="hidden pb-8 px-6">
+             <div class="bg-white overflow-hidden">
+                <!-- Search Boxes Container -->
+                <div class="flex flex-col md:flex-row gap-6 mb-6">
+                    <!-- Box 1: ค้นหาพนักงานเพื่อแก้ไขข้อมูล (50% Width) -->
+                    <div class="md:w-1/2 p-6 border-b bg-gray-50 rounded-xl shadow-inner">
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">ค้นหาพนักงานเพื่อแก้ไขข้อมูล</h3>
+                        <div class="flex items-end space-x-2">
+                            <div class="flex-grow">
+                                <label for="searchEmployeeIdInput" class="block text-sm font-bold text-gray-500 mb-1">รหัสพนักงาน</label>
+                                <input type="text" id="searchEmployeeIdInput" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm !text-sm p-2" placeholder="ใส่รหัสพนักงาน 5-6 หลัก">
+                            </div>
+                            <button id="searchEmployeeButton" class="px-8 py-2 !text-sm font-bold text-white bg-blue-600 rounded-md hover:bg-blue-700 shadow transition-all active:scale-95">ค้นหา</button>
+                        </div>
+                        <p id="searchEmployeeError" class="text-red-600 text-sm mt-2 font-bold h-5"></p>
+                    </div>
+
+                    <!-- Box 2: ลงทะเบียนพนักงาน (50% Width) -->
+                    <div class="md:w-1/2 p-6 border-b bg-green-50 rounded-xl shadow-inner">
+                        <h3 class="text-xl font-bold text-green-800 mb-3 uppercase">ลงทะเบียนพนักงาน</h3>
+                        <div class="flex items-end space-x-2">
+                            <div class="flex-grow">
+                                <label for="searchRegEmployeeIdInput" class="block text-sm font-bold text-green-600 mb-1">รหัสพนักงาน</label>
+                                <input type="text" id="searchRegEmployeeIdInput" class="mt-1 block w-full rounded-md border-green-300 shadow-sm !text-sm p-2" placeholder="ใส่รหัสพนักงานเพื่อลงทะเบียน">
+                            </div>
+                            <button id="searchRegEmployeeButton" class="px-8 py-2 !text-sm font-bold text-white bg-green-600 rounded-md hover:bg-green-700 shadow transition-all active:scale-95 uppercase">ค้นหาเพื่อลงทะเบียน</button>
+                        </div>
+                        <p id="searchRegEmployeeError" class="text-red-600 text-sm mt-2 font-bold h-5"></p>
+                    </div>
+                </div>
+
+                <div class="px-6 py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold uppercase">ภาพรวมรายที่นั่ง (Grid)</h2>
+                        <div id="gvOverallStatsContainer" class="hidden flex flex-wrap gap-2 mt-2">
+                             <span class="px-3 py-1 rounded-md bg-gray-100 text-sm font-bold border">ทั้งหมด (Invite): <span id="gvOverallStatsTotal">0</span></span>
+                             <span class="px-3 py-1 rounded-md bg-green-50 text-green-700 text-sm font-bold border border-green-200">ลงทะเบียนแล้ว: <span id="gvOverallStatsRegistered">0</span></span>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                         <label for="groupViewManagerFilter" class="text-base font-bold text-gray-600 mr-2">Manager:</label>
+                         <select id="groupViewManagerFilter" class="rounded-md border-gray-300 text-sm py-2 px-6 bg-[#f97316] text-white font-bold w-56 focus:ring-0">
+                             <option value="">-- ดูทั้งหมด --</option>
+                         </select>
+                    </div>
+                </div>
+                <div id="teamBoxesContainer" class="p-6 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3"></div>
+             </div>
+        </div>
+        
+        <!-- Employee List Content -->
+        <div id="employee-list-content" class="hidden pb-8 px-0">
+             <div class="bg-white overflow-hidden">
+                <div class="px-8 py-6 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50">
+                    <div>
+                        <h2 class="text-xl font-bold uppercase">ข้อมูลสมาชิกทั้งหมด</h2>
+                        <div id="empStatsContainer" class="hidden flex flex-wrap gap-2 mt-3">
+                            <span class="px-4 py-1.5 rounded-xl bg-gray-100 text-gray-700 text-sm font-black border shadow-sm">ทั้งหมด: <span id="empStatsTotal">0</span></span>
+                            <span class="px-4 py-1.5 rounded-xl bg-green-50 text-green-700 text-sm font-black border border-green-200 shadow-sm">ลงทะเบียน: <span id="empStatsRegistered">0</span></span>
+                            <span class="px-4 py-1.5 rounded-xl bg-red-50 text-red-700 text-sm font-black border border-red-200 shadow-sm">ยังไม่ลง: <span id="empStatsUnregistered">0</span></span>
+                            <span class="px-4 py-1.5 rounded-xl bg-blue-50 text-blue-700 text-sm font-black border border-blue-200 shadow-sm">คิดเป็น: <span id="empStatsPercent">0%</span></span>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                         <label for="managerFilterSelect" class="text-base font-bold text-gray-600 mr-2">ตัวกรอง:</label>
+                         <select id="managerFilterSelect" class="rounded-xl border-gray-300 text-sm py-2 px-6 bg-[#f97316] text-white font-bold w-56 focus:ring-0">
+                             <option value="">-- ทั้งหมด --</option>
+                         </select>
+                     </div>
+                </div>
+                <div class="overflow-x-auto p-8">
+                    <table class="min-w-full text-sm shadow-sm border rounded-2xl overflow-hidden">
+                        <thead class="table-header-gray">
+                            <tr>
+                                <th class="px-4 py-4 text-center font-bold">#</th>
+                                <th class="px-4 py-4 text-center font-bold sortable-header" id="sort-emp-id">รหัสพนักงาน ↕️</th>
+                                <th class="px-4 py-4 text-center font-bold sortable-header" id="sort-emp-name">ชื่อ-นามสกุล ↕️</th>
+                                <th class="px-4 py-4 text-center font-bold">สาขา</th>
+                                <th class="px-4 py-4 text-center font-bold">สังกัด</th>
+                                <th class="px-4 py-4 text-center font-bold">ที่นั่ง</th>
+                                <th class="px-4 py-4 text-center font-bold sortable-header" id="sort-emp-status">สถานะ ↕️</th>
+                                <th class="px-4 py-4 text-center font-bold">แก้ไข</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeeListTableBody" class="divide-y divide-gray-100 bg-white"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gift Management Content -->
+        <div id="gift-management-content" class="hidden pb-8 px-6">
+            <div class="bg-white rounded-xl border border-gray-200 p-8 shadow-sm">
+                <h2 class="text-xl font-bold text-gray-800 mb-6 uppercase border-l-4 border-blue-600 pl-3">จัดการรายการของรางวัล</h2>
+                <div class="bg-gray-50 p-6 rounded-2xl border mb-8 max-w-[1000px] shadow-inner">
+                    <div class="flex flex-wrap gap-4 items-end">
+                        <div class="flex-grow" style="max-width: 600px;">
+                            <label class="block text-sm font-bold text-gray-500 mb-1">รายชื่อของรางวัล</label>
+                            <input type="text" id="giftNameInput" class="!text-sm" placeholder="เช่น iPhone 15">
+                        </div>
+                        <div style="width: 90px;">
+                            <label class="block text-sm font-bold text-gray-500 mb-1">จำนวน</label>
+                            <input type="number" id="giftQtyInput" class="!text-sm text-center" value="1" min="1">
+                        </div>
+                        <div class="flex items-end">
+                            <button id="addGiftBtn" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition-all active:scale-95 shadow-lg !text-xs">เพิ่มของรางวัล</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="overflow-x-auto border rounded-xl shadow-sm">
+                    <table class="min-w-full text-base">
+                        <thead class="table-header-gray">
+                            <tr>
+                                <th class="px-4 py-4 text-center font-bold w-24">ลำดับ</th>
+                                <th class="px-4 py-4 text-left font-bold">ชื่อของรางวัล</th>
+                                <th class="px-4 py-4 text-center font-bold">จำนวนทั้งหมด</th>
+                                <th class="px-4 py-4 text-center font-bold">คงเหลือ</th>
+                                <th class="px-4 py-4 text-center font-bold">สถานะการสุ่ม</th>
+                                <th class="px-4 py-4 text-center font-bold">จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="giftListTableBody" class="divide-y divide-gray-100 bg-white">
+                            <tr><td colspan="6" class="p-6 text-center text-gray-400 font-bold">ยังไม่มีข้อมูลของรางวัล</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Winners List Content -->
+        <div id="winners-list-content" class="hidden pb-8 px-6">
+            <div class="bg-white rounded-xl border border-gray-200 p-8 shadow-sm">
+                <h2 class="text-xl font-bold text-gray-800 mb-6 uppercase border-l-4 border-green-600 pl-3">รายชื่อผู้ได้รับรางวัลแยกตามหมวดหมู่</h2>
+                <div id="winnersByGiftContainer" class="space-y-12">
+                    <div class="p-10 text-center text-gray-400 font-bold italic">กำลังโหลดข้อมูล...</div>
+                </div>
+                <div class="mt-12 text-center">
+                    <button id="downloadWinnersCsvButton" class="px-8 py-3 text-base font-bold text-white bg-green-600 rounded-md hover:bg-green-700 shadow transition-all active:scale-95">
+                        📥 Download Winners CSV Report
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Content -->
+        <div id="register-content" class="hidden pb-8 px-6 text-center">
+             <div class="bg-white p-12 rounded-[3rem] shadow-xl border border-gray-100 flex flex-col items-center">
+                <h2 class="text-xl font-bold text-gray-800 mb-10 font-black">QR Code</h2>
+                <div class="p-6 bg-white border-8 border-blue-600 rounded-[3rem] shadow-2xl mb-4 hover:scale-105 transition-all">
+                    <img src="./images/QRcode-CRSG.png" alt="QR Code" class="w-80 h-80" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=REGISTER'">
+                </div>
+             </div>
+        </div>
+
+        <!-- Group Random Content -->
+        <div id="group-random-content" class="hidden pb-8 px-6">
+            <div class="bg-white rounded-xl border border-gray-200 p-8 shadow-sm">
+                
+                <div class="flex flex-col md:flex-row gap-4 mb-6 items-stretch">
+                    <div class="md:w-[30%] grid grid-cols-1 gap-2">
+                        <div class="bg-blue-50 p-3 rounded-xl border border-blue-100 shadow-sm text-center">
+                            <p class="text-sm text-blue-700 uppercase font-black">ผู้มีสิทธิ์ลุ้นรางวัลทั้งหมด (Invite)</p>
+                            <p id="grTotalEligible" class="text-xl font-black text-blue-900">0</p>
+                        </div>
+                        <div class="bg-orange-50 p-3 rounded-xl border border-orange-100 shadow-sm text-center">
+                            <p class="text-sm text-orange-700 uppercase font-black">คนที่ยังไม่ถูกสุ่ม</p>
+                            <p id="grRemainingEligible" class="text-xl font-black text-orange-900">0</p>
+                        </div>
+                        <div class="bg-green-50 p-3 rounded-xl border border-green-100 shadow-sm text-center">
+                            <p class="text-sm text-green-700 uppercase font-black">ผู้ได้รับรางวัลแล้ว</p>
+                            <p id="grTotalWinners" class="text-xl font-black text-green-900">0</p>
+                        </div>
+                    </div>
+
+                    <div class="md:w-[70%] flex flex-col gap-3">
+                        <div class="bg-gray-50 px-4 py-3 rounded-xl border shadow-sm w-full">
+                            <label class="block text-sm font-bold text-gray-400 mb-1 uppercase tracking-wider text-center">เลือกของรางวัลสำหรับการสุ่มกลุ่ม</label>
+                            <div id="grGiftBox" class="flex items-center justify-between bg-white border-2 border-dashed border-gray-200 rounded-xl p-3 transition-all">
+                                <div class="flex flex-col text-left">
+                                    <p id="grGiftDisplayName" class="text-base font-black text-gray-400 leading-tight uppercase">-- ยังไม่ได้เลือกของรางวัล --</p>
+                                    <p id="grGiftDisplayQty" class="text-sm font-bold text-gray-300 mt-1">คงเหลือ: - ชิ้น</p>
+                                </div>
+                                <button id="openGroupGiftPickerBtn" class="px-4 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-black border border-blue-200 shadow-sm shrink-0 active:scale-95 transition-all">เปลี่ยน</button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-stretch gap-3 w-full flex-grow min-h-[90px]">
+                            <div class="w-[30%] bg-gray-50 p-3 rounded-xl border shadow-sm flex flex-col justify-center items-center text-center">
+                                <label class="text-sm font-bold text-gray-500 uppercase mb-1">จำนวนผู้โชคดี</label>
+                                <input type="number" id="grDrawCount" value="0" min="0" class="w-full text-center text-3xl font-black text-blue-600 bg-white border border-blue-100 rounded-lg focus:border-blue-500 focus:ring-0 py-1 shadow-inner">
+                            </div>
+                            <div class="w-[70%]">
+                                <button id="grStartDrawBtn" class="w-full h-full text-xl font-black text-white bg-[#0056ff] rounded-xl hover:bg-blue-700 shadow-lg transition-all active:scale-95 disabled:bg-gray-400 uppercase tracking-widest flex items-center justify-center">
+                                    🚀 เริ่มสุ่มแบบกลุ่ม
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-0 border-t border-gray-100 pt-4">
+                    <div class="p-4 border-r border-gray-100">
+                        <h4 class="text-xl font-black text-blue-600 uppercase mb-3 text-center">รายชื่อชุดที่ 1</h4>
+                        <div id="grBoxLeft" class="min-h-[250px] flex flex-col space-y-1.5"></div>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-black text-indigo-600 uppercase mb-3 text-center">รายชื่อชุดที่ 2</h4>
+                        <div id="grBoxRight" class="min-h-[250px] flex flex-col space-y-1.5"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+
+    <!-- LIGHTBOX: Manual Registration -->
+    <div id="manualRegisterModal" class="hidden fixed inset-0 z-[140] bg-gray-900 bg-opacity-80 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-lg border-t-8 border-green-600">
+            <h3 class="text-xl font-bold mb-6 uppercase border-b pb-3 text-gray-800 text-center">รายละเอียดพนักงานเพื่อลงทะเบียน</h3>
+            <div id="regEmpDetail" class="space-y-4 mb-6">
+                <div class="flex justify-between items-center"><label class="text-sm font-bold text-gray-400 uppercase">Emp ID</label><p id="regEmpId" class="text-xl font-bold text-blue-700 font-mono"></p></div>
+                <div class="flex justify-between items-start flex-col"><label class="text-sm font-bold text-gray-400 uppercase mb-1">ชื่อ-นามสกุล</label><p id="regEmpName" class="font-black text-gray-900 text-lg"></p></div>
+                
+                <!-- เพิ่มฟิลด์ สาขา และ สังกัด เพิ่มเติม -->
+                <div class="flex justify-between items-center bg-gray-50 p-2 rounded-lg"><label class="text-xs font-bold text-gray-400 uppercase">สาขา (Branch)</label><p id="regEmpBranch" class="text-sm font-bold text-gray-700"></p></div>
+                <div class="flex justify-between items-center bg-gray-50 p-2 rounded-lg"><label class="text-xs font-bold text-gray-400 uppercase">สังกัด (Manager)</label><p id="regEmpManager" class="text-sm font-bold text-gray-700"></p></div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm font-bold text-gray-400 mb-1 block">โต๊ะที่นั่ง</label>
+                        <input type="text" id="regEmpSeat" class="bg-gray-50 font-bold border-2 focus:border-green-500 outline-none p-3 rounded-xl text-base" placeholder="เช่น A1, A2">
+                    </div>
+                    <div>
+                        <label class="text-sm font-bold text-gray-400 mb-1 block">สถานะ Invite</label>
+                        <select id="regEmpInviteStatus" class="bg-gray-50 font-bold border-2 focus:border-green-500 outline-none p-3 rounded-xl text-base">
+                            <option value="">-- ว่าง --</option>
+                            <option value="invite">invite</option>
+                        </select>
+                    </div>
+                </div>
+                <p id="regManualError" class="text-red-600 text-sm font-black italic h-4"></p>
+            </div>
+            <div class="flex justify-end gap-3 font-bold">
+                <button id="closeManualRegModalButton" class="px-6 py-2 bg-gray-100 rounded-xl text-sm uppercase transition-all hover:bg-gray-200">ยกเลิก</button>
+                <button id="saveManualRegButton" class="px-8 py-2 bg-green-600 text-white rounded-xl text-sm font-black shadow-lg transition-all hover:bg-green-700 uppercase">ลงทะเบียนและบันทึก</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LIGHTBOX: Group Detail -->
+    <div id="groupViewModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-80 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-[90%] max-h-[90vh] flex flex-col border-t-8 border-blue-600 text-center">
+            <div class="flex justify-between items-start mb-4 border-b pb-4">
+                 <div class="text-left">
+                     <h3 id="groupViewModalTitle" class="text-xl font-bold text-gray-800">รายชื่อสมาชิกทีม</h3>
+                     <div id="groupViewStatsContainer" class="flex flex-wrap gap-2 mt-2">
+                         <span class="px-3 py-1 rounded-full bg-gray-100 text-sm font-bold border uppercase">Total: <span id="groupViewStatsTotal">0</span></span>
+                         <span class="px-3 py-1 rounded-full bg-green-50 text-green-700 text-sm font-bold border border-green-200 uppercase">Reg: <span id="groupViewStatsRegistered">0</span></span>
+                     </div>
+                 </div>
+                 <button id="closeGroupViewModalButton" class="text-gray-400 hover:text-gray-600 text-4xl font-light transition-all">&times;</button>
+            </div>
+            <div class="flex-grow overflow-y-auto border rounded-lg shadow-inner bg-gray-50">
+                 <table class="min-w-full text-sm">
+                    <thead class="table-header-gray sticky top-0 z-10">
+                        <tr>
+                            <th class="px-4 py-4 text-center font-bold text-sm">ลำดับ</th>
+                            <th class="px-4 py-4 text-left font-bold text-sm">ID</th>
+                            <th class="px-4 py-4 text-left font-bold text-sm">ชื่อ-นามสกุล</th>
+                            <th class="px-4 py-4 text-left font-bold text-sm">สาขา</th>
+                            <th class="px-4 py-4 text-left font-bold text-sm">สังกัด</th>
+                            <th class="px-4 py-4 text-left font-bold text-sm">สถานะ</th>
+                            <th class="px-4 py-4 text-center font-bold text-sm">แก้ไข</th>
+                        </tr>
+                    </thead>
+                    <tbody id="groupViewTableBody" class="divide-y divide-gray-100 bg-white"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MODAL: Lucky Draw Individual -->
+    <div id="randomizeModal" class="hidden fixed inset-0 z-40 bg-gray-600 bg-opacity-75 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-[75%] h-[80vh] flex flex-col mx-4 border-t-8 border-blue-600 relative">
+            <button id="closeRandomizeModalButtonX" class="absolute top-2 right-4 text-gray-400 hover:text-gray-600 text-5xl font-light transition-all z-10">&times;</button>
+            <h3 class="text-xl font-bold text-center text-gray-900 mb-6 uppercase">ระบบสุ่มรายบุคคล</h3>
+            <div class="max-w-lg mx-auto mb-8 w-full">
+                <label class="block text-sm font-bold text-gray-400 mb-2 text-center">ของรางวัลที่เลือกสุ่ม</label>
+                <div id="indGiftBox" class="flex items-center justify-between bg-blue-50 border-2 border-dashed border-blue-200 rounded-2xl p-3 transition-colors">
+                    <div class="flex flex-col text-left">
+                        <p id="indGiftDisplayName" class="text-lg font-black text-blue-400 leading-tight">-- ยังไม่ได้เลือกของรางวัล --</p>
+                        <p id="indGiftDisplayQty" class="text-sm text-black-400 mt-2">คงเหลือ: - ชิ้น</p>
+                    </div>
+                    <button id="openGiftPickerBtn" class="px-4 py-1.5 rounded-xl bg-red-50 text-red-700 text-sm font-black border border-red-200 shadow-sm">เปลี่ยน</button>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-blue-50 p-4 rounded-xl text-center border font-bold"><p class="text-base text-blue-700 uppercase">สมาชิกที่มางานและได้รับสิทธิ์</p><p id="modalParticipantsCount" class="text-2xl font-bold">0</p></div>
+                <div class="bg-green-50 p-4 rounded-xl text-center border font-bold"><p class="text-base text-green-700 uppercase">ผู้ที่ได้รับการสุ่มแล้ว</p><p id="modalDrawnCount" class="text-2xl font-bold">0</p></div>
+            </div>
+            <div class="flex justify-center space-x-2 mb-6 shrink-0">
+                <div id="digit1" class="w-16 h-20 bg-black text-white text-4xl font-mono font-bold rounded-lg flex items-center justify-center shadow-lg">0</div>
+                <div id="digit2" class="w-16 h-20 bg-black text-white text-4xl font-mono font-bold rounded-lg flex items-center justify-center shadow-lg">0</div>
+                <div id="digit3" class="w-16 h-20 bg-black text-white text-4xl font-mono font-bold rounded-lg flex items-center justify-center shadow-lg">0</div>
+                <div id="digit4" class="w-16 h-20 bg-black text-white text-4xl font-mono font-bold rounded-lg flex items-center justify-center shadow-lg">0</div>
+                <div id="digit5" class="w-16 h-20 bg-black text-white text-4xl font-mono font-bold rounded-lg flex items-center justify-center shadow-lg">0</div>
+            </div>
+            <div class="mb-6 flex flex-col items-center shrink-0">
+                <button id="startRandomizeButton" class="w-[40%] px-6 py-4 text-base text-white bg-blue-600 rounded-lg font-bold hover:bg-blue-700 shadow-xl active:scale-95 disabled:bg-gray-400 uppercase" disabled>เริ่มการสุ่มรายคน</button>
+                <p id="randomizeError" class="text-red-600 text-base mt-3 font-bold uppercase"></p>
+            </div>
+            <div class="flex-grow overflow-y-auto border rounded-xl bg-gray-50 font-bold">
+                <table class="min-w-full text-base">
+                    <thead class="bg-gray-200 sticky top-0 uppercase text-gray-700">
+                        <tr><th class="px-4 py-4 text-left">รหัสพนักงาน</th><th class="px-4 py-4 text-left">ชื่อผู้โชคดี</th><th class="px-4 py-4 text-left">สาขา/สังกัด</th><th class="px-4 py-4 text-center">Action</th></tr>
+                    </thead>
+                    <tbody id="drawnWinnersTableBody" class="bg-white divide-y"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Gift Picker -->
+    <div id="giftPickerModal" class="hidden fixed inset-0 z-[100] bg-gray-900 bg-opacity-80 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 w-[70%] modal-enter flex flex-col border-t-8 border-orange-500">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 id="giftPickerTitle" class="text-xl font-black text-gray-800 uppercase">เลือกของรางวัล</h3>
+                <button id="closeGiftPickerBtn" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <div class="overflow-y-auto max-h-[60vh] space-y-2" id="giftPickerList"></div>
+        </div>
+    </div>
+
+    <!-- POPUP WINNER Detail -->
+    <div id="winnerDetailModal" class="hidden fixed inset-0 z-[200] bg-gray-900 bg-opacity-95 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-12 max-w-xl w-full text-center border-t-8 border-blue-600 transform scale-110">
+            <h3 class="text-xl font-black text-blue-600 mb-4 uppercase">🎊 WINNER 🎊</h3>
+            <div class="text-6xl mb-6">🏆</div>
+            <p id="winnerName" class="text-2xl font-black text-gray-900 my-4 leading-tight uppercase"></p>
+            <p id="winnerGiftText" class="text-xl font-bold text-orange-600 mb-6"></p>
+            <div class="bg-blue-50 p-6 rounded-[2rem] mb-10 border border-blue-100 shadow-inner text-center">
+                <p id="winnerEmployeeId" class="text-xl font-black text-blue-800 font-mono"></p>
+                <p id="winnerBU" class="text-lg font-bold text-gray-600 mt-2 uppercase"></p>
+                <p id="winnerTeam" class="text-base font-medium text-gray-400 mt-2 uppercase"></p>
+            </div>
+            <div class="flex flex-col gap-4">
+                <button id="cancelWinnerButton" class="text-base font-bold text-red-400 hover:text-red-600 hover:underline transition-all uppercase">ยกเลิกรางวัล (Cancel)</button>
+                <button id="closeWinnerModalButton" class="px-12 py-3 text-base font-black bg-blue-600 text-white rounded-[1.5rem] hover:bg-blue-700 shadow-2xl active:scale-95 transition-all">ยินดีด้วย!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Edit Profile -->
+    <div id="editEmployeeModal" class="hidden fixed inset-0 z-[120] bg-gray-900 bg-opacity-80 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-md border-b-8 border-orange-500">
+            <h3 class="text-xl font-bold mb-8 uppercase border-b pb-3 text-gray-800 font-bold text-center">แก้ไขข้อมูลพนักงาน</h3>
+            <div class="space-y-6">
+                <div class="flex justify-between items-center"><label class="text-sm font-bold text-gray-400 uppercase">Emp ID</label><p id="editEmpId" class="text-xl font-bold text-blue-700 font-mono"></p></div>
+                <div class="flex justify-between items-start flex-col"><label class="text-sm font-bold text-gray-400 uppercase mb-1">ชื่อ-นามสกุล</label><p id="editEmpName" class="font-black text-gray-900 text-lg"></p></div>
+                <div><label class="text-sm font-bold text-gray-400 uppercase mb-1 block font-bold">Manager / สังกัด</label><input type="text" id="editEmpManager" class="bg-gray-50 font-bold border-2 focus:border-blue-500 outline-none p-3 rounded-xl text-base"></div>
+                <div><label class="text-sm font-bold text-gray-400 uppercase mb-1 block font-bold">Team / ผังที่นั่ง</label><input type="text" id="editEmpTeam" class="bg-gray-50 font-bold border-2 focus:border-blue-500 outline-none p-3 rounded-xl text-base"></div>
+                <p id="editError" class="text-red-600 text-sm font-black italic mt-2"></p>
+            </div>
+            <div class="mt-10 flex justify-end gap-3 font-bold">
+                <button id="closeEditModalButton" class="px-6 py-2 bg-gray-100 rounded-xl text-sm uppercase transition-all hover:bg-gray-200">ยกเลิก</button>
+                <button id="saveEditModalButton" class="px-8 py-2 bg-blue-600 text-white rounded-xl text-sm font-black shadow-lg transition-all hover:bg-blue-700 uppercase">บันทึก</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Edit Gift -->
+    <div id="editGiftModal" class="hidden fixed inset-0 z-[150] bg-gray-900 bg-opacity-80 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-md border-b-8 border-orange-500">
+            <h3 class="text-xl font-bold mb-8 uppercase border-b pb-3 text-gray-800 font-bold text-center">แก้ไขข้อมูลของรางวัล</h3>
+            <div class="space-y-6">
+                <div><label class="text-sm font-bold text-gray-400 uppercase mb-1 block font-bold">ชื่อของรางวัล</label><input type="text" id="editGiftName" class="!text-sm" placeholder="เช่น ทีวี 50 นิ้ว"></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm font-bold text-gray-400 uppercase mb-1 block font-bold">จำนวนทั้งหมด</label>
+                        <input type="number" id="editGiftTotalQty" class="!text-sm text-center w-full bg-gray-50 font-bold border-2 focus:border-blue-500 outline-none p-3 rounded-xl" min="1">
+                    </div>
+                    <div>
+                        <label class="text-sm font-bold text-gray-400 uppercase mb-1 block font-bold">จำนวนคงเหลือ</label>
+                        <input type="number" id="editGiftRemainingQty" class="!text-sm text-center w-full bg-gray-50 font-bold border-2 focus:border-blue-500 outline-none p-3 rounded-xl" min="0">
+                    </div>
+                </div>
+            </div>
+            <div class="mt-10 flex justify-end gap-3 font-bold">
+                <button id="closeEditGiftModalBtn" class="px-6 py-2 bg-gray-100 rounded-xl text-sm uppercase transition-all hover:bg-gray-200">ยกเลิก</button>
+                <button id="saveEditGiftBtn" class="px-8 py-2 bg-blue-600 text-white rounded-xl text-sm font-black shadow-lg transition-all hover:bg-blue-700 uppercase">บันทึก</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Confirmation Center -->
+    <div id="confirmModal" class="hidden fixed inset-0 z-[300] bg-gray-900 bg-opacity-80 flex items-center justify-center p-4">
+        <div id="confirmModalInner" class="bg-white rounded-2xl p-10 max-w-lg w-full shadow-2xl text-center transition-all duration-300">
+            <h3 id="confirmTitle" class="text-xl font-black mb-4 uppercase text-red-600">ยืนยัน?</h3>
+            <p id="confirmText" class="text-gray-600 font-bold mb-6 leading-relaxed italic text-base"></p>
+            
+            <div id="confirmInputContainer" class="hidden mb-10">
+                <p class="text-sm text-gray-500 mb-2">พิมพ์คำว่า <span class="font-bold text-red-600 uppercase">Reset</span> เพื่อยืนยันการล้างข้อมูล</p>
+                <input type="text" id="confirmInput" class="text-center border-2 border-red-200 rounded-lg p-2 w-full focus:border-red-500 outline-none text-sm font-bold uppercase" placeholder="พิมพ์ที่นี่...">
+            </div>
+
+            <div class="flex justify-center gap-4">
+                <button id="closeConfirmButton" class="px-6 py-2 bg-gray-100 rounded-xl text-sm font-bold hover:bg-gray-200 uppercase">ไม่</button>
+                <button id="confirmActionButton" class="px-8 py-2 bg-red-600 text-white rounded-xl text-sm font-black shadow-lg hover:bg-red-700 uppercase">ใช่</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Section -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, collection, onSnapshot, 
+            doc, updateDoc, setDoc, addDoc, deleteDoc, serverTimestamp, writeBatch 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgWMzWcZPzyzoBu5eQzj2y59nKsxTWurQ",
+            authDomain: "ttb-register.firebaseapp.com",
+            projectId: "ttb-register",
+            storageBucket: "ttb-register.firebasestorage.app",
+            messagingSenderId: "1070273157855",
+            appId: "1:1070273157855:web:5c8120e1df27e233d8676a"
+        };
+
+        let db, auth;
+        let allEmployeesData = [];
+        let allGiftsData = [];
+        let selectedIndGiftId = null; 
+        let selectedGroupGiftId = null; 
+        let giftPickerContext = 'ind'; 
+        let teamNames = ["A1","A2","A3","A4","A5","A6","A7","A8","A9","A10","A11","A12","A13","A14","A15","A16","A17","A18","A19","A20","A21","A22","A23","A24","B1","B2","B3","B4","B5","B6","B7","B8","B9","B10","B11","B12","B13","B14","B15","B16","B17","B18","B19","B20","B21","B22","B23","B24"];
+        let charts = {};
+        let currentConfirmAction = null;
+        let currentEditingDocId = null;
+        let currentEditingGiftId = null;
+        let drawInterval = null;
+
+        // Sorting state for Employee List
+        let empSortField = 'status'; // default to status
+        let empSortDir = 'desc'; // default desc for status (registered first)
+
+        // Init App
+        (async () => {
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                await signInAnonymously(auth);
+                
+                initCharts();
+                setupTabs();
+                setupListeners();
+                startListening();
+                startListeningGifts();
+                
+                // Initialize Team Names display
+                document.getElementById('definedTeamNamesInput').value = teamNames.join(',');
+                
+                setInterval(() => {
+                    const now = new Date();
+                    document.getElementById('currentDateTime').textContent = now.toLocaleString('th-TH', { 
+                        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' 
+                    });
+                }, 1000);
+            } catch (e) { console.error(e); }
+        })();
+
+        // Navigation
+        function setupTabs() {
+            const tabs = {
+                'tab-dashboard': 'dashboard-content',
+                'tab-team-list': 'team-list-content',
+                'tab-group-view': 'group-view-content',
+                'tab-employee-list': 'employee-list-content',
+                'tab-gift-management': 'gift-management-content',
+                'tab-register': 'register-content',
+                'tab-group-random': 'group-random-content',
+                'tab-winners-list': 'winners-list-content'
+            };
+            Object.keys(tabs).forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.addEventListener('click', function() {
+                    Object.keys(tabs).forEach(k => {
+                        const b = document.getElementById(k);
+                        const c = document.getElementById(tabs[k]);
+                        if (b) b.classList.replace('bg-gray-300', 'bg-gray-100');
+                        if (c) c.classList.add('hidden');
+                    });
+                    this.classList.replace('bg-gray-100', 'bg-gray-300');
+                    document.getElementById(tabs[id])?.classList.remove('hidden');
+                    window.dispatchEvent(new Event('resize'));
+                });
+            });
+        }
+
+        function initCharts() {
+            const opts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { color: '#fff', font: { weight: 'bold', size: 12 }, formatter: v => v > 0 ? v : '' } } };
+            charts.breakdown = new Chart(document.getElementById('registrationBreakdownChart'), { type: 'doughnut', data: { labels: ['Invite', 'Non-Invite'], datasets: [{ data: [0, 0], backgroundColor: ['#3B82F6', '#F59E0B'] }] }, options: { ...opts, cutout: '75%' }, plugins: [ChartDataLabels] });
+            charts.goal = new Chart(document.getElementById('registrationDonutChart'), { type: 'doughnut', data: { labels: ['Registered', 'Remaining'], datasets: [{ data: [0, 0], backgroundColor: ['#10B981', '#E5E7EB'] }] }, options: { ...opts, cutout: '75%' }, plugins: [ChartDataLabels] });
+            const barOpts = { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } }, plugins: { legend: { display: true, position: 'bottom', labels: { font: { size: 12 } } }, datalabels: { color: '#fff' } } };
+            charts.bar1 = new Chart(document.getElementById('teamBarChart1'), { type: 'bar', data: { labels: [], datasets: [{ label: 'ลงแล้ว', data: [], backgroundColor: '#3B82F6' }, { label: 'ยังไม่ลง', data: [], backgroundColor: '#BFDBFE' }] }, options: barOpts, plugins: [ChartDataLabels] });
+            charts.bar2 = new Chart(document.getElementById('teamBarChart2'), { type: 'bar', data: { labels: [], datasets: [{ label: 'ลงแล้ว', data: [], backgroundColor: '#3B82F6' }, { label: 'ยังไม่ลง', data: [], backgroundColor: '#BFDBFE' }] }, options: barOpts, plugins: [ChartDataLabels] });
+        }
+
+        function startListening() {
+            onSnapshot(collection(db, "crsg"), snap => {
+                allEmployeesData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                refreshUI();
+            }, err => console.error(err));
+        }
+
+        function startListeningGifts() {
+            onSnapshot(collection(db, "crsg_gift"), snap => {
+                const gifts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                allGiftsData = gifts.sort((a, b) => (a.order || 0) - (b.order || 0));
+                renderGiftTable();
+                refreshIndGiftState(); 
+                refreshGroupGiftState(); 
+                updateWinnersList();
+            }, err => console.error(err));
+        }
+
+        function refreshUI() {
+            const reg = allEmployeesData.filter(e => e.DateLogin);
+            // ปรับเงื่อนไขการนับเป้าหมายและผู้ลงทะเบียนตามฟิลด์ invite === 'invite'
+            const regMembers = allEmployeesData.filter(e => e.DateLogin && e.invite === 'invite');
+            const regExtras = allEmployeesData.filter(e => e.DateLogin && e.invite !== 'invite');
+            const partTarget = allEmployeesData.filter(e => e.invite === 'invite');
+            
+            document.getElementById('managerEmployeeCount').textContent = allEmployeesData.filter(e => e.Check_Manager).length;
+            document.getElementById('teamMemberCountElem').textContent = allEmployeesData.filter(e => e.Check_Place).length;
+            
+            const empTotal = allEmployeesData.length;
+            const empReg = reg.length;
+            const empUnreg = empTotal - empReg;
+            const empPerc = empTotal > 0 ? Math.round((empReg / empTotal) * 100) : 0;
+            
+            if(document.getElementById('empStatsContainer')) {
+                document.getElementById('empStatsTotal').textContent = empTotal;
+                document.getElementById('empStatsRegistered').textContent = empReg;
+                document.getElementById('empStatsUnregistered').textContent = empUnreg;
+                document.getElementById('empStatsPercent').textContent = empPerc + "%";
+                document.getElementById('empStatsContainer').classList.remove('hidden');
+            }
+            
+            document.getElementById('targetCount').textContent = partTarget.length;
+            document.getElementById('participantsCountBox').textContent = regMembers.length;
+            document.getElementById('attendeesCount').textContent = regExtras.length;
+            document.getElementById('remainingCount').textContent = Math.max(0, partTarget.length - regMembers.length);
+            
+            document.getElementById('breakdownCenterTotal').textContent = reg.length;
+            document.getElementById('donutPercentage').textContent = partTarget.length ? Math.round((regMembers.length/partTarget.length)*100)+"%" : "0%";
+            
+            if(charts.breakdown) { 
+                charts.breakdown.data.datasets[0].data = [regMembers.length, regExtras.length]; 
+                charts.breakdown.update(); 
+            }
+            if(charts.goal) { 
+                charts.goal.data.datasets[0].data = [regMembers.length, Math.max(0, partTarget.length - regMembers.length)]; 
+                charts.goal.update(); 
+            }
+            
+            const teamStats = {}; 
+            teamNames.forEach(t => teamStats[t] = { r: 0, t: 0 });
+            allEmployeesData.forEach(e => { 
+                if(e.Check_Place && teamStats[e.Check_Place]) { 
+                    teamStats[e.Check_Place].t++; 
+                    if(e.DateLogin) teamStats[e.Check_Place].r++; 
+                } 
+            });
+            
+            const mid = Math.ceil(teamNames.length / 2);
+            if(charts.bar1) { 
+                charts.bar1.data.labels = teamNames.slice(0, mid); 
+                charts.bar1.data.datasets[0].data = teamNames.slice(0, mid).map(k => teamStats[k].r); 
+                charts.bar1.data.datasets[1].data = teamNames.slice(0, mid).map(k => teamStats[k].t - teamStats[k].r); 
+                charts.bar1.update(); 
+            }
+            if(charts.bar2) { 
+                charts.bar2.data.labels = teamNames.slice(mid); 
+                charts.bar2.data.datasets[0].data = teamNames.slice(mid).map(k => teamStats[k].r); 
+                charts.bar2.data.datasets[1].data = teamNames.slice(mid).map(k => teamStats[k].t - teamStats[k].r); 
+                charts.bar2.update(); 
+            }
+
+            const sorted = [...reg].sort((a,b) => (b.DateLogin?.toMillis() || 0) - (a.DateLogin?.toMillis() || 0)).slice(0, 30);
+            document.getElementById('latestRegistrationsTableBody').innerHTML = sorted.map(e => `<tr><td class="px-4 py-0 text-center">${e.employeeId}</td><td class="px-4 py-0 uppercase font-bold text-xm text-left">${e.FullName_th}</td><td class="px-4 py-0 text-gray-600 text-xm text-left">${e.Branch_eng||'-'}</td><td class="px-4 py-0 text-gray-600 text-xm text-left">${e.Check_Manager||'-'}</td><td class="px-4 py-0 text-center"><span class="px-3 py-0 bg-green-100 text-green-700 rounded-full text-xs font-black uppercase">ลงทะเบียน</span></td><td class="px-4 py-0 text-center"><span onclick="cancelReg('${e.id}', '${e.FullName_th}')" class="text-red-600 hover:text-red-700 cursor-pointer font-black text-xs">ลบ</span></td></tr>`).join('');
+            
+            updateTeamTab(); updateGridTab(); updateEmployeeList(); updateGroupRandomUI(); updateLuckyDrawStats(); updateWinnersList();
+        }
+
+        // --- WINNERS LIST ---
+        function updateWinnersList() {
+            const container = document.getElementById('winnersByGiftContainer');
+            if (!container) return;
+            const winners = allEmployeesData.filter(e => e.RandomTime);
+            if (winners.length === 0) { container.innerHTML = '<div class="p-10 text-center text-gray-400 font-bold italic">-- ยังไม่มีผู้ได้รับรางวัล --</div>'; return; }
+            container.innerHTML = allGiftsData.map(gift => {
+                const giftWinners = winners.filter(w => w.AwardedGiftId === gift.id || (w.AwardedGift === gift.name && !w.AwardedGiftId));
+                if (giftWinners.length === 0) return '';
+                giftWinners.sort((a, b) => (b.RandomTime?.toMillis() || 0) - (a.RandomTime?.toMillis() || 0));
+                return `
+                    <div class="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
+                        <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
+                            <h3 class="text-lg font-black text-indigo-700 uppercase">🎁 ของรางวัล: ${gift.name}</h3>
+                            <span class="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase">${giftWinners.length} ท่าน</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm">
+                                <thead class="table-header-gray">
+                                    <tr>
+                                        <th class="px-4 py-4 text-center font-bold text-gray-600">ลำดับ</th>
+                                        <th class="px-4 py-4 text-left font-bold text-gray-600">รหัสพนักงาน</th>
+                                        <th class="px-4 py-4 text-left font-bold text-gray-600">ชื่อ-นามสกุล</th>
+                                        <th class="px-4 py-4 text-left font-bold text-gray-600">สาขา</th>
+                                        <th class="px-4 py-4 text-left font-bold text-gray-600">สังกัด</th>
+                                        <th class="px-4 py-4 text-left font-bold text-gray-600">ที่นั่ง</th>
+                                        <th class="px-4 py-4 text-center font-bold text-gray-600">รับของรางวัล</th>
+                                        <th class="px-4 py-4 text-center font-bold text-gray-600">จัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    ${giftWinners.map((w, i) => {
+                                        const isReceived = w.ReceivedTime ? true : false;
+                                        const statusLabel = isReceived ? 'รับแล้ว' : 'ยังไม่รับ';
+                                        const statusClass = isReceived ? 'bg-green-500 text-white' : 'bg-red-500 text-white cursor-pointer hover:bg-red-600';
+                                        const statusAction = isReceived ? '' : `onclick="markAsReceived('${w.id}')"`;
+                                        return `
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-4 py-0 text-center font-bold text-gray-400 text-xs">${i+1}</td>
+                                                <td class="px-4 py-0 font-mono font-black text-blue-700 text-sm">${w.employeeId}</td>
+                                                <td class="px-4 py-0 font-black uppercase text-xm text-left">${w.FullName_th}</td>
+                                                <td class="px-4 py-0 text-gray-600 uppercase text-xm text-left">${w.Branch_eng || '-'}</td>
+                                                <td class="px-4 py-0 text-gray-600 uppercase text-xm text-left">${w.Check_Manager || '-'}</td>
+                                                <td class="px-4 py-0 text-blue-600 font-bold uppercase text-xm text-left">${w.Check_Place || '-'}</td>
+                                                <td class="px-4 py-0 text-center">
+                                                    <span ${statusAction} class="px-3 py-0.5 rounded text-[10px] font-black transition-all shadow-sm ${statusClass}">${statusLabel}</span>
+                                                </td>
+                                                <td class="px-4 py-0 text-center">
+                                                    <button onclick="removeLuckyWinner('${w.id}')" class="px-3 py-0 bg-red-100 text-red-600 rounded-lg text-xs font-black hover:bg-red-600 hover:text-white transition-all uppercase">ลบ</button>
+                                                </td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.markAsReceived = async (id) => {
+            try { await updateDoc(doc(db, "crsg", id), { ReceivedTime: serverTimestamp() }); } catch (err) { console.error(err); }
+        };
+
+        // --- GIFT MANAGEMENT ---
+        async function addGift() {
+            const name = document.getElementById('giftNameInput').value.trim();
+            const qty = parseInt(document.getElementById('giftQtyInput').value);
+            if (!name || isNaN(qty)) return;
+            const maxOrder = allGiftsData.reduce((max, g) => Math.max(max, g.order || 0), 0);
+            await addDoc(collection(db, "crsg_gift"), { name, totalQty: qty, remainingQty: qty, status: 'on', order: maxOrder + 1, createdAt: serverTimestamp() });
+            document.getElementById('giftNameInput').value = ""; document.getElementById('giftQtyInput').value = "1";
+        }
+
+        function renderGiftTable() {
+            const body = document.getElementById('giftListTableBody');
+            if (allGiftsData.length === 0) { body.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-gray-400 font-bold">ยังไม่มีข้อมูลของรางวัล</td></tr>'; return; }
+            body.innerHTML = allGiftsData.map((g, idx) => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 text-center"><input type="number" value="${g.order || (idx + 1)}" onchange="updateGiftOrder('${g.id}', this.value)" class="w-16 p-1 text-center border rounded font-bold text-blue-600" min="1"></td>
+                    <td class="px-4 py-2 text-sm font-normal">${g.name}</td>
+                    <td class="px-4 py-2 text-center">${g.totalQty}</td>
+                    <td class="px-4 py-2 text-center text-blue-600 font-bold">${g.remainingQty}</td>
+                    <td class="px-4 py-2 text-center"><button onclick="toggleGiftStatus('${g.id}', '${g.status}')" class="px-4 py-1 rounded-full text-xs font-black uppercase transition-all shadow-sm border ${g.status === 'on' ? 'bg-green-400 text-white border-green-600' : 'bg-gray-200 text-gray-600'}">${g.status === 'on' ? 'ON' : 'OFF'}</button></td>
+                    <td class="px-4 py-2 text-center"><span onclick="editGift('${g.id}')" class="text-orange-500 hover:text-orange-700 cursor-pointer font-bold text-xs uppercase mr-2">Edit</span>| <span onclick="deleteGift('${g.id}', '${g.name}')" class="text-red-500 hover:text-red-700 cursor-pointer font-bold text-xs uppercase">Delete</span></td>
+                </tr>
+            `).join('');
+        }
+
+        window.updateGiftOrder = async (id, val) => { const v = parseInt(val); if (!isNaN(v)) await updateDoc(doc(db, "crsg_gift", id), { order: v }); };
+        window.toggleGiftStatus = async (id, cur) => { await updateDoc(doc(db, "crsg_gift", id), { status: cur === 'on' ? 'off' : 'on' }); };
+        
+        window.editGift = (id) => { 
+            const g = allGiftsData.find(x => x.id === id); if(!g) return; currentEditingGiftId = id; 
+            document.getElementById('editGiftName').value = g.name; 
+            document.getElementById('editGiftTotalQty').value = g.totalQty; 
+            document.getElementById('editGiftRemainingQty').value = g.remainingQty; 
+            document.getElementById('editGiftModal').classList.remove('hidden'); 
+        };
+
+        window.deleteGift = (id, name) => { 
+            const modalInner = document.getElementById('confirmModalInner');
+            modalInner.className = "bg-white rounded-2xl p-10 max-w-lg w-full shadow-2xl text-center transition-all duration-300";
+            currentConfirmAction = async () => { await deleteDoc(doc(db, "crsg_gift", id)); document.getElementById('confirmModal').classList.add('hidden'); }; 
+            document.getElementById('confirmTitle').textContent = "ลบของรางวัล"; 
+            document.getElementById('confirmText').textContent = `ยืนยันการลบ [${name}] ?`; 
+            document.getElementById('confirmInputContainer').classList.add('hidden'); 
+            document.getElementById('confirmModal').classList.remove('hidden'); 
+        };
+
+        // --- GIFT PICKER LOGIC ---
+        function renderGiftPicker() {
+            const list = document.getElementById('giftPickerList');
+            const available = allGiftsData.filter(g => g.status === 'on' && g.remainingQty > 0);
+            document.getElementById('giftPickerTitle').textContent = (giftPickerContext === 'ind') ? "สุ่มรายคน: เลือกของรางวัล" : "สุ่มแบบกลุ่ม: เลือกของรางวัล";
+            if (!available.length) { list.innerHTML = '<p class="text-center py-10 text-gray-400 font-bold italic">-- ไม่มีของรางวัลคงเหลือ --</p>'; return; }
+            const currentId = (giftPickerContext === 'ind') ? selectedIndGiftId : selectedGroupGiftId;
+            list.innerHTML = available.map(g => {
+                const isSelected = g.id === currentId;
+                return `<div onclick="pickGift('${g.id}')" class="flex items-center justify-between p-4 border rounded-xl hover:bg-blue-50 cursor-pointer transition-all ${isSelected ? 'bg-blue-100 border-blue-500 shadow-md' : 'bg-white border-gray-100'}">
+                    <div>
+                        <p class="font-black ${isSelected ? 'text-blue-800' : 'text-base text-gray-800'} uppercase">${g.name}</p>
+                        <p class="${isSelected ? 'text-blue-600' : 'text-gray-500'} font-bold">คงเหลือ: ${g.remainingQty}</p>
+                    </div>
+                    <div class="px-4 py-1 ${isSelected ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'} rounded-lg text-sm font-black uppercase">${isSelected ? 'Selected' : 'Select'}</div>
+                </div>`;
+            }).join('');
+        }
+
+        window.pickGift = (id) => {
+            if (giftPickerContext === 'ind') { selectedIndGiftId = id; refreshIndGiftState(); }
+            else { 
+                selectedGroupGiftId = id; 
+                document.getElementById('grBoxLeft').innerHTML = '';
+                document.getElementById('grBoxRight').innerHTML = '';
+                refreshGroupGiftState(); 
+            }
+            document.getElementById('giftPickerModal').classList.add('hidden');
+        };
+
+        function refreshIndGiftState() {
+            const display = document.getElementById('indGiftDisplayName');
+            const qty = document.getElementById('indGiftDisplayQty');
+            const btn = document.getElementById('startRandomizeButton');
+            if (!selectedIndGiftId) { display.textContent = "-- ยังไม่ได้เลือกของรางวัล --"; qty.textContent = "คงเหลือ: - ชิ้น"; btn.disabled = true; return; }
+            const g = allGiftsData.find(x => x.id === selectedIndGiftId);
+            if (!g || g.remainingQty <= 0) { display.textContent = g ? g.name + " (หมดแล้ว)" : "-- รางวัลถูกลบ --"; qty.textContent = "คงเหลือ: 0"; btn.disabled = true; }
+            else { display.textContent = g.name; qty.textContent = `คงเหลือ: ${g.remainingQty} ชิ้น`; btn.disabled = false; }
+        }
+
+        function refreshGroupGiftState() {
+            const display = document.getElementById('grGiftDisplayName');
+            const qty = document.getElementById('grGiftDisplayQty');
+            const box = document.getElementById('grGiftBox');
+            const btn = document.getElementById('grStartDrawBtn');
+            const inp = document.getElementById('grDrawCount');
+            if (!selectedGroupGiftId) { 
+                display.textContent = "-- ยังไม่ได้เลือกของรางวัล --"; 
+                display.className = "text-base font-black text-gray-400 leading-tight uppercase";
+                qty.textContent = "คงเหลือ: - ชิ้น"; 
+                qty.className = "text-sm font-bold text-gray-300 mt-1";
+                box.className = "flex items-center justify-between bg-white border-2 border-dashed border-gray-200 rounded-xl p-3 transition-all";
+                inp.value = 0; btn.disabled = true; return; 
+            }
+            const g = allGiftsData.find(x => x.id === selectedGroupGiftId);
+            if (!g || g.remainingQty <= 0) { 
+                display.textContent = g ? g.name + " (หมดแล้ว)" : "-- รางวัลถูกลบ --"; 
+                display.className = "text-base font-black text-red-400 leading-tight uppercase";
+                qty.textContent = "คงเหลือ: 0"; box.className = "flex items-center justify-between bg-white border-2 border-dashed border-gray-200 rounded-xl p-3 transition-all";
+                inp.value = 0; btn.disabled = true; 
+            }
+            else { 
+                display.textContent = g.name; display.className = "text-base font-black text-blue-600 leading-tight uppercase"; 
+                qty.textContent = `คงเหลือ: ${g.remainingQty} ชิ้น`; qty.className = "text-sm font-bold text-gray-600 mt-1"; 
+                box.className = "flex items-center justify-between bg-blue-50 border-2 border-blue-300 rounded-xl p-3 transition-all";
+                inp.value = g.remainingQty; inp.max = g.remainingQty; btn.disabled = false; 
+            }
+        }
+
+        // --- LUCKY DRAW LOGIC ---
+        async function startGroupRandomDraw() {
+            const amount = parseInt(document.getElementById('grDrawCount').value) || 0;
+            // ปรับเงื่อนไขการสุ่มแบบกลุ่มให้เช็ค invite === 'invite'
+            const participants = allEmployeesData.filter(e => e.DateLogin && e.invite === 'invite' && !e.RandomTime);
+            
+            if (!selectedGroupGiftId) return;
+            const g = allGiftsData.find(x => x.id === selectedGroupGiftId);
+            if (amount <= 0 || participants.length < amount || g.remainingQty < amount) return;
+
+            const btn = document.getElementById('grStartDrawBtn'); btn.disabled = true;
+            const boxL = document.getElementById('grBoxLeft'); const boxR = document.getElementById('grBoxRight');
+            boxL.innerHTML = ''; boxR.innerHTML = '';
+
+            const selected = [...participants].sort(() => 0.5 - Math.random()).slice(0, amount);
+            await updateDoc(doc(db, "crsg_gift", selectedGroupGiftId), { remainingQty: g.remainingQty - amount });
+
+            const half = Math.ceil(amount / 2);
+            const winnersL = selected.slice(0, half); const winnersR = selected.slice(half);
+
+            const showLoader = (box) => { const div = document.createElement('div'); div.id = 'loader'; div.className = 'loading-gif'; box.appendChild(div); };
+            const hideLoader = (box) => { const loader = box.querySelector('#loader'); if(loader) loader.remove(); };
+
+            for(let i=0; i < winnersL.length; i++) {
+                showLoader(boxL); await new Promise(r => setTimeout(r, 1000)); hideLoader(boxL);
+                const w = winnersL[i]; boxL.innerHTML += createWinnerItemHTML(i + 1, w);
+                await updateWinnerInDB(w, g.name, selectedGroupGiftId);
+            }
+            for(let i=0; i < winnersR.length; i++) {
+                showLoader(boxR); await new Promise(r => setTimeout(r, 1000)); hideLoader(boxR);
+                const w = winnersR[i]; boxR.innerHTML += createWinnerItemHTML(half + i + 1, w);
+                await updateWinnerInDB(w, g.name, selectedGroupGiftId);
+            }
+            btn.disabled = false; confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
+        }
+
+        function createWinnerItemHTML(order, w) {
+            return `
+                <div class="flex items-center justify-between bg-blue-50 p-2.5 rounded-xl border border-blue-100 winner-row-animate shadow-sm mb-1.5">
+                    <div class="flex items-center gap-2.5">
+                        <span class="bg-blue-600 text-white w-5 h-5 flex items-center justify-center rounded-full text-[9px] font-bold">${order}</span>
+                        <span class="text-sm font-black text-gray-800 uppercase text-left">${w.FullName_th} (${w.employeeId})</span>
+                    </div>
+                    <span onclick="removeLuckyWinner('${w.id}')" class="text-red-400 hover:text-red-600 cursor-pointer font-bold text-lg ml-3">&times;</span>
+                </div>
+            `;
+        }
+
+        async function updateWinnerInDB(w, giftName, giftId) {
+            await updateDoc(doc(db, "crsg", w.id), { RandomTime: serverTimestamp(), AwardedGift: giftName, AwardedGiftId: giftId });
+        }
+
+        async function runIndividualLuckyDraw() {
+            // ปรับเงื่อนไขการสุ่มรายคนให้เช็ค invite === 'invite'
+            const eligible = allEmployeesData.filter(e => e.DateLogin && e.invite === 'invite' && !e.RandomTime);
+            if(!eligible.length || !selectedIndGiftId) return;
+            const g = allGiftsData.find(x => x.id === selectedIndGiftId);
+            if (g.remainingQty <= 0) return;
+            const btn = document.getElementById('startRandomizeButton'); btn.disabled = true;
+            const digs = [1,2,3,4,5].map(i => document.getElementById('digit'+i));
+            
+            let tick = 0;
+            drawInterval = setInterval(() => {
+                digits.forEach(d => d.textContent = Math.floor(Math.random()*10));
+                if(++tick > 40) {
+                    clearInterval(drawInterval);
+                    const w = eligible[Math.floor(Math.random()*eligible.length)];
+                    const idStr = String(w.employeeId).slice(-5).padStart(5,'0');
+                    digs.forEach((d, i) => d.textContent = idStr[i]);
+                    setTimeout(async () => {
+                        await updateDoc(doc(db, "crsg_gift", selectedIndGiftId), { remainingQty: g.remainingQty - 1 });
+                        await updateDoc(doc(db, "crsg", w.id), { RandomTime: serverTimestamp(), AwardedGift: g.name, AwardedGiftId: selectedIndGiftId });
+                        document.getElementById('winnerName').textContent = `${w.FullName_th} (${w.employeeId})`;
+                        document.getElementById('winnerGiftText').textContent = `รางวัล: ${g.name}`;
+                        document.getElementById('winnerEmployeeId').textContent = `รหัสพนักงาน: ${w.employeeId}`;
+                        document.getElementById('winnerBU').textContent = `สาขา: ${w.Branch_eng || '-'}`;
+                        document.getElementById('winnerTeam').textContent = `สังกัด: ${w.Check_Manager || '-'}`;
+                        document.getElementById('winnerDetailModal').classList.remove('hidden');
+                        confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } }); btn.disabled = false;
+                    }, 500);
+                }
+            }, 50);
+        }
+
+        window.removeLuckyWinner = async (id) => {
+            const e = allEmployeesData.find(x => x.id === id); if (!e) return;
+            if (e.AwardedGiftId) {
+                const g = allGiftsData.find(x => x.id === e.AwardedGiftId);
+                if (g) await updateDoc(doc(db, "crsg_gift", g.id), { remainingQty: g.remainingQty + 1 });
+            }
+            await updateDoc(doc(db, "crsg", id), { RandomTime: null, AwardedGift: "", AwardedGiftId: null, ReceivedTime: null });
+            document.getElementById('winnerDetailModal').classList.add('hidden');
+        };
+
+        // --- UI UPDATES ---
+        function updateLuckyDrawStats() {
+            // ปรับเงื่อนไขการนับสถิติใน Modal ให้เช็ค invite === 'invite'
+            const pool = allEmployeesData.filter(e => e.DateLogin && e.invite === 'invite');
+            const drawn = pool.filter(e => e.RandomTime).sort((a,b) => (b.RandomTime?.toMillis() || 0) - (a.RandomTime?.toMillis() || 0));
+            document.getElementById('modalParticipantsCount').textContent = pool.filter(e => !e.RandomTime).length;
+            document.getElementById('modalDrawnCount').textContent = drawn.length;
+            document.getElementById('drawnWinnersTableBody').innerHTML = drawn.map(w => `<tr><td class="px-4 py-4 font-mono font-black text-blue-700 text-center">${w.employeeId}</td><td class="px-4 py-4 uppercase font-bold text-xm text-left">${w.FullName_th}${w.AwardedGift ? `<br/><span class="text-sm text-orange-600">🎁 ${w.AwardedGift}</span>` : ""}</td><td class="px-4 py-4 text-xm font-bold text-gray-500 uppercase text-left">${w.Branch_eng || '-'}</td><td class="px-4 py-4 text-center"><span onclick="removeLuckyWinner('${w.id}')" class="bg-red-50 text-white px-3 py-1 rounded cursor-pointer text-sm font-bold">ลบ</span></td></tr>`).join('');
+        }
+
+        function updateTeamTab() {
+            const sel = document.getElementById('teamSelect'); const cur = sel.value;
+            sel.innerHTML = '<option value="">-- เลือกทีม --</option>' + teamNames.map(t => `<option value="${t}">${t}</option>`).join('');
+            sel.value = teamNames.includes(cur) ? cur : "";
+            
+            if(sel.value) {
+                const members = allEmployeesData.filter(e => e.Check_Place === sel.value);
+                document.getElementById('teamStatsTotal').textContent = members.length; document.getElementById('teamStatsRegistered').textContent = members.filter(m => m.DateLogin).length;
+                document.getElementById('teamStatsContainer').classList.remove('hidden');
+                document.getElementById('selectedTeamTableBody').innerHTML = members.map((e,i) => `
+                    <tr class="${e.DateLogin ? 'bg-yellow-50':''} hover:bg-gray-50 transition-colors text-center">
+                        <td class="px-4 py-0 font-normal text-sm">${i+1}</td>
+                        <td class="px-4 py-0 font-normal text-sm text-blue-800">${e.employeeId}</td>
+                        <td class="px-4 py-0 font-normal text-sm uppercase text-left">${e.FullName_th}</td>
+                        <td class="px-4 py-0 font-normal text-sm text-gray-600 text-left">${e.Branch_eng||'-'}</td>
+                        <td class="px-4 py-0 font-normal text-sm text-gray-600 text-left">${e.Check_Manager||'-'}</td>
+                        <td class="px-4 py-0 font-black text-xs uppercase">
+                            ${e.DateLogin ? '<span class="px-3 py-1 bg-green-100 text-green-700 rounded-md">ลงทะเบียน</span>' : '-'}
+                        </td>
+                        <td class="px-4 py-0 text-center"><span onclick="editEmp('${e.id}')" class="text-orange-500 hover:text-orange-700 cursor-pointer font-black text-xs uppercase shadow-sm">Edit</span></td>
+                    </tr>`).join('');
+            } else document.getElementById('teamStatsContainer').classList.add('hidden');
+        }
+
+        function updateGridTab() {
+            const filter = document.getElementById('groupViewManagerFilter').value;
+            const managers = [...new Set(allEmployeesData.map(e => e.Check_Manager).filter(Boolean))].sort();
+            const filterSelect = document.getElementById('groupViewManagerFilter');
+            
+            if (filterSelect.options.length !== managers.length + 1) {
+                filterSelect.innerHTML = '<option value="">-- ดูทั้งหมด --</option>' + managers.map(m => `<option value="${m}">${m}</option>`).join('');
+            }
+            filterSelect.value = filter;
+
+            const filtered = filter ? allEmployeesData.filter(e => e.Check_Manager === filter) : allEmployeesData;
+            
+            // สถิติรวมสำหรับคนที่มี invite
+            const invitedPeople = filtered.filter(e => e.invite === 'invite');
+            document.getElementById('gvOverallStatsTotal').textContent = invitedPeople.length; 
+            document.getElementById('gvOverallStatsRegistered').textContent = invitedPeople.filter(e => e.DateLogin).length;
+            document.getElementById('gvOverallStatsContainer').classList.remove('hidden');
+            
+            const counts = {}; 
+            teamNames.forEach(t => counts[t] = { r: 0, t: 0 });
+            
+            // นับจำนวนตามผังที่นั่ง (Check_Place)
+            filtered.filter(e => e.Check_Place).forEach(e => { 
+                if(counts[e.Check_Place]) { 
+                    counts[e.Check_Place].t++; 
+                    if(e.DateLogin) counts[e.Check_Place].r++; 
+                } 
+            });
+
+            document.getElementById('teamBoxesContainer').innerHTML = teamNames.map(t => {
+                const c = counts[t]; 
+                let bg = 'bg-gray-100'; 
+                // เงื่อนไขสี: ลงครบ = เขียว, ลงบ้างแต่ไม่ครบ = ส้มอ่อน, ยังไม่ลง = เทา
+                if(c.t > 0) {
+                    if(c.r === c.t) bg = 'bg-green-100'; 
+                    else if(c.r > 0) bg = 'bg-orange-100';
+                }
+                return `
+                    <div onclick="openGroupDetail('${t}')" class="${bg} p-2 rounded-[8px] border text-center shadow-sm cursor-pointer hover:shadow-md transition-all active:scale-95">
+                        <p class="text-[10px] font-black text-blue-700 uppercase">${t}</p>
+                        <p class="text-lg font-black text-gray-900 mt-0.5">${c.r}/${c.t}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateEmployeeList() {
+            const filter = document.getElementById('managerFilterSelect').value;
+            const managers = [...new Set(allEmployeesData.map(e => e.Check_Manager).filter(Boolean))].sort();
+            const managerSelect = document.getElementById('managerFilterSelect');
+            if (managerSelect.options.length !== managers.length + 1) {
+                managerSelect.innerHTML = '<option value="">-- ทั้งหมด --</option>' + managers.map(m => `<option value="${m}">${m}</option>`).join('');
+            }
+            managerSelect.value = filter;
+            
+            let filtered = filter ? allEmployeesData.filter(e => e.Check_Manager === filter) : allEmployeesData;
+
+            // Apply Sorting
+            filtered.sort((a, b) => {
+                let valA, valB;
+                if (empSortField === 'status') {
+                    valA = a.DateLogin ? 1 : 0;
+                    valB = b.DateLogin ? 1 : 0;
+                } else if (empSortField === 'name') {
+                    // Thai Locale String sorting
+                    return empSortDir === 'asc' ? a.FullName_th.localeCompare(b.FullName_th, 'th') : b.FullName_th.localeCompare(a.FullName_th, 'th');
+                } else {
+                    // ID sorting (string or number)
+                    valA = a.employeeId;
+                    valB = b.employeeId;
+                }
+
+                if (valA < valB) return empSortDir === 'asc' ? -1 : 1;
+                if (valA > valB) return empSortDir === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            document.getElementById('employeeListTableBody').innerHTML = filtered.map((e,i) => `
+                <tr class="${e.DateLogin ? 'bg-yellow-50':''} hover:bg-gray-50 transition-colors text-center">
+                    <td class="px-4 py-0 text-sm font-normal text-gray-400">${i+1}</td>
+                    <td class="px-4 py-0 font-normal text-sm text-blue-800">${e.employeeId}</td>
+                    <td class="px-4 py-0 font-normal text-xm uppercase text-left">${e.FullName_th}</td>
+                    <td class="px-4 py-0 font-normal text-xm text-left text-gray-600">${e.Branch_eng || '-'}</td>
+                    <td class="px-4 py-0 font-normal text-xm text-left text-gray-600">${e.Check_Manager || '-'}</td>
+                    <td class="px-4 py-0 font-bold text-xm text-blue-500 uppercase">${e.Check_Place || '-'}</td>
+                    <td class="px-4 py-0 font-black text-xm">
+                        ${e.DateLogin ? '<span class="px-3 py-1 bg-green-100 text-green-700 rounded-md">ลงทะเบียน</span>' : '-'}
+                    </td>
+                    <td class="px-4 py-0 text-center"><span onclick="editEmp('${e.id}')" class="text-orange-500 hover:text-orange-700 cursor-pointer font-black text-xm uppercase transition-all">Edit</span></td>
+                </tr>
+            `).join('');
+        }
+
+        window.cancelReg = (id, name) => {
+            const modalInner = document.getElementById('confirmModalInner');
+            modalInner.className = "bg-white rounded-2xl p-10 max-w-lg w-full shadow-2xl text-center";
+            currentConfirmAction = async () => { await updateDoc(doc(db, "crsg", id), { DateLogin: null }); document.getElementById('confirmModal').classList.add('hidden'); };
+            document.getElementById('confirmTitle').textContent = "ยกเลิกการลงทะเบียน"; 
+            document.getElementById('confirmText').textContent = `ต้องการยกเลิกสถานะของ [${name}] ?`; 
+            document.getElementById('confirmInputContainer').classList.add('hidden'); 
+            document.getElementById('confirmModal').classList.remove('hidden');
+        };
+
+        window.openGroupDetail = (teamName) => {
+            const members = allEmployeesData.filter(e => e.Check_Place === teamName);
+            document.getElementById('groupViewModalTitle').textContent = `ข้อมูลสมาชิกทีม ${teamName}`;
+            document.getElementById('groupViewStatsTotal').textContent = members.length; document.getElementById('groupViewStatsRegistered').textContent = members.filter(m => m.DateLogin).length;
+            document.getElementById('groupViewTableBody').innerHTML = members.map((e, i) => {
+                return `<tr class="${e.DateLogin ? 'bg-yellow-50' : ''} hover:bg-gray-50 text-center">
+                    <td class="px-4 py-0 font-bold text-gray-400 text-xs">${i + 1}</td>
+                    <td class="px-4 py-0 font-normal text-blue-700 text-xm text-center">${e.employeeId}</td>
+                    <td class="px-4 py-0 font-normal text-xm uppercase font-bold text-left">${e.FullName_th}</td>
+                    <td class="px-4 py-0 text-xm uppercase text-gray-400 text-left">${e.Branch_eng || '-'}</td>
+                    <td class="px-4 py-0 text-xm uppercase text-gray-400 text-left">${e.Check_Manager || '-'}</td>
+                    <td class="px-4 py-0 text-xm uppercase font-normal">
+                        ${e.DateLogin ? '<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-normal">ลงทะเบียน</span>' : '-'}
+                    </td>
+                    <td class="px-4 py-0 text-center">
+                        <span onclick="editEmp('${e.id}')" class="bg-red-500 text-white px-3 py-0.5 rounded text-[10px] font-bold uppercase cursor-pointer">Edit</span>
+                    </td>
+                </tr>`;
+            }).join('') || '<tr><td colspan="7" class="p-10 text-center">ไม่พบรายชื่อ</td></tr>';
+            document.getElementById('groupViewModal').classList.remove('hidden');
+        };
+
+        window.editEmp = (id) => {
+            const e = allEmployeesData.find(x => x.id === id); if(!e) return; currentEditingDocId = id;
+            document.getElementById('editEmpId').textContent = e.employeeId; document.getElementById('editEmpName').textContent = e.FullName_th;
+            document.getElementById('editEmpManager').value = e.Check_Manager || ''; document.getElementById('editEmpTeam').value = e.Check_Place || '';
+            document.getElementById('editEmployeeModal').classList.remove('hidden');
+        };
+
+        // --- Manual Registration Logic ---
+        function searchForRegistration() {
+            const id = document.getElementById('searchRegEmployeeIdInput').value.trim();
+            const errorEl = document.getElementById('searchRegEmployeeError');
+            errorEl.textContent = "";
+            
+            if(!id) { errorEl.textContent = "กรุณาใส่รหัสพนักงาน"; return; }
+            
+            const e = allEmployeesData.find(x => x.employeeId === id);
+            if(e) {
+                currentEditingDocId = e.id;
+                document.getElementById('regEmpId').textContent = e.employeeId;
+                document.getElementById('regEmpName').textContent = e.FullName_th;
+                
+                // แสดงข้อมูล สาขา และ สังกัด เพิ่มเติมใต้ชื่อ
+                document.getElementById('regEmpBranch').textContent = e.Branch_eng || '-';
+                document.getElementById('regEmpManager').textContent = e.Check_Manager || '-';
+
+                document.getElementById('regEmpSeat').value = e.Check_Place || '';
+                // ดึงข้อมูลจากฟิลด์ invite
+                document.getElementById('regEmpInviteStatus').value = e.invite || '';
+                
+                document.getElementById('manualRegisterModal').classList.remove('hidden');
+                document.getElementById('regManualError').textContent = "";
+            } else {
+                errorEl.textContent = "ไม่พบรหัสพนักงานในระบบ";
+            }
+        }
+
+        async function saveManualRegistration() {
+            const seat = document.getElementById('regEmpSeat').value.trim();
+            const inviteStatus = document.getElementById('regEmpInviteStatus').value;
+            const errorEl = document.getElementById('regManualError');
+            
+            try {
+                // บันทึกลงฟิลด์ invite และ Check_Place โดยตรง
+                await updateDoc(doc(db, "crsg", currentEditingDocId), {
+                    Check_Place: seat,
+                    invite: inviteStatus,
+                    DateLogin: serverTimestamp() // บันทึกเวลาลงทะเบียนทันที
+                });
+                document.getElementById('manualRegisterModal').classList.add('hidden');
+                document.getElementById('searchRegEmployeeIdInput').value = "";
+            } catch (err) {
+                console.error(err);
+                errorEl.textContent = "เกิดข้อผิดพลาดในการบันทึก";
+            }
+        }
+
+        function handleEmpSort(field) {
+            if (empSortField === field) {
+                empSortDir = empSortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                empSortField = field;
+                empSortDir = 'asc';
+            }
+            updateEmployeeList();
+        }
+
+        function setupListeners() {
+            document.getElementById('randomizeButton').addEventListener('click', () => { updateLuckyDrawStats(); document.getElementById('randomizeModal').classList.remove('hidden'); });
+            document.getElementById('closeRandomizeModalButtonX').addEventListener('click', () => document.getElementById('randomizeModal').classList.add('hidden'));
+            document.getElementById('startRandomizeButton').addEventListener('click', runIndividualLuckyDraw);
+            document.getElementById('grStartDrawBtn').addEventListener('click', startGroupRandomDraw);
+            document.getElementById('closeGroupViewModalButton').addEventListener('click', () => document.getElementById('groupViewModal').classList.add('hidden'));
+            document.getElementById('closeWinnerModalButton').addEventListener('click', () => document.getElementById('winnerDetailModal').classList.add('hidden'));
+            document.getElementById('closeEditModalButton').addEventListener('click', () => document.getElementById('editEmployeeModal').classList.add('hidden'));
+            document.getElementById('closeConfirmButton').addEventListener('click', () => document.getElementById('confirmModal').classList.add('hidden'));
+            
+            // Sorting Listeners
+            document.getElementById('sort-emp-id').addEventListener('click', () => handleEmpSort('id'));
+            document.getElementById('sort-emp-name').addEventListener('click', () => handleEmpSort('name'));
+            document.getElementById('sort-emp-status').addEventListener('click', () => handleEmpSort('status'));
+
+            // Manual Reg Listeners
+            document.getElementById('searchRegEmployeeButton').addEventListener('click', searchForRegistration);
+            document.getElementById('closeManualRegModalButton').addEventListener('click', () => document.getElementById('manualRegisterModal').classList.add('hidden'));
+            document.getElementById('saveManualRegButton').addEventListener('click', saveManualRegistration);
+
+            document.getElementById('confirmActionButton').addEventListener('click', async () => {
+                if (currentConfirmAction) await currentConfirmAction();
+            });
+
+            document.getElementById('addGiftBtn').addEventListener('click', addGift);
+            document.getElementById('openGiftPickerBtn').addEventListener('click', () => { giftPickerContext = 'ind'; renderGiftPicker(); document.getElementById('giftPickerModal').classList.remove('hidden'); });
+            document.getElementById('openGroupGiftPickerBtn').addEventListener('click', () => { giftPickerContext = 'group'; renderGiftPicker(); document.getElementById('giftPickerModal').classList.remove('hidden'); });
+            document.getElementById('closeGiftPickerBtn').addEventListener('click', () => document.getElementById('giftPickerModal').classList.add('hidden'));
+            document.getElementById('closeEditGiftModalBtn').addEventListener('click', () => document.getElementById('editGiftModal').classList.add('hidden'));
+            
+            document.getElementById('saveEditGiftBtn').addEventListener('click', async () => {
+                const newName = document.getElementById('editGiftName').value.trim();
+                const newTotal = parseInt(document.getElementById('editGiftTotalQty').value);
+                const newRemaining = parseInt(document.getElementById('editGiftRemainingQty').value);
+                if(!newName || isNaN(newTotal) || isNaN(newRemaining)) return;
+                await updateDoc(doc(db, "crsg_gift", currentEditingGiftId), { name: newName, totalQty: newTotal, remainingQty: newRemaining });
+                document.getElementById('editGiftModal').classList.add('hidden');
+            });
+
+            document.getElementById('saveEditModalButton').addEventListener('click', async () => { await updateDoc(doc(db, "crsg", currentEditingDocId), { Check_Manager: document.getElementById('editEmpManager').value, Check_Place: document.getElementById('editEmpTeam').value }); document.getElementById('editEmployeeModal').classList.add('hidden'); });
+            document.getElementById('searchEmployeeButton').addEventListener('click', () => { const id = document.getElementById('searchEmployeeIdInput').value.trim(); const e = allEmployeesData.find(x => x.employeeId === id); if(e) editEmp(e.id); else document.getElementById('searchEmployeeError').textContent = "ไม่พบรหัสพนักงาน"; });
+            document.getElementById('teamSelect').addEventListener('change', updateTeamTab);
+            document.getElementById('groupViewManagerFilter').addEventListener('change', updateGridTab);
+            document.getElementById('managerFilterSelect').addEventListener('change', updateEmployeeList);
+            
+            document.getElementById('updateTeamNamesBtn').addEventListener('click', () => {
+                const val = document.getElementById('definedTeamNamesInput').value.trim();
+                if(!val) return;
+                teamNames = val.split(',').map(t => t.trim()).filter(Boolean);
+                refreshUI();
+            });
+
+            document.getElementById('downloadCsvButton').addEventListener('click', () => {
+                let csv = "\uFEFFรหัสพนักงาน,ชื่อ-นามสกุล,สายงาน,สังกัด,ทีม,สถานะ\n";
+                allEmployeesData.filter(e => e.DateLogin).forEach(e => { csv += `"${e.employeeId}","${e.FullName_th}","${e.Branch_eng||''}","${e.Check_Manager||''}","${e.Check_Place||''}","ลงทะเบียน"\n`; });
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "Registration_Report.csv"; link.click();
+            });
+            document.getElementById('downloadWinnersCsvButton').addEventListener('click', () => {
+                const winners = allEmployeesData.filter(e => e.RandomTime).sort((a,b) => (b.RandomTime?.toMillis() || 0) - (a.RandomTime?.toMillis() || 0));
+                let csv = "\uFEFFรหัสพนักงาน,ชื่อ-นามสกุล,ของรางวัล,สาขา,สังกัด,ที่นั่ง,สถานะรับของ,เวลาได้รับ\n";
+                winners.forEach(e => { 
+                    const timeStr = e.RandomTime?.toMillis() ? new Date(e.RandomTime.toMillis()).toLocaleString('th-TH') : '-';
+                    const receivedStr = e.ReceivedTime ? 'รับแล้ว' : 'ยังไม่รับ';
+                    csv += `"${e.employeeId}","${e.FullName_th}","${e.AwardedGift||''}","${e.Branch_eng||''}","${e.Check_Manager||''}","${e.Check_Place||''}","${receivedStr}","${timeStr}"\n`; 
+                });
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "Winners_Report.csv"; link.click();
+            });
+
+            document.getElementById('resetTeamButton').addEventListener('click', () => {
+                const modalInner = document.getElementById('confirmModalInner');
+                const inputContainer = document.getElementById('confirmInputContainer');
+                const inputField = document.getElementById('confirmInput');
+                inputContainer.classList.remove('hidden');
+                inputField.value = "";
+                currentConfirmAction = async () => {
+                    if (inputField.value.trim().toUpperCase() !== 'RESET') return;
+                    const batch = writeBatch(db);
+                    allEmployeesData.forEach(e => {
+                        batch.update(doc(db, "crsg", e.id), { 
+                            DateLogin: null, 
+                            RandomTime: null, 
+                            AwardedGift: "", 
+                            AwardedGiftId: null, 
+                            ReceivedTime: null 
+                        });
+                    });
+                    await batch.commit();
+                    document.getElementById('confirmModal').classList.add('hidden');
+                };
+                document.getElementById('confirmTitle').textContent = "รีเซ็ตระบบ"; 
+                document.getElementById('confirmText').textContent = "ยืนยันการล้างข้อมูลการลงทะเบียนและรางวัลทั้งหมด?"; 
+                document.getElementById('confirmModal').classList.remove('hidden');
+            });
+        }
+
+        function updateGroupRandomUI() {
+            // ปรับเงื่อนไขหน้าสุ่มแบบกลุ่มให้เช็ค invite === 'invite'
+            const pool = allEmployeesData.filter(e => e.DateLogin && e.invite === 'invite');
+            const drawn = pool.filter(e => e.RandomTime).sort((a,b) => (b.RandomTime?.toMillis() || 0) - (a.RandomTime?.toMillis() || 0));
+            const avail = pool.filter(e => !e.RandomTime);
+            if(document.getElementById('grTotalEligible')) document.getElementById('grTotalEligible').textContent = pool.length;
+            if(document.getElementById('grRemainingEligible')) document.getElementById('grRemainingEligible').textContent = avail.length;
+            if(document.getElementById('grTotalWinners')) document.getElementById('grTotalWinners').textContent = drawn.length;
+        }
+    </script>
+</body>
+</html>
