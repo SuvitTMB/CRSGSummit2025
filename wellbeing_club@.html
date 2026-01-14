@@ -47,7 +47,8 @@
             to { opacity: 1; transform: translateY(0); }
         }
         button:disabled {
-            background-color: #d1d5db !important;
+            background-color: #f3f4f6 !important;
+            color: #9ca3af !important;
             cursor: not-allowed !important;
             box-shadow: none !important;
             transform: none !important;
@@ -667,7 +668,8 @@
                             <th class="px-4 py-4 text-left font-bold">สาขา</th>
                             <th class="px-4 py-4 text-left font-bold">สังกัด</th>
                             <th class="px-4 py-4 text-center font-bold">โต๊ะที่นั่ง</th>
-                            <th class="px-4 py-4 text-center font-bold">เวลาลงทะเบียน</th>
+                            <th class="px-4 py-4 text-center font-bold" id="dashListRegHeader">ลงทะเบียน</th>
+                            <th class="px-4 py-4 text-center font-bold">Admin</th>
                         </tr>
                     </thead>
                     <tbody id="dashboardListTableBody" class="divide-y divide-gray-100 bg-white"></tbody>
@@ -754,8 +756,8 @@
             <div class="space-y-6">
                 <div class="flex justify-between items-center"><label class="text-sm font-bold text-gray-400 uppercase">Emp ID</label><p id="editEmpId" class="text-xl font-bold text-blue-700 font-mono"></p></div>
                 <div class="flex justify-between items-start flex-col"><label class="text-sm font-bold text-gray-400 uppercase mb-1">ชื่อ-นามสกุล</label><p id="editEmpName" class="font-black text-gray-900 text-lg"></p></div>
-                <div><label class="text-sm font-bold text-gray-400 uppercase mb-1 block font-bold">สาขา</label><input type="text" id="editEmpManager" class="bg-gray-50 font-bold border-2 focus:border-blue-500 outline-none p-3 rounded-xl text-base"></div>
-                <div><label class="text-sm font-bold text-gray-400 uppercase mb-1 block font-bold">โต๊ะที่นั่ง</label><input type="text" id="editEmpTeam" class="bg-gray-50 font-bold border-2 focus:border-blue-500 outline-none p-3 rounded-xl text-base"></div>
+                <div><label class="text-sm font-bold text-gray-400 uppercase mb-1 block font-bold">Manager / สังกัด</label><input type="text" id="editEmpManager" class="bg-gray-50 font-bold border-2 focus:border-blue-500 outline-none p-3 rounded-xl text-base"></div>
+                <div><label class="text-sm font-bold text-gray-400 uppercase mb-1 block font-bold">Team / ผังที่นั่ง</label><input type="text" id="editEmpTeam" class="bg-gray-50 font-bold border-2 focus:border-blue-500 outline-none p-3 rounded-xl text-base"></div>
                 <p id="editError" class="text-red-600 text-sm font-black italic mt-2"></p>
             </div>
             <div class="mt-10 flex justify-end gap-3 font-bold">
@@ -809,8 +811,1106 @@
 
     <!-- Script Section -->
     <script type="module">
-const _0x21551b=_0x22ac;(function(_0x4bb917,_0x4bdb0a){const _0x3f0886=_0x22ac,_0x48217f=_0x4bb917();while(!![]){try{const _0x2d1f5f=parseInt(_0x3f0886(0x27b))/0x1+parseInt(_0x3f0886(0x2a2))/0x2*(-parseInt(_0x3f0886(0x25b))/0x3)+-parseInt(_0x3f0886(0x1b0))/0x4*(-parseInt(_0x3f0886(0x113))/0x5)+parseInt(_0x3f0886(0x1c5))/0x6*(-parseInt(_0x3f0886(0x139))/0x7)+parseInt(_0x3f0886(0x12b))/0x8+parseInt(_0x3f0886(0x142))/0x9*(-parseInt(_0x3f0886(0x1a3))/0xa)+-parseInt(_0x3f0886(0x221))/0xb;if(_0x2d1f5f===_0x4bdb0a)break;else _0x48217f['push'](_0x48217f['shift']());}catch(_0x2a8402){_0x48217f['push'](_0x48217f['shift']());}}}(_0x5f08,0xaa891));import{initializeApp}from'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';import{getAuth,signInAnonymously}from'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';import{getFirestore,collection,onSnapshot,doc,updateDoc,setDoc,addDoc,deleteDoc,serverTimestamp,writeBatch}from'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';const firebaseConfig={'apiKey':'AIzaSyAgWMzWcZPzyzoBu5eQzj2y59nKsxTWurQ','authDomain':'ttb-register.firebaseapp.com','projectId':_0x21551b(0x129),'storageBucket':_0x21551b(0x158),'messagingSenderId':_0x21551b(0x165),'appId':_0x21551b(0x19e)};let db,auth,allEmployeesData=[],allGiftsData=[],selectedIndGiftId=null,selectedGroupGiftId=null,giftPickerContext=_0x21551b(0x23a),teamNames=['A1','A2','A3','A4','A5','A6','A7','A8','A9',_0x21551b(0x292),_0x21551b(0x17d),_0x21551b(0x159),_0x21551b(0x16c),_0x21551b(0x280),_0x21551b(0x119),_0x21551b(0x276),_0x21551b(0x1cf),_0x21551b(0x126),'A19',_0x21551b(0x1c4),_0x21551b(0x211),'A22','A23',_0x21551b(0x2b6),'B1','B2','B3','B4','B5','B6','B7','B8','B9','B10',_0x21551b(0x1e3),_0x21551b(0x29f),_0x21551b(0x131),_0x21551b(0x178),'B15',_0x21551b(0x1c2),_0x21551b(0x170),'B18',_0x21551b(0x27f),_0x21551b(0x278),'B21',_0x21551b(0x250),_0x21551b(0x23c),_0x21551b(0x1be)],charts={},currentConfirmAction=null,currentEditingDocId=null,currentEditingGiftId=null,drawInterval=null,empSortField=_0x21551b(0x244),empSortDir=_0x21551b(0x20e),empCurrentPage=0x1;const empPageSize=0x64;((async()=>{const _0x76bc6c=_0x21551b;try{const _0x3b7e76=initializeApp(firebaseConfig);db=getFirestore(_0x3b7e76),auth=getAuth(_0x3b7e76),await signInAnonymously(auth),initCharts(),setupTabs(),setupListeners(),startListening(),startListeningGifts(),document[_0x76bc6c(0x1c1)](_0x76bc6c(0x227))[_0x76bc6c(0x1b2)]=teamNames['join'](','),setInterval(()=>{const _0x50f4cd=_0x76bc6c,_0x460b56=new Date();document[_0x50f4cd(0x1c1)]('currentDateTime')[_0x50f4cd(0x203)]=_0x460b56[_0x50f4cd(0x1f9)](_0x50f4cd(0x168),{'year':_0x50f4cd(0x184),'month':_0x50f4cd(0x240),'day':_0x50f4cd(0x184),'hour':_0x50f4cd(0x252),'minute':_0x50f4cd(0x252),'second':_0x50f4cd(0x252)});},0x3e8);}catch(_0x1eee79){console[_0x76bc6c(0x2af)](_0x1eee79);}})());function setupTabs(){const _0x52233a=_0x21551b,_0x43e2fb={'tab-dashboard':'dashboard-content','tab-team-list':_0x52233a(0x1d3),'tab-group-view':_0x52233a(0x180),'tab-employee-list':'employee-list-content','tab-gift-management':_0x52233a(0x199),'tab-register':_0x52233a(0x260),'tab-group-random':_0x52233a(0x133),'tab-winners-list':_0x52233a(0x231)};Object[_0x52233a(0x15a)](_0x43e2fb)[_0x52233a(0x248)](_0x17fc0c=>{const _0x53f488=_0x52233a,_0x1b909e=document[_0x53f488(0x1c1)](_0x17fc0c);if(!_0x1b909e)return;_0x1b909e[_0x53f488(0x204)](_0x53f488(0x1e6),function(){const _0x10b151=_0x53f488;Object[_0x10b151(0x15a)](_0x43e2fb)[_0x10b151(0x248)](_0x5d6d3f=>{const _0x5f121e=_0x10b151,_0x1be120=document[_0x5f121e(0x1c1)](_0x5d6d3f),_0x4e5bab=document[_0x5f121e(0x1c1)](_0x43e2fb[_0x5d6d3f]);if(_0x1be120)_0x1be120['classList']['replace'](_0x5f121e(0x15f),_0x5f121e(0x2b5));if(_0x4e5bab)_0x4e5bab['classList'][_0x5f121e(0x174)]('hidden');}),this[_0x10b151(0x19a)][_0x10b151(0x245)]('bg-gray-100',_0x10b151(0x15f)),document['getElementById'](_0x43e2fb[_0x17fc0c])?.[_0x10b151(0x19a)][_0x10b151(0x266)](_0x10b151(0x190)),window[_0x10b151(0x15b)](new Event(_0x10b151(0x15c)));});});}function initCharts(){const _0x2b2b5a=_0x21551b,_0x1a5249={'responsive':!![],'maintainAspectRatio':![],'plugins':{'legend':{'display':![]},'datalabels':{'color':_0x2b2b5a(0x2ae),'font':{'weight':'bold','size':0xc},'formatter':_0x56269b=>_0x56269b>0x0?_0x56269b:''}}};charts[_0x2b2b5a(0x1a6)]=new Chart(document['getElementById'](_0x2b2b5a(0x27c)),{'type':_0x2b2b5a(0x153),'data':{'labels':['Invite','Non-Invite'],'datasets':[{'data':[0x0,0x0],'backgroundColor':['#3B82F6','#F59E0B']}]},'options':{..._0x1a5249,'cutout':'75%'},'plugins':[ChartDataLabels]}),charts[_0x2b2b5a(0x18d)]=new Chart(document[_0x2b2b5a(0x1c1)]('registrationDonutChart'),{'type':'doughnut','data':{'labels':[_0x2b2b5a(0x121),_0x2b2b5a(0x1aa)],'datasets':[{'data':[0x0,0x0],'backgroundColor':[_0x2b2b5a(0x249),_0x2b2b5a(0x1bc)]}]},'options':{..._0x1a5249,'cutout':'75%'},'plugins':[ChartDataLabels]});const _0x272d1e={'indexAxis':'y','responsive':!![],'maintainAspectRatio':![],'scales':{'x':{'stacked':!![]},'y':{'stacked':!![]}},'plugins':{'legend':{'display':!![],'position':'bottom','labels':{'font':{'size':0xc}}},'datalabels':{'color':_0x2b2b5a(0x2ae)}}};charts[_0x2b2b5a(0x26b)]=new Chart(document[_0x2b2b5a(0x1c1)](_0x2b2b5a(0x26d)),{'type':_0x2b2b5a(0x1ac),'data':{'labels':[],'datasets':[{'label':'ลงแล้ว','data':[],'backgroundColor':_0x2b2b5a(0x22b)},{'label':_0x2b2b5a(0x1cb),'data':[],'backgroundColor':_0x2b2b5a(0x218)}]},'options':_0x272d1e,'plugins':[ChartDataLabels]}),charts['bar2']=new Chart(document['getElementById'](_0x2b2b5a(0x29d)),{'type':'bar','data':{'labels':[],'datasets':[{'label':'ลงแล้ว','data':[],'backgroundColor':_0x2b2b5a(0x22b)},{'label':_0x2b2b5a(0x1cb),'data':[],'backgroundColor':_0x2b2b5a(0x218)}]},'options':_0x272d1e,'plugins':[ChartDataLabels]}),charts[_0x2b2b5a(0x228)]=new Chart(document[_0x2b2b5a(0x1c1)](_0x2b2b5a(0x291)),{'type':'line','data':{'labels':Array['from']({'length':0x18},(_0x29f6eb,_0x3e49b5)=>_0x3e49b5[_0x2b2b5a(0x23f)]()[_0x2b2b5a(0x196)](0x2,'0')+_0x2b2b5a(0x1b5)),'datasets':[{'label':_0x2b2b5a(0x21b),'data':Array(0x18)[_0x2b2b5a(0x246)](0x0),'borderColor':_0x2b2b5a(0x22b),'backgroundColor':_0x2b2b5a(0x22b),'tension':0.1},{'label':_0x2b2b5a(0x1e9),'data':Array(0x18)[_0x2b2b5a(0x246)](0x0),'borderColor':_0x2b2b5a(0x132),'backgroundColor':_0x2b2b5a(0x132),'tension':0.1}]},'options':{'responsive':!![],'maintainAspectRatio':![],'plugins':{'legend':{'display':!![],'position':_0x2b2b5a(0x18a)},'datalabels':{'display':![]}},'scales':{'y':{'beginAtZero':!![],'ticks':{'stepSize':0x1,'precision':0x0}}}}});}function startListening(){const _0x260c18=_0x21551b;onSnapshot(collection(db,_0x260c18(0x198)),_0x5379f1=>{const _0x2c6ac4=_0x260c18;allEmployeesData=_0x5379f1['docs'][_0x2c6ac4(0x1c6)](_0x45ac19=>({'id':_0x45ac19['id'],..._0x45ac19[_0x2c6ac4(0x23d)]()})),refreshUI();},_0x22c796=>console[_0x260c18(0x2af)](_0x22c796));}function startListeningGifts(){onSnapshot(collection(db,'crsg_gift'),_0x502339=>{const _0x13dd54=_0x22ac,_0x39f09d=_0x502339[_0x13dd54(0x1b6)][_0x13dd54(0x1c6)](_0x2c8d65=>({'id':_0x2c8d65['id'],..._0x2c8d65[_0x13dd54(0x23d)]()}));allGiftsData=_0x39f09d['sort']((_0x139fcd,_0x325f9e)=>(_0x139fcd[_0x13dd54(0x25f)]||0x0)-(_0x325f9e[_0x13dd54(0x25f)]||0x0)),renderGiftTable(),refreshIndGiftState(),refreshGroupGiftState(),updateWinnersList();},_0x3ca407=>console['error'](_0x3ca407));}function refreshUI(){const _0x587603=_0x21551b,_0x34314f=allEmployeesData['filter'](_0x1b3024=>_0x1b3024['DateLogin']),_0x45b95e=allEmployeesData[_0x587603(0x224)](_0x4ecc00=>_0x4ecc00[_0x587603(0x2a1)]&&_0x4ecc00[_0x587603(0x297)]==='invite'),_0x19faa7=allEmployeesData[_0x587603(0x224)](_0x3ed6c5=>_0x3ed6c5[_0x587603(0x2a1)]&&_0x3ed6c5['invite']!==_0x587603(0x297)),_0x83845f=allEmployeesData['filter'](_0x2fe4a7=>_0x2fe4a7['invite']===_0x587603(0x297));document[_0x587603(0x1c1)](_0x587603(0x1fb))[_0x587603(0x203)]=allEmployeesData[_0x587603(0x224)](_0x1d11e8=>_0x1d11e8[_0x587603(0x111)])[_0x587603(0x296)],document['getElementById'](_0x587603(0x112))['textContent']=allEmployeesData[_0x587603(0x224)](_0x58c39d=>_0x58c39d['Check_Place'])[_0x587603(0x296)];const _0x367f0b=allEmployeesData[_0x587603(0x224)](_0x400ee6=>_0x400ee6[_0x587603(0x1ff)]&&_0x400ee6[_0x587603(0x1ff)][_0x587603(0x212)]()!==''),_0x34cbbf=_0x367f0b[_0x587603(0x296)],_0x56f1b7=_0x367f0b['filter'](_0x59e7f6=>_0x59e7f6[_0x587603(0x2a1)])['length'],_0x29b7c7=_0x34cbbf-_0x56f1b7,_0x2ecfcb=_0x34cbbf>0x0?Math[_0x587603(0x285)](_0x56f1b7/_0x34cbbf*0x64):0x0;document[_0x587603(0x1c1)](_0x587603(0x210))&&(document[_0x587603(0x1c1)](_0x587603(0x23b))[_0x587603(0x203)]=_0x34cbbf,document[_0x587603(0x1c1)](_0x587603(0x176))[_0x587603(0x203)]=_0x56f1b7,document['getElementById'](_0x587603(0x2aa))[_0x587603(0x203)]=_0x29b7c7,document[_0x587603(0x1c1)](_0x587603(0x29e))[_0x587603(0x203)]=_0x2ecfcb+'%',document[_0x587603(0x1c1)](_0x587603(0x210))[_0x587603(0x19a)][_0x587603(0x266)](_0x587603(0x190)));document[_0x587603(0x1c1)]('targetCount')['textContent']=_0x83845f['length'],document[_0x587603(0x1c1)](_0x587603(0x186))[_0x587603(0x203)]=_0x45b95e[_0x587603(0x296)],document['getElementById'](_0x587603(0x235))[_0x587603(0x203)]=_0x19faa7[_0x587603(0x296)],document[_0x587603(0x1c1)](_0x587603(0x272))['textContent']=Math[_0x587603(0x17e)](0x0,_0x83845f[_0x587603(0x296)]-_0x45b95e[_0x587603(0x296)]),document[_0x587603(0x1c1)](_0x587603(0x290))[_0x587603(0x203)]=_0x34314f[_0x587603(0x296)],document['getElementById']('donutPercentage')[_0x587603(0x203)]=_0x83845f[_0x587603(0x296)]?Math[_0x587603(0x285)](_0x45b95e[_0x587603(0x296)]/_0x83845f['length']*0x64)+'%':'0%';charts[_0x587603(0x1a6)]&&(charts[_0x587603(0x1a6)][_0x587603(0x23d)][_0x587603(0x28f)][0x0][_0x587603(0x23d)]=[_0x45b95e['length'],_0x19faa7[_0x587603(0x296)]],charts[_0x587603(0x1a6)]['update']());charts['goal']&&(charts[_0x587603(0x18d)][_0x587603(0x23d)][_0x587603(0x28f)][0x0][_0x587603(0x23d)]=[_0x45b95e[_0x587603(0x296)],Math[_0x587603(0x17e)](0x0,_0x83845f['length']-_0x45b95e['length'])],charts[_0x587603(0x18d)]['update']());if(charts['timeline']){const _0x16abf1=Array(0x18)['fill'](0x0),_0x136279=Array(0x18)[_0x587603(0x246)](0x0);let _0x2c0541=0x0,_0x58f22e=0x0;_0x34314f[_0x587603(0x248)](_0x37717c=>{const _0x4cfd75=_0x587603;if(_0x37717c['DateLogin']){const _0x108cea=new Date(_0x37717c[_0x4cfd75(0x2a1)][_0x4cfd75(0x17a)]()),_0xf473b2=_0x108cea[_0x4cfd75(0x215)]();_0x37717c[_0x4cfd75(0x297)]===_0x4cfd75(0x297)?(_0x16abf1[_0xf473b2]++,_0x2c0541++):(_0x136279[_0xf473b2]++,_0x58f22e++);}}),charts[_0x587603(0x228)][_0x587603(0x23d)]['datasets'][0x0][_0x587603(0x23d)]=_0x16abf1,charts[_0x587603(0x228)][_0x587603(0x23d)][_0x587603(0x28f)][0x1]['data']=_0x136279,charts['timeline'][_0x587603(0x16f)](),document[_0x587603(0x1c1)]('timelineTotalInvite')[_0x587603(0x203)]=_0x2c0541,document[_0x587603(0x1c1)](_0x587603(0x201))[_0x587603(0x203)]=_0x58f22e;}const _0x1d35d0={};teamNames[_0x587603(0x248)](_0x52ecc4=>_0x1d35d0[_0x52ecc4]={'r':0x0,'t':0x0}),allEmployeesData[_0x587603(0x248)](_0x3289fa=>{const _0x16d1a8=_0x587603;if(_0x3289fa[_0x16d1a8(0x1ff)]&&_0x1d35d0[_0x3289fa[_0x16d1a8(0x1ff)]]){_0x1d35d0[_0x3289fa['Check_Place']]['t']++;if(_0x3289fa['DateLogin'])_0x1d35d0[_0x3289fa[_0x16d1a8(0x1ff)]]['r']++;}});const _0xc5821e=Math[_0x587603(0x267)](teamNames[_0x587603(0x296)]/0x2);charts[_0x587603(0x26b)]&&(charts[_0x587603(0x26b)][_0x587603(0x23d)][_0x587603(0x232)]=teamNames['slice'](0x0,_0xc5821e),charts[_0x587603(0x26b)][_0x587603(0x23d)][_0x587603(0x28f)][0x0][_0x587603(0x23d)]=teamNames[_0x587603(0x205)](0x0,_0xc5821e)[_0x587603(0x1c6)](_0x1a8bb2=>_0x1d35d0[_0x1a8bb2]['r']),charts[_0x587603(0x26b)][_0x587603(0x23d)][_0x587603(0x28f)][0x1][_0x587603(0x23d)]=teamNames[_0x587603(0x205)](0x0,_0xc5821e)['map'](_0x36a8d4=>_0x1d35d0[_0x36a8d4]['t']-_0x1d35d0[_0x36a8d4]['r']),charts[_0x587603(0x26b)][_0x587603(0x16f)]());charts['bar2']&&(charts['bar2']['data'][_0x587603(0x232)]=teamNames['slice'](_0xc5821e),charts['bar2'][_0x587603(0x23d)][_0x587603(0x28f)][0x0][_0x587603(0x23d)]=teamNames['slice'](_0xc5821e)[_0x587603(0x1c6)](_0x327b71=>_0x1d35d0[_0x327b71]['r']),charts['bar2'][_0x587603(0x23d)][_0x587603(0x28f)][0x1][_0x587603(0x23d)]=teamNames[_0x587603(0x205)](_0xc5821e)[_0x587603(0x1c6)](_0x2a6fb5=>_0x1d35d0[_0x2a6fb5]['t']-_0x1d35d0[_0x2a6fb5]['r']),charts[_0x587603(0x254)][_0x587603(0x16f)]());const _0x5be62e=[..._0x34314f][_0x587603(0x2a8)]((_0x8062ab,_0xe6e260)=>(_0xe6e260[_0x587603(0x2a1)]?.['toMillis']()||0x0)-(_0x8062ab[_0x587603(0x2a1)]?.[_0x587603(0x17a)]()||0x0))[_0x587603(0x205)](0x0,0x1e);document[_0x587603(0x1c1)](_0x587603(0x1af))[_0x587603(0x183)]=_0x5be62e[_0x587603(0x1c6)](_0x4c668e=>_0x587603(0x2a7)+_0x4c668e[_0x587603(0x24e)]+_0x587603(0x15d)+_0x4c668e[_0x587603(0x137)]+'</td><td\x20class=\x22px-4\x20py-0\x20text-gray-600\x20text-xm\x20text-left\x20text-sm\x22>'+(_0x4c668e[_0x587603(0x1fc)]||'-')+_0x587603(0x286)+(_0x4c668e[_0x587603(0x111)]||'-')+'</td><td\x20class=\x22px-4\x20py-0\x20text-center\x22><span\x20class=\x22px-3\x20py-0\x20bg-green-100\x20text-green-700\x20rounded-full\x20text-xs\x20font-black\x20uppercase\x22>ลงทะเบียน</span></td><td\x20class=\x22px-4\x20py-0\x20text-center\x22><span\x20onclick=\x22cancelReg(\x27'+_0x4c668e['id']+_0x587603(0x2a9)+_0x4c668e[_0x587603(0x137)]+_0x587603(0x16d))['join'](''),updateTeamTab(),updateGridTab(),updateEmployeeList(),updateGroupRandomUI(),updateLuckyDrawStats(),updateWinnersList();}function updateWinnersList(){const _0x24526f=_0x21551b,_0x59b20b=document[_0x24526f(0x1c1)](_0x24526f(0x207));if(!_0x59b20b)return;const _0x499786=allEmployeesData[_0x24526f(0x224)](_0x4d10ee=>_0x4d10ee['RandomTime']);if(_0x499786[_0x24526f(0x296)]===0x0){_0x59b20b['innerHTML']='<div\x20class=\x22p-10\x20text-center\x20text-gray-400\x20font-bold\x20italic\x22>--\x20ยังไม่มีผู้ได้รับรางวัล\x20--</div>';return;}_0x59b20b[_0x24526f(0x183)]=allGiftsData[_0x24526f(0x1c6)](_0x5d5c19=>{const _0x4e37be=_0x24526f,_0x29bc7d=_0x499786['filter'](_0x15aff4=>_0x15aff4[_0x4e37be(0x1e2)]===_0x5d5c19['id']||_0x15aff4[_0x4e37be(0x1dc)]===_0x5d5c19['name']&&!_0x15aff4[_0x4e37be(0x1e2)]);if(_0x29bc7d[_0x4e37be(0x296)]===0x0)return'';return _0x29bc7d['sort']((_0x4a0443,_0x431281)=>(_0x431281[_0x4e37be(0x25e)]?.[_0x4e37be(0x17a)]()||0x0)-(_0x4a0443['RandomTime']?.['toMillis']()||0x0)),_0x4e37be(0x20b)+_0x5d5c19[_0x4e37be(0x22a)]+_0x4e37be(0x128)+_0x29bc7d[_0x4e37be(0x296)]+_0x4e37be(0x185)+_0x29bc7d[_0x4e37be(0x1c6)]((_0x553b12,_0x4d4592)=>{const _0x105234=_0x4e37be,_0x368572=_0x553b12['ReceivedTime']?!![]:![],_0x4f27ca=_0x368572?_0x105234(0x26c):_0x105234(0x295),_0x17a279=_0x368572?'bg-green-500\x20text-white':'bg-red-500\x20text-white\x20cursor-pointer\x20hover:bg-red-600',_0x567eba=_0x368572?'':_0x105234(0x261)+_0x553b12['id']+_0x105234(0x1fd);return _0x105234(0x293)+(_0x4d4592+0x1)+_0x105234(0x222)+_0x553b12['employeeId']+_0x105234(0x18e)+_0x553b12[_0x105234(0x137)]+_0x105234(0x239)+(_0x553b12['Branch_eng']||'-')+_0x105234(0x239)+(_0x553b12['Check_Manager']||'-')+_0x105234(0x182)+(_0x553b12[_0x105234(0x1ff)]||'-')+_0x105234(0x1da)+_0x567eba+'\x20class=\x22px-3\x20py-0.5\x20rounded\x20text-[10px]\x20font-black\x20transition-all\x20shadow-sm\x20'+_0x17a279+'\x22>'+_0x4f27ca+_0x105234(0x25c)+_0x553b12['id']+'\x27)\x22\x20class=\x22px-3\x20py-0\x20bg-red-100\x20text-red-600\x20rounded-lg\x20text-xs\x20font-black\x20hover:bg-red-600\x20hover:text-white\x20transition-all\x20uppercase\x22>ลบ</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20';})[_0x4e37be(0x2b1)]('')+_0x4e37be(0x251);})[_0x24526f(0x2b1)]('');}window[_0x21551b(0x12a)]=async _0x4d108d=>{const _0x598ca2=_0x21551b;try{await updateDoc(doc(db,_0x598ca2(0x198),_0x4d108d),{'ReceivedTime':serverTimestamp()});}catch(_0x4fb659){console[_0x598ca2(0x2af)](_0x4fb659);}},window[_0x21551b(0x265)]=_0x100ccc=>{const _0x222e4e=_0x21551b;let _0x243938='',_0x25d6dd=[];if(_0x100ccc==='total')_0x243938='รายชื่อพนักงานเป้าหมายทั้งหมด',_0x25d6dd=allEmployeesData[_0x222e4e(0x224)](_0x37f721=>_0x37f721[_0x222e4e(0x297)]===_0x222e4e(0x297));else{if(_0x100ccc===_0x222e4e(0x1e4))_0x243938=_0x222e4e(0x26a),_0x25d6dd=allEmployeesData[_0x222e4e(0x224)](_0x1e6415=>_0x1e6415[_0x222e4e(0x2a1)]&&_0x1e6415[_0x222e4e(0x297)]===_0x222e4e(0x297));else{if(_0x100ccc===_0x222e4e(0x161))_0x243938='รายชื่อพนักงานที่ยังไม่ลงทะเบียน',_0x25d6dd=allEmployeesData[_0x222e4e(0x224)](_0x168448=>!_0x168448[_0x222e4e(0x2a1)]&&_0x168448[_0x222e4e(0x297)]==='invite');else _0x100ccc===_0x222e4e(0x1d6)&&(_0x243938=_0x222e4e(0x17b),_0x25d6dd=allEmployeesData[_0x222e4e(0x224)](_0x1ec8e4=>_0x1ec8e4[_0x222e4e(0x2a1)]&&_0x1ec8e4['invite']!==_0x222e4e(0x297)));}}document['getElementById'](_0x222e4e(0x26f))[_0x222e4e(0x203)]=_0x243938,document['getElementById'](_0x222e4e(0x148))[_0x222e4e(0x203)]=_0x25d6dd[_0x222e4e(0x296)];const _0x42cd77=document[_0x222e4e(0x1c1)]('dashboardListTableBody');_0x42cd77['innerHTML']=_0x25d6dd['map']((_0x276832,_0x18c59c)=>{const _0x2c2889=_0x222e4e,_0x1ae032=_0x276832[_0x2c2889(0x2a1)]?new Date(_0x276832[_0x2c2889(0x2a1)][_0x2c2889(0x17a)]())[_0x2c2889(0x1f9)](_0x2c2889(0x168),{'hour':'2-digit','minute':_0x2c2889(0x252)}):'-';return _0x2c2889(0x156)+(_0x18c59c+0x1)+_0x2c2889(0x1f1)+_0x276832[_0x2c2889(0x24e)]+_0x2c2889(0x21a)+_0x276832['FullName_th']+_0x2c2889(0x24f)+(_0x276832[_0x2c2889(0x1fc)]||'-')+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-2\x20text-left\x20text-gray-600\x22>'+(_0x276832[_0x2c2889(0x111)]||'-')+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-2\x20font-bold\x20text-blue-500\x20uppercase\x20text-center\x22>'+(_0x276832[_0x2c2889(0x1ff)]||'-')+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-2\x20text-sm\x20text-gray-500\x20text-center\x22>'+_0x1ae032+_0x2c2889(0x136);})[_0x222e4e(0x2b1)]('')||_0x222e4e(0x172),document[_0x222e4e(0x1c1)](_0x222e4e(0x279))[_0x222e4e(0x19a)][_0x222e4e(0x266)](_0x222e4e(0x190));};async function addGift(){const _0x230c24=_0x21551b,_0x4c2262=document[_0x230c24(0x1c1)]('giftNameInput')['value'][_0x230c24(0x212)](),_0x35ad7c=parseInt(document[_0x230c24(0x1c1)]('giftQtyInput')[_0x230c24(0x1b2)]);if(!_0x4c2262||isNaN(_0x35ad7c))return;const _0xfcb5bc=allGiftsData[_0x230c24(0x164)]((_0x1bd702,_0x127de1)=>Math[_0x230c24(0x17e)](_0x1bd702,_0x127de1[_0x230c24(0x25f)]||0x0),0x0);await addDoc(collection(db,'crsg_gift'),{'name':_0x4c2262,'totalQty':_0x35ad7c,'remainingQty':_0x35ad7c,'status':'on','order':_0xfcb5bc+0x1,'createdAt':serverTimestamp()}),document[_0x230c24(0x1c1)](_0x230c24(0x14e))['value']='',document[_0x230c24(0x1c1)](_0x230c24(0x11c))[_0x230c24(0x1b2)]='1';}function renderGiftTable(){const _0x408266=_0x21551b,_0x393060=document[_0x408266(0x1c1)](_0x408266(0x1ad));if(allGiftsData[_0x408266(0x296)]===0x0){_0x393060[_0x408266(0x183)]=_0x408266(0x1c3);return;}_0x393060[_0x408266(0x183)]=allGiftsData['map']((_0x516816,_0x25f2b6)=>_0x408266(0x1ea)+(_0x516816['order']||_0x25f2b6+0x1)+_0x408266(0x19f)+_0x516816['id']+_0x408266(0x14d)+_0x516816[_0x408266(0x22a)]+_0x408266(0x189)+_0x516816[_0x408266(0x214)]+_0x408266(0x149)+_0x516816['remainingQty']+_0x408266(0x1df)+_0x516816['id']+_0x408266(0x2a9)+_0x516816[_0x408266(0x244)]+_0x408266(0x2b2)+(_0x516816['status']==='on'?_0x408266(0x11d):_0x408266(0x263))+'\x22>'+(_0x516816[_0x408266(0x244)]==='on'?'ON':_0x408266(0x1c8))+'</button></td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-2\x20text-center\x22><span\x20onclick=\x22editGift(\x27'+_0x516816['id']+_0x408266(0x1d1)+_0x516816['id']+_0x408266(0x2a9)+_0x516816[_0x408266(0x22a)]+_0x408266(0x193))[_0x408266(0x2b1)]('');}window['updateGiftOrder']=async(_0x3573db,_0x3c7211)=>{const _0x1f941e=_0x21551b,_0x46314e=parseInt(_0x3c7211);if(!isNaN(_0x46314e))await updateDoc(doc(db,_0x1f941e(0x167),_0x3573db),{'order':_0x46314e});},window['toggleGiftStatus']=async(_0x15262a,_0x3fb700)=>{const _0x3d55b5=_0x21551b;await updateDoc(doc(db,_0x3d55b5(0x167),_0x15262a),{'status':_0x3fb700==='on'?_0x3d55b5(0x187):'on'});},window[_0x21551b(0x226)]=_0x4a1a77=>{const _0x590506=_0x21551b,_0x3da1e2=allGiftsData[_0x590506(0x2b0)](_0x34b888=>_0x34b888['id']===_0x4a1a77);if(!_0x3da1e2)return;currentEditingGiftId=_0x4a1a77,document[_0x590506(0x1c1)](_0x590506(0x241))[_0x590506(0x1b2)]=_0x3da1e2[_0x590506(0x22a)],document[_0x590506(0x1c1)](_0x590506(0x284))[_0x590506(0x1b2)]=_0x3da1e2[_0x590506(0x214)],document[_0x590506(0x1c1)]('editGiftRemainingQty')[_0x590506(0x1b2)]=_0x3da1e2[_0x590506(0x150)],document['getElementById'](_0x590506(0x21e))[_0x590506(0x19a)][_0x590506(0x266)](_0x590506(0x190));},window[_0x21551b(0x1b8)]=(_0x100937,_0x356d95)=>{const _0x28b3e2=_0x21551b,_0x26227d=document[_0x28b3e2(0x1c1)](_0x28b3e2(0x16b));_0x26227d[_0x28b3e2(0x18c)]=_0x28b3e2(0x18f),currentConfirmAction=async()=>{const _0x4950ee=_0x28b3e2;await deleteDoc(doc(db,_0x4950ee(0x167),_0x100937)),document[_0x4950ee(0x1c1)](_0x4950ee(0x20c))[_0x4950ee(0x19a)][_0x4950ee(0x174)](_0x4950ee(0x190));},document[_0x28b3e2(0x1c1)](_0x28b3e2(0x21d))[_0x28b3e2(0x203)]=_0x28b3e2(0x223),document[_0x28b3e2(0x1c1)](_0x28b3e2(0x114))[_0x28b3e2(0x203)]='ยืนยันการลบ\x20['+_0x356d95+_0x28b3e2(0x197),document[_0x28b3e2(0x1c1)](_0x28b3e2(0x1a4))['classList'][_0x28b3e2(0x174)]('hidden'),document[_0x28b3e2(0x1c1)](_0x28b3e2(0x20c))['classList']['remove'](_0x28b3e2(0x190));};function renderGiftPicker(){const _0x19b65e=_0x21551b,_0x1d55b1=document[_0x19b65e(0x1c1)](_0x19b65e(0x1e5)),_0x3b823d=allGiftsData[_0x19b65e(0x224)](_0x15cb7a=>_0x15cb7a['status']==='on'&&_0x15cb7a[_0x19b65e(0x150)]>0x0);document[_0x19b65e(0x1c1)](_0x19b65e(0x20f))['textContent']=giftPickerContext===_0x19b65e(0x23a)?_0x19b65e(0x281):_0x19b65e(0x155);if(!_0x3b823d[_0x19b65e(0x296)]){_0x1d55b1['innerHTML']=_0x19b65e(0x1db);return;}const _0xa102c5=giftPickerContext===_0x19b65e(0x23a)?selectedIndGiftId:selectedGroupGiftId;_0x1d55b1[_0x19b65e(0x183)]=_0x3b823d[_0x19b65e(0x1c6)](_0x4bfbeb=>{const _0x3b2efc=_0x19b65e,_0x279b7d=_0x4bfbeb['id']===_0xa102c5;return'<div\x20onclick=\x22pickGift(\x27'+_0x4bfbeb['id']+'\x27)\x22\x20class=\x22flex\x20items-center\x20justify-between\x20p-4\x20border\x20rounded-xl\x20hover:bg-blue-50\x20cursor-pointer\x20transition-all\x20'+(_0x279b7d?'bg-blue-100\x20border-blue-500\x20shadow-md':'bg-white\x20border-gray-100')+_0x3b2efc(0x209)+(_0x279b7d?_0x3b2efc(0x294):_0x3b2efc(0x17c))+_0x3b2efc(0x258)+_0x4bfbeb['name']+_0x3b2efc(0x213)+(_0x279b7d?_0x3b2efc(0x256):_0x3b2efc(0x140))+'\x20font-bold\x20text-sm\x22>คงเหลือ:\x20'+_0x4bfbeb[_0x3b2efc(0x150)]+_0x3b2efc(0x277)+(_0x279b7d?_0x3b2efc(0x26e):_0x3b2efc(0x13f))+_0x3b2efc(0x1b4)+(_0x279b7d?_0x3b2efc(0x1ee):'Select')+_0x3b2efc(0x206);})[_0x19b65e(0x2b1)]('');}window[_0x21551b(0x262)]=_0x141ccb=>{const _0x2019af=_0x21551b;giftPickerContext===_0x2019af(0x23a)?(selectedIndGiftId=_0x141ccb,refreshIndGiftState()):(selectedGroupGiftId=_0x141ccb,document[_0x2019af(0x1c1)](_0x2019af(0x1bb))[_0x2019af(0x183)]='',document[_0x2019af(0x1c1)](_0x2019af(0x1b3))[_0x2019af(0x183)]='',refreshGroupGiftState()),document[_0x2019af(0x1c1)](_0x2019af(0x1d5))[_0x2019af(0x19a)]['add']('hidden');};function refreshIndGiftState(){const _0x3e6a87=_0x21551b,_0x5a351f=document[_0x3e6a87(0x1c1)](_0x3e6a87(0x138)),_0x1ae126=document[_0x3e6a87(0x1c1)](_0x3e6a87(0x157)),_0x28fb9c=document[_0x3e6a87(0x1c1)](_0x3e6a87(0x1c9));if(!selectedIndGiftId){_0x5a351f[_0x3e6a87(0x203)]=_0x3e6a87(0x2a3),_0x1ae126[_0x3e6a87(0x203)]='คงเหลือ:\x20-\x20ชิ้น',_0x28fb9c[_0x3e6a87(0x259)]=!![];return;}const _0xceabb1=allGiftsData[_0x3e6a87(0x2b0)](_0x3940f8=>_0x3940f8['id']===selectedIndGiftId);!_0xceabb1||_0xceabb1[_0x3e6a87(0x150)]<=0x0?(_0x5a351f[_0x3e6a87(0x203)]=_0xceabb1?_0xceabb1[_0x3e6a87(0x22a)]+_0x3e6a87(0x1b9):_0x3e6a87(0x1d9),_0x1ae126[_0x3e6a87(0x203)]=_0x3e6a87(0x123),_0x28fb9c[_0x3e6a87(0x259)]=!![]):(_0x5a351f[_0x3e6a87(0x203)]=_0xceabb1['name'],_0x1ae126['textContent']=_0x3e6a87(0x20d)+_0xceabb1['remainingQty']+_0x3e6a87(0x169),_0x28fb9c[_0x3e6a87(0x259)]=![]);}function refreshGroupGiftState(){const _0x54b5a5=_0x21551b,_0x1cefbf=document[_0x54b5a5(0x1c1)](_0x54b5a5(0x2ad)),_0x424a76=document['getElementById'](_0x54b5a5(0x1ba)),_0x117761=document[_0x54b5a5(0x1c1)](_0x54b5a5(0x22d)),_0x42e87b=document['getElementById'](_0x54b5a5(0x27a)),_0x3ef0a4=document[_0x54b5a5(0x1c1)]('grDrawCount');if(!selectedGroupGiftId){_0x1cefbf[_0x54b5a5(0x203)]=_0x54b5a5(0x2a3),_0x1cefbf[_0x54b5a5(0x18c)]=_0x54b5a5(0x163),_0x424a76[_0x54b5a5(0x203)]=_0x54b5a5(0x24d),_0x424a76[_0x54b5a5(0x18c)]=_0x54b5a5(0x1fa),_0x117761[_0x54b5a5(0x18c)]='flex\x20items-center\x20justify-between\x20bg-white\x20border-2\x20border-dashed\x20border-gray-200\x20rounded-xl\x20p-3\x20transition-all\x20text-sm',_0x3ef0a4[_0x54b5a5(0x1b2)]=0x0,_0x42e87b[_0x54b5a5(0x259)]=!![];return;}const _0x28ce10=allGiftsData['find'](_0x31a4dd=>_0x31a4dd['id']===selectedGroupGiftId);!_0x28ce10||_0x28ce10[_0x54b5a5(0x150)]<=0x0?(_0x1cefbf['textContent']=_0x28ce10?_0x28ce10['name']+_0x54b5a5(0x1b9):_0x54b5a5(0x1d9),_0x1cefbf[_0x54b5a5(0x18c)]=_0x54b5a5(0x1ca),_0x424a76['textContent']=_0x54b5a5(0x123),_0x117761[_0x54b5a5(0x18c)]='flex\x20items-center\x20justify-between\x20bg-white\x20border-2\x20border-dashed\x20border-gray-200\x20rounded-xl\x20p-3\x20transition-all',_0x3ef0a4[_0x54b5a5(0x1b2)]=0x0,_0x42e87b['disabled']=!![]):(_0x1cefbf[_0x54b5a5(0x203)]=_0x28ce10[_0x54b5a5(0x22a)],_0x1cefbf[_0x54b5a5(0x18c)]=_0x54b5a5(0x1f0),_0x424a76[_0x54b5a5(0x203)]='คงเหลือ:\x20'+_0x28ce10[_0x54b5a5(0x150)]+_0x54b5a5(0x169),_0x424a76[_0x54b5a5(0x18c)]='text-sm\x20font-bold\x20text-gray-600\x20mt-1\x20text-sm',_0x117761['className']=_0x54b5a5(0x116),_0x3ef0a4[_0x54b5a5(0x1b2)]=_0x28ce10[_0x54b5a5(0x150)],_0x3ef0a4['max']=_0x28ce10['remainingQty'],_0x42e87b[_0x54b5a5(0x259)]=![]);}async function startGroupRandomDraw(){const _0xf4d25c=_0x21551b,_0x5cc610=parseInt(document[_0xf4d25c(0x1c1)](_0xf4d25c(0x29c))['value'])||0x0,_0x1fcc94=allEmployeesData[_0xf4d25c(0x224)](_0xe34839=>_0xe34839[_0xf4d25c(0x2a1)]&&_0xe34839[_0xf4d25c(0x297)]===_0xf4d25c(0x297)&&!_0xe34839[_0xf4d25c(0x25e)]);if(!selectedGroupGiftId)return;const _0x5f2afc=allGiftsData[_0xf4d25c(0x2b0)](_0x31ef68=>_0x31ef68['id']===selectedGroupGiftId);if(_0x5cc610<=0x0||_0x1fcc94[_0xf4d25c(0x296)]<_0x5cc610||_0x5f2afc['remainingQty']<_0x5cc610)return;const _0x533269=document['getElementById'](_0xf4d25c(0x27a));_0x533269['disabled']=!![];const _0x3a9da9=document[_0xf4d25c(0x1c1)](_0xf4d25c(0x1e7)),_0x45ddc8=document['getElementById'](_0xf4d25c(0x181));_0x3a9da9[_0xf4d25c(0x183)]='',_0x45ddc8[_0xf4d25c(0x183)]='';const _0x176d15=[..._0x1fcc94][_0xf4d25c(0x2a8)](()=>0.5-Math[_0xf4d25c(0x1a8)]())[_0xf4d25c(0x205)](0x0,_0x5cc610);await updateDoc(doc(db,_0xf4d25c(0x167),selectedGroupGiftId),{'remainingQty':_0x5f2afc['remainingQty']-_0x5cc610});const _0x33447a=Math[_0xf4d25c(0x267)](_0x5cc610/0x2),_0x45d422=_0x176d15['slice'](0x0,_0x33447a),_0x227ec4=_0x176d15['slice'](_0x33447a),_0x27077d=_0x574ef8=>{const _0x525e83=_0xf4d25c,_0x3406ce=document[_0x525e83(0x1ef)](_0x525e83(0x1a1));_0x3406ce['id']='loader',_0x3406ce[_0x525e83(0x18c)]=_0x525e83(0x20a),_0x574ef8[_0x525e83(0x1a2)](_0x3406ce);},_0x14cf60=_0x546822=>{const _0x1abaee=_0xf4d25c,_0x52faf0=_0x546822[_0x1abaee(0x188)](_0x1abaee(0x1e8));if(_0x52faf0)_0x52faf0[_0x1abaee(0x266)]();};for(let _0x23052b=0x0;_0x23052b<_0x45d422[_0xf4d25c(0x296)];_0x23052b++){_0x27077d(_0x3a9da9),await new Promise(_0x2ae310=>setTimeout(_0x2ae310,0x3e8)),_0x14cf60(_0x3a9da9);const _0x8bf70b=_0x45d422[_0x23052b];_0x3a9da9[_0xf4d25c(0x183)]+=createWinnerItemHTML(_0x23052b+0x1,_0x8bf70b),await updateWinnerInDB(_0x8bf70b,_0x5f2afc['name'],selectedGroupGiftId);}for(let _0x339e4e=0x0;_0x339e4e<_0x227ec4[_0xf4d25c(0x296)];_0x339e4e++){_0x27077d(_0x45ddc8),await new Promise(_0x9fd6ef=>setTimeout(_0x9fd6ef,0x3e8)),_0x14cf60(_0x45ddc8);const _0x15b568=_0x227ec4[_0x339e4e];_0x45ddc8[_0xf4d25c(0x183)]+=createWinnerItemHTML(_0x33447a+_0x339e4e+0x1,_0x15b568),await updateWinnerInDB(_0x15b568,_0x5f2afc[_0xf4d25c(0x22a)],selectedGroupGiftId);}_0x533269['disabled']=![],confetti({'particleCount':0x96,'spread':0x64,'origin':{'y':0.6}});}function createWinnerItemHTML(_0x2338fb,_0x2f0152){const _0x1c39ba=_0x21551b;return _0x1c39ba(0x21c)+_0x2338fb+_0x1c39ba(0x264)+_0x2f0152[_0x1c39ba(0x137)]+'\x20('+_0x2f0152['employeeId']+_0x1c39ba(0x166)+_0x2f0152['id']+'\x27)\x22\x20class=\x22text-red-400\x20hover:text-red-600\x20cursor-pointer\x20font-bold\x20text-lg\x20ml-3\x20text-sm\x22>&times;</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20';}async function updateWinnerInDB(_0x273f80,_0x503df9,_0x486321){const _0x25feef=_0x21551b;await updateDoc(doc(db,_0x25feef(0x198),_0x273f80['id']),{'RandomTime':serverTimestamp(),'AwardedGift':_0x503df9,'AwardedGiftId':_0x486321});}async function runIndividualLuckyDraw(){const _0x37504c=_0x21551b,_0x550b5d=document[_0x37504c(0x1c1)](_0x37504c(0x253));_0x550b5d[_0x37504c(0x203)]='';const _0x4edbc8=allEmployeesData[_0x37504c(0x224)](_0x2f1a67=>_0x2f1a67[_0x37504c(0x2a1)]&&_0x2f1a67[_0x37504c(0x297)]===_0x37504c(0x297)&&!_0x2f1a67[_0x37504c(0x25e)]);if(!selectedIndGiftId){_0x550b5d[_0x37504c(0x203)]=_0x37504c(0x1f4);return;}if(!_0x4edbc8[_0x37504c(0x296)]){_0x550b5d[_0x37504c(0x203)]=_0x37504c(0x275);return;}const _0x59d352=allGiftsData[_0x37504c(0x2b0)](_0x4c76a7=>_0x4c76a7['id']===selectedIndGiftId);if(!_0x59d352||_0x59d352[_0x37504c(0x150)]<=0x0){_0x550b5d[_0x37504c(0x203)]=_0x37504c(0x21f);return;}const _0x27089b=document[_0x37504c(0x1c1)]('startRandomizeButton');_0x27089b[_0x37504c(0x259)]=!![];const _0x42adbd=[0x1,0x2,0x3,0x4,0x5][_0x37504c(0x1c6)](_0x2a4b49=>document['getElementById'](_0x37504c(0x28c)+_0x2a4b49));let _0x1c733f=0x0;drawInterval=setInterval(()=>{const _0x47c00f=_0x37504c;_0x42adbd[_0x47c00f(0x248)](_0xe147a3=>_0xe147a3[_0x47c00f(0x203)]=Math[_0x47c00f(0x146)](Math[_0x47c00f(0x1a8)]()*0xa));if(++_0x1c733f>0x28){clearInterval(drawInterval);const _0x3e4490=_0x4edbc8[Math[_0x47c00f(0x146)](Math[_0x47c00f(0x1a8)]()*_0x4edbc8[_0x47c00f(0x296)])],_0x28350b=String(_0x3e4490[_0x47c00f(0x24e)])[_0x47c00f(0x205)](-0x5)[_0x47c00f(0x196)](0x5,'0');_0x42adbd['forEach']((_0xc9ae5a,_0x4c8a06)=>_0xc9ae5a[_0x47c00f(0x203)]=_0x28350b[_0x4c8a06]),setTimeout(async()=>{const _0x229c65=_0x47c00f;await updateDoc(doc(db,_0x229c65(0x167),selectedIndGiftId),{'remainingQty':_0x59d352[_0x229c65(0x150)]-0x1}),await updateDoc(doc(db,_0x229c65(0x198),_0x3e4490['id']),{'RandomTime':serverTimestamp(),'AwardedGift':_0x59d352[_0x229c65(0x22a)],'AwardedGiftId':selectedIndGiftId}),document['getElementById'](_0x229c65(0x1bd))['textContent']=_0x3e4490[_0x229c65(0x137)]+'\x20('+_0x3e4490['employeeId']+')',document[_0x229c65(0x1c1)]('winnerGiftText')['textContent']='รางวัล:\x20'+_0x59d352['name'],document[_0x229c65(0x1c1)](_0x229c65(0x1f6))[_0x229c65(0x203)]=_0x229c65(0x23e)+_0x3e4490[_0x229c65(0x24e)],document[_0x229c65(0x1c1)](_0x229c65(0x14c))[_0x229c65(0x203)]=_0x229c65(0x152)+(_0x3e4490[_0x229c65(0x1fc)]||'-'),document[_0x229c65(0x1c1)](_0x229c65(0x27d))['textContent']='สังกัด:\x20'+(_0x3e4490[_0x229c65(0x111)]||'-'),document[_0x229c65(0x1c1)](_0x229c65(0x237))[_0x229c65(0x19a)][_0x229c65(0x266)]('hidden'),confetti({'particleCount':0x96,'spread':0x64,'origin':{'y':0.6}}),_0x27089b[_0x229c65(0x259)]=![],updateLuckyDrawStats();},0x1f4);}},0x32);}window[_0x21551b(0x1ae)]=async _0x24fc9a=>{const _0x3d81b9=_0x21551b,_0x45810d=allEmployeesData[_0x3d81b9(0x2b0)](_0x5e13dd=>_0x5e13dd['id']===_0x24fc9a);if(!_0x45810d)return;if(_0x45810d[_0x3d81b9(0x1e2)]){const _0x5098c8=allGiftsData['find'](_0x30c5e0=>_0x30c5e0['id']===_0x45810d[_0x3d81b9(0x1e2)]);if(_0x5098c8)await updateDoc(doc(db,'crsg_gift',_0x5098c8['id']),{'remainingQty':_0x5098c8[_0x3d81b9(0x150)]+0x1});}await updateDoc(doc(db,_0x3d81b9(0x198),_0x24fc9a),{'RandomTime':null,'AwardedGift':'','AwardedGiftId':null,'ReceivedTime':null}),document['getElementById'](_0x3d81b9(0x237))['classList']['add']('hidden');};function updateLuckyDrawStats(){const _0x253475=_0x21551b,_0x142890=allEmployeesData[_0x253475(0x224)](_0x5bf877=>_0x5bf877[_0x253475(0x2a1)]&&_0x5bf877[_0x253475(0x297)]===_0x253475(0x297)),_0x38da05=_0x142890[_0x253475(0x224)](_0x65f01c=>_0x65f01c['RandomTime'])[_0x253475(0x2a8)]((_0x216ea2,_0x5639ea)=>(_0x5639ea[_0x253475(0x25e)]?.[_0x253475(0x17a)]()||0x0)-(_0x216ea2[_0x253475(0x25e)]?.['toMillis']()||0x0));document[_0x253475(0x1c1)](_0x253475(0x1d4))['textContent']=_0x142890[_0x253475(0x224)](_0x50b25c=>!_0x50b25c['RandomTime'])[_0x253475(0x296)],document[_0x253475(0x1c1)]('modalDrawnCount')[_0x253475(0x203)]=_0x38da05[_0x253475(0x296)],document[_0x253475(0x1c1)](_0x253475(0x28d))[_0x253475(0x183)]=_0x38da05[_0x253475(0x1c6)](_0x320539=>_0x253475(0x1cc)+_0x320539['employeeId']+'</td><td\x20class=\x22px-4\x20py-4\x20uppercase\x20font-bold\x20text-xm\x20text-left\x20text-sm\x20text-sm\x22>'+_0x320539[_0x253475(0x137)]+(_0x320539[_0x253475(0x1dc)]?_0x253475(0x2b4)+_0x320539[_0x253475(0x1dc)]+'</span>':'')+_0x253475(0x175)+(_0x320539[_0x253475(0x1fc)]||'-')+'</td><td\x20class=\x22px-4\x20py-4\x20text-center\x22><span\x20onclick=\x22removeLuckyWinner(\x27'+_0x320539['id']+'\x27)\x22\x20class=\x22bg-red-50\x20text-white\x20px-3\x20py-1\x20rounded\x20cursor-pointer\x20text-sm\x20font-bold\x22>ลบ</span></td></tr>')[_0x253475(0x2b1)]('');}function updateTeamTab(){const _0x33e339=_0x21551b,_0x3abce8=document[_0x33e339(0x1c1)](_0x33e339(0x217)),_0x405738=_0x3abce8['value'];_0x3abce8[_0x33e339(0x183)]=_0x33e339(0x236)+teamNames[_0x33e339(0x1c6)](_0x270bfa=>_0x33e339(0x122)+_0x270bfa+'\x22>'+_0x270bfa+_0x33e339(0x22f))['join'](''),_0x3abce8['value']=teamNames[_0x33e339(0x19c)](_0x405738)?_0x405738:'';if(_0x3abce8['value']){const _0x555061=allEmployeesData['filter'](_0x513ff4=>_0x513ff4['Check_Place']===_0x3abce8[_0x33e339(0x1b2)]);document[_0x33e339(0x1c1)](_0x33e339(0x173))[_0x33e339(0x203)]=_0x555061[_0x33e339(0x296)],document[_0x33e339(0x1c1)]('teamStatsRegistered')[_0x33e339(0x203)]=_0x555061[_0x33e339(0x224)](_0x3c445a=>_0x3c445a['DateLogin'])[_0x33e339(0x296)],document[_0x33e339(0x1c1)]('teamStatsContainer')[_0x33e339(0x19a)][_0x33e339(0x266)](_0x33e339(0x190)),document[_0x33e339(0x1c1)](_0x33e339(0x1f5))[_0x33e339(0x183)]=_0x555061[_0x33e339(0x1c6)]((_0x390883,_0x450681)=>'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr\x20class=\x22'+(_0x390883[_0x33e339(0x2a1)]?_0x33e339(0x29a):'')+_0x33e339(0x1c7)+(_0x450681+0x1)+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20font-normal\x20text-blue-800\x22>'+_0x390883[_0x33e339(0x24e)]+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20font-normal\x20uppercase\x20text-left\x22>'+_0x390883[_0x33e339(0x137)]+_0x33e339(0x11a)+(_0x390883[_0x33e339(0x1fc)]||'-')+_0x33e339(0x11a)+(_0x390883[_0x33e339(0x111)]||'-')+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20text-center\x20font-black\x20uppercase\x20text-xs\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+(_0x390883[_0x33e339(0x2a1)]?'<span\x20class=\x22px-3\x20py-1\x20bg-green-100\x20text-green-700\x20rounded-md\x22>ลงทะเบียน</span>':'-')+_0x33e339(0x11e)+_0x390883['id']+_0x33e339(0x1c0))[_0x33e339(0x2b1)]('');}else document[_0x33e339(0x1c1)](_0x33e339(0x14f))['classList'][_0x33e339(0x174)]('hidden');}function updateGridTab(){const _0x29cf57=_0x21551b,_0x41bb9a=document['getElementById'](_0x29cf57(0x1a7))['value'],_0xac404e=[...new Set(allEmployeesData['map'](_0x13a043=>_0x13a043['Check_Manager'])[_0x29cf57(0x224)](Boolean))]['sort'](),_0x521340=document[_0x29cf57(0x1c1)](_0x29cf57(0x1a7));_0x521340[_0x29cf57(0x1f8)][_0x29cf57(0x296)]!==_0xac404e[_0x29cf57(0x296)]+0x1&&(_0x521340[_0x29cf57(0x183)]=_0x29cf57(0x130)+_0xac404e[_0x29cf57(0x1c6)](_0xf9c074=>'<option\x20value=\x22'+_0xf9c074+'\x22>'+_0xf9c074+'</option>')['join'](''));_0x521340[_0x29cf57(0x1b2)]=_0x41bb9a;const _0x9ebcec=_0x41bb9a?allEmployeesData['filter'](_0x5c8ad1=>_0x5c8ad1['Check_Manager']===_0x41bb9a):allEmployeesData,_0x3a174a=_0x9ebcec[_0x29cf57(0x224)](_0x47fe31=>_0x47fe31[_0x29cf57(0x297)]===_0x29cf57(0x297));document[_0x29cf57(0x1c1)](_0x29cf57(0x29b))[_0x29cf57(0x203)]=_0x3a174a[_0x29cf57(0x296)],document[_0x29cf57(0x1c1)](_0x29cf57(0x247))['textContent']=_0x3a174a[_0x29cf57(0x224)](_0x355927=>_0x355927[_0x29cf57(0x2a1)])[_0x29cf57(0x296)],document['getElementById'](_0x29cf57(0x230))[_0x29cf57(0x19a)][_0x29cf57(0x266)]('hidden');const _0x16301c={};teamNames[_0x29cf57(0x248)](_0x5e87e1=>_0x16301c[_0x5e87e1]={'r':0x0,'t':0x0}),_0x9ebcec[_0x29cf57(0x224)](_0x49cda2=>_0x49cda2['Check_Place'])[_0x29cf57(0x248)](_0x7aa8c1=>{const _0x540f9e=_0x29cf57;if(_0x16301c[_0x7aa8c1[_0x540f9e(0x1ff)]]){_0x16301c[_0x7aa8c1[_0x540f9e(0x1ff)]]['t']++;if(_0x7aa8c1[_0x540f9e(0x2a1)])_0x16301c[_0x7aa8c1[_0x540f9e(0x1ff)]]['r']++;}});const _0x40d53c=document[_0x29cf57(0x1c1)](_0x29cf57(0x1bb)),_0x456270=document[_0x29cf57(0x1c1)](_0x29cf57(0x1b3));_0x40d53c[_0x29cf57(0x183)]='',_0x456270[_0x29cf57(0x183)]='',teamNames['forEach'](_0x396d0c=>{const _0x500657=_0x29cf57,_0x2101e5=_0x16301c[_0x396d0c];let _0x3ea402=_0x500657(0x2b5);if(_0x2101e5['t']>0x0){if(_0x2101e5['r']===_0x2101e5['t'])_0x3ea402=_0x500657(0x28a);else{if(_0x2101e5['r']>0x0)_0x3ea402=_0x500657(0x2a4);}}const _0x13b42c=_0x500657(0x1d0)+_0x396d0c+_0x500657(0x17f)+_0x3ea402+'\x20aspect-square\x20rounded-full\x20border\x20border-gray-200\x20flex\x20flex-col\x20items-center\x20justify-center\x20cursor-pointer\x20hover:shadow-lg\x20hover:scale-105\x20transition-all\x20active:scale-95\x20shadow-sm\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22text-[12px]\x20font-bold\x20text-blue-700\x20leading-none\x20text-xs\x20font-bold\x22>'+_0x396d0c+'</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22text-sm\x20font-black\x20text-gray-900\x20mt-0.5\x20text-sm\x22>'+_0x2101e5['r']+'/'+_0x2101e5['t']+_0x500657(0x288);if(_0x396d0c[_0x500657(0x28e)]('A'))_0x40d53c[_0x500657(0x183)]+=_0x13b42c;else{if(_0x396d0c[_0x500657(0x28e)]('B'))_0x456270[_0x500657(0x183)]+=_0x13b42c;}});}function _0x5f08(){const _0x48dd79=['closeGiftPickerBtn','digit','drawnWinnersTableBody','startsWith','datasets','breakdownCenterTotal','registrationTimelineChart','A10','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr\x20class=\x22hover:bg-gray-50\x20transition-colors\x20text-sm\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20text-center\x20font-bold\x20text-gray-400\x20text-xs\x22>','text-blue-800','ยังไม่รับ','length','invite','editEmpName','sort-emp-id','bg-yellow-50','gvOverallStatsTotal','grDrawCount','teamBarChart2','empStatsPercent','B12','\ufeffรหัสพนักงาน,ชื่อ-นามสกุล,ของรางวัล,สาขา,สังกัด,ที่นั่ง,สถานะรับของ,เวลาได้รับ\x0a','DateLogin','64HPoKxg','--\x20ยังไม่ได้เลือกของรางวัล\x20--','bg-orange-100','changeEmpPage',']\x20หรือไม่?','<tr><td\x20class=\x22px-4\x20py-0\x20text-center\x20text-sm\x22>','sort','\x27,\x20\x27','empStatsUnregistered','asc','editEmpManager','grGiftDisplayName','#fff','error','find','join','\x27)\x22\x20class=\x22px-4\x20py-1\x20rounded-full\x20text-xs\x20font-black\x20uppercase\x20transition-all\x20shadow-sm\x20border\x20','ไม่พบรหัสพนักงานในระบบ','<br/><span\x20class=\x22text-sm\x20text-orange-600\x20text-xs\x22>🎁\x20','bg-gray-100','A24','member','Check_Manager','teamMemberCountElem','305ZuHmAW','confirmText','closeDashboardListModalButton','flex\x20items-center\x20justify-between\x20bg-blue-50\x20border-2\x20border-blue-300\x20rounded-xl\x20p-3\x20transition-all','searchRegEmployeeError','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20text-left\x20text-gray-400\x20text-sm\x22>','A15','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20font-normal\x20text-gray-600\x20text-left\x22>','grRemainingEligible','giftQtyInput','bg-green-400\x20text-white\x20border-green-600','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20text-center\x22><span\x20onclick=\x22editEmp(\x27','sort-emp-name','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20font-normal\x20text-center\x20text-orange-600\x20text-sm\x20text-sm\x22>','Registered','<option\x20value=\x22','คงเหลือ:\x200','manualRegisterModal','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','A18','closeRandomizeModalButtonX','</h3>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22bg-indigo-600\x20text-white\x20px-3\x20py-1\x20rounded-full\x20text-xs\x20font-bold\x20uppercase\x22>','ttb-register','markAsReceived','6273776fjMXoX','total','regEmpInviteStatus','openGroupGiftPickerBtn','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20font-normal\x20text-left\x20text-gray-600\x20text-sm\x20text-sm\x22>','<option\x20value=\x22\x22>--\x20ดูทั้งหมด\x20--</option>','B13','#F59E0B','group-random-content','sort-emp-branch','downloadWinnersCsvButton','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','FullName_th','indGiftDisplayName','2843239UQttfz','ข้อมูลสมาชิกทีม\x20','editEmpTeam','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr\x20class=\x22','\x27)\x22\x20class=\x22bg-red-500\x20text-white\x20px-3\x20py-0.5\x20rounded\x20text-[10px]\x20font-bold\x20uppercase\x20cursor-pointer\x22>Edit</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tr>','openGiftPickerBtn','bg-gray-100\x20text-gray-500','text-gray-500','<span\x20class=\x22bg-green-100\x20text-green-700\x20px-2\x20py-0.5\x20rounded\x20text-[10px]\x20font-normal\x22>ลงทะเบียน</span>','9fKdIaw','sort-emp-member',')\x22>ถัดไป</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','\x27)\x22\x20class=\x22bg-red-100\x20text-red-700\x20px-3\x20py-1\x20rounded\x20text-[10px]\x20font-normal\x20uppercase\x20cursor-pointer\x20hover:bg-red-200\x20transition-all\x20text-sm\x20text-sm\x22>Delete</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','floor','regEmpName','dashboardListCount','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-2\x20text-center\x20text-blue-600\x20font-bold\x20text-sm\x22>','toUpperCase','closeConfirmButton','winnerBU','\x27,\x20this.value)\x22\x20class=\x22w-16\x20p-1\x20text-center\x20border\x20rounded\x20font-bold\x20text-blue-600\x22\x20min=\x221\x22></td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-2\x20text-sm\x20font-normal\x22>','giftNameInput','teamStatsContainer','remainingQty','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20font-normal\x20text-blue-700\x20text-center\x20text-sm\x22>','สาขา:\x20','doughnut','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20text-center\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22cancelReg(\x27','สุ่มแบบกลุ่ม:\x20เลือกของรางวัล','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr\x20class=\x22hover:bg-gray-50\x20text-center\x20text-sm\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-2\x20text-gray-400\x20font-bold\x20text-xs\x22>','indGiftDisplayQty','ttb-register.firebasestorage.app','A12','keys','dispatchEvent','resize','</td><td\x20class=\x22px-4\x20py-0\x20uppercase\x20font-bold\x20text-xm\x20text-left\x20text-sm\x22>','downloadEmployeeCsvButton','bg-gray-300','sort-emp-manager','unregistered','ไม่พบรหัสพนักงาน','text-base\x20font-black\x20text-gray-400\x20leading-tight\x20uppercase\x20text-sm','reduce','1070273157855',')</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20onclick=\x22removeLuckyWinner(\x27','crsg_gift','th-TH','\x20ชิ้น','regManualError','confirmModalInner','A13','\x27)\x22\x20class=\x22text-red-600\x20hover:text-red-700\x20cursor-pointer\x20font-black\x20text-xs\x22>ลบ</span></td></tr>','href','update','B17','regEmpId','<tr><td\x20colspan=\x227\x22\x20class=\x22p-10\x20text-center\x20text-gray-400\x22>ไม่พบข้อมูล</td></tr>','teamStatsTotal','add','</td><td\x20class=\x22px-4\x20py-4\x20text-xm\x20font-bold\x20text-gray-500\x20uppercase\x20text-left\x20text-sm\x22>','empStatsRegistered',')\x22>ก่อนหน้า</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','B14','grTotalWinners','toMillis','รายชื่อผู้ร่วมงาน','text-base\x20text-gray-800','A11','max','\x27)\x22\x20class=\x22','group-view-content','grBoxRight','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20text-blue-600\x20font-bold\x20uppercase\x20text-center\x22>','innerHTML','numeric','\x20ท่าน</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22overflow-x-auto\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<table\x20class=\x22min-w-full\x20text-sm\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<thead\x20class=\x22table-header-gray\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<th\x20class=\x22px-4\x20py-4\x20text-center\x20font-bold\x20text-gray-600\x22>ลำดับ</th>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<th\x20class=\x22px-4\x20py-4\x20text-left\x20font-bold\x20text-gray-600\x22>รหัส</th>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<th\x20class=\x22px-4\x20py-4\x20text-left\x20font-bold\x20text-gray-600\x22>ชื่อ-นามสกุล</th>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<th\x20class=\x22px-4\x20py-4\x20text-left\x20font-bold\x20text-gray-600\x22>สาขา</th>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<th\x20class=\x22px-4\x20py-4\x20text-left\x20font-bold\x20text-gray-600\x22>สังกัด</th>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<th\x20class=\x22px-4\x20py-4\x20text-left\x20font-bold\x20text-gray-600\x22>ที่นั่ง</th>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<th\x20class=\x22px-4\x20py-4\x20text-center\x20font-bold\x20text-gray-600\x22>รับของรางวัล</th>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<th\x20class=\x22px-4\x20py-4\x20text-center\x20font-bold\x20text-gray-600\x22>จัดการ</th>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</thead>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tbody\x20class=\x22divide-y\x20divide-gray-100\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','participantsCountBox','off','querySelector','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-2\x20text-center\x20text-sm\x22>','top','ยืนยันการล้างข้อมูลการลงทะเบียนและรางวัลทั้งหมด?','className','goal','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20font-black\x20uppercase\x20text-left\x22>','bg-white\x20rounded-2xl\x20p-10\x20max-w-lg\x20w-full\x20shadow-2xl\x20text-center\x20transition-all\x20duration-300','hidden','randomizeModal','card-registered','\x27)\x22\x20class=\x22text-red-500\x20hover:text-red-700\x20cursor-pointer\x20font-bold\x20text-xs\x20uppercase\x20text-sm\x22>Delete</span></td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','text/csv;charset=utf-8;','groupViewTableBody','padStart',']\x20?','crsg','gift-management-content','classList','openGroupDetail','includes','groupViewStatsRegistered','1:1070273157855:web:5c8120e1df27e233d8676a','\x22\x20onchange=\x22updateGiftOrder(\x27',')\x22>','div','appendChild','5751160gHPxTC','confirmInputContainer','ReceivedTime','breakdown','groupViewManagerFilter','random','confirmActionButton','Remaining','\ufeffรหัส,ชื่อ-นามสกุล,สายงาน,สังกัด,ทีม,สถานะ\x0a','bar','giftListTableBody','removeLuckyWinner','latestRegistrationsTableBody','90212zQUzFX','ต้องการลบข้อมูลวันเวลาลงทะเบียนของ\x20[','value','teamGridB','\x20rounded-lg\x20text-sm\x20font-black\x20uppercase\x22>',':00','docs','sort-emp-status','deleteGift','\x20(หมดแล้ว)','grGiftDisplayQty','teamGridA','#E5E7EB','winnerName','B24','editEmpId','\x27)\x22\x20class=\x22text-orange-500\x20hover:text-orange-700\x20cursor-pointer\x20font-black\x20text-xs\x20uppercase\x20shadow-sm\x22>Edit</span></td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tr>','getElementById','B16','<tr><td\x20colspan=\x226\x22\x20class=\x22p-6\x20text-center\x20text-gray-400\x20font-bold\x22>ยังไม่มีข้อมูลของรางวัล</td></tr>','A20','12yvXXIB','map','\x20hover:bg-gray-50\x20transition-colors\x20text-center\x20text-sm\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20font-normal\x22>','OFF','startRandomizeButton','text-base\x20font-black\x20text-red-400\x20leading-tight\x20uppercase\x20text-sm','ยังไม่ลง','<tr><td\x20class=\x22px-4\x20py-4\x20font-mono\x20font-black\x20text-blue-700\x20text-center\x20text-sm\x22>','sort-emp-gift','managerFilterSelect','A17','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20onclick=\x22openGroupDetail(\x27','\x27)\x22\x20class=\x22text-orange-500\x20hover:text-orange-700\x20cursor-pointer\x20font-bold\x20text-xs\x20uppercase\x20mr-2\x20text-sm\x22>Edit</span>|\x20<span\x20onclick=\x22deleteGift(\x27','createObjectURL','team-list-content','modalParticipantsCount','giftPickerModal','extras','editEmployeeModal','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20text-center\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20onclick=\x22editEmp(\x27','--\x20รางวัลถูกลบ\x20--','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20text-center\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20','<p\x20class=\x22text-center\x20py-10\x20text-gray-400\x20font-bold\x20italic\x20text-sm\x22>--\x20ไม่มีของรางวัลคงเหลือ\x20--</p>','AwardedGift','localeCompare','bg-white\x20rounded-2xl\x20p-10\x20max-w-lg\x20w-full\x20shadow-2xl\x20text-center','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-2\x20text-center\x22><button\x20onclick=\x22toggleGiftStatus(\x27','\x22,\x22ลงทะเบียน\x22\x0a','กรุณาใส่รหัสพนักงาน','AwardedGiftId','B11','registered','giftPickerList','click','grBoxLeft','#loader','ผู้ร่วมงาน','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<tr\x20class=\x22hover:bg-gray-50\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-2\x20text-center\x22><input\x20type=\x22number\x22\x20value=\x22','download','<span\x20class=\x22px-1\x20text-gray-400\x22>...</span>','card-unregistered','Selected','createElement','text-base\x20font-black\x20text-blue-600\x20leading-tight\x20uppercase\x20text-sm','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-2\x20font-mono\x20font-bold\x20text-blue-700\x20text-center\x22>','saveEditGiftBtn','ยืนยันการลบ','กรุณาเลือกของรางวัลก่อน','selectedTeamTableBody','winnerEmployeeId','confirmInput','options','toLocaleString','text-sm\x20font-bold\x20text-gray-300\x20mt-1\x20text-sm','managerEmployeeCount','Branch_eng','\x27)\x22','searchEmployeeError','Check_Place','รีเซ็ตระบบ','timelineTotalExtra','commit','textContent','addEventListener','slice','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>','winnersByGiftContainer','downloadCsvButton','\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22font-black\x20','loading-gif','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22bg-white\x20border\x20border-gray-100\x20rounded-2xl\x20overflow-hidden\x20shadow-sm\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22bg-gray-50\x20px-6\x20py-4\x20border-b\x20flex\x20justify-between\x20items-center\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h3\x20class=\x22text-lg\x20font-black\x20text-indigo-700\x20uppercase\x22>🎁\x20ของรางวัล:\x20','confirmModal','คงเหลือ:\x20','desc','giftPickerTitle','empStatsContainer','A21','trim','</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22','totalQty','getHours','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20font-bold\x20text-blue-500\x20uppercase\x20text-center\x20text-sm\x20text-sm\x22>','teamSelect','#BFDBFE','\x22,\x22','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-2\x20font-bold\x20text-left\x20uppercase\x22>','กลุ่มเป้าหมาย','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20items-center\x20justify-between\x20bg-blue-50\x20p-2.5\x20rounded-xl\x20border\x20border-blue-100\x20winner-row-animate\x20shadow-sm\x20mb-1.5\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20items-center\x20gap-2.5\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22bg-blue-600\x20text-white\x20w-5\x20h-5\x20flex\x20items-center\x20justify-center\x20rounded-full\x20text-[9px]\x20font-bold\x22>','confirmTitle','editGiftModal','ของรางวัลหมดแล้ว','resetTeamButton','5058372ZwDcfo','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20font-mono\x20font-black\x20text-blue-700\x22>','ลบของรางวัล','filter','<option\x20value=\x22\x22>--\x20ทั้งหมด\x20--</option>','editGift','definedTeamNamesInput','timeline','รางวัล','name','#3B82F6','split','grGiftBox','change','</option>','gvOverallStatsContainer','winners-list-content','labels','groupViewModal','branch','attendeesCount','<option\x20value=\x22\x22>--\x20เลือกทีม\x20--</option>','winnerDetailModal','regEmpManager','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20text-gray-600\x20uppercase\x20text-left\x22>','ind','empStatsTotal','B23','data','รหัสพนักงาน:\x20','toString','long','editGiftName','closeWinnerModalButton','grTotalEligible','status','replace','fill','gvOverallStatsRegistered','forEach','#10B981','groupViewModalTitle','\ufeffลำดับ,รหัส,ชื่อ-นามสกุล,สาขา,สังกัด,Member,รางวัล,ที่นั่ง,สถานะ\x0a','\x20hover:bg-gray-50\x20transition-colors\x20text-center\x20text-sm\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20text-gray-400\x20text-center\x20text-xs\x22>','คงเหลือ:\x20-\x20ชิ้น','employeeId','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-2\x20text-left\x20text-gray-600\x22>','B22','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</tbody>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</table>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','2-digit','randomizeError','bar2','regEmpSeat','text-blue-600','gift','\x20uppercase\x20text-sm\x22>','disabled','searchRegEmployeeButton','159ZsNLmU','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20text-center\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22removeLuckyWinner(\x27','active','RandomTime','order','register-content','onclick=\x22markAsReceived(\x27','pickGift','bg-gray-200\x20text-gray-600','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22text-sm\x20font-black\x20text-gray-800\x20uppercase\x20text-left\x22>','openDashboardList','remove','ceil','<button\x20class=\x22pagination-btn\x20','Winners_Report.csv','รายชื่อพนักงานที่ลงทะเบียนแล้ว','bar1','รับแล้ว','teamBarChart1','bg-blue-600\x20text-white','dashboardListModalTitle','manager','closeEditGiftModalBtn','remainingCount','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22pagination-btn\x22\x20','editEmp','ไม่มีผู้มีสิทธิ์ลุ้น','A16','</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22px-4\x20py-1\x20','B20','dashboardListModal','grStartDrawBtn','387576vHSTTR','registrationBreakdownChart','winnerTeam','\x20onclick=\x22changeEmpPage(','B19','A14','สุ่มรายคน:\x20เลือกของรางวัล','RESET','group','editGiftTotalQty','round','</td><td\x20class=\x22px-4\x20py-0\x20text-gray-600\x20text-xm\x20text-left\x20text-sm\x22>','searchEmployeeIdInput','</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','editGiftRemainingQty','bg-green-100'];_0x5f08=function(){return _0x48dd79;};return _0x5f08();}function updateEmployeeList(){const _0x41d52c=_0x21551b,_0xefaae4=document['getElementById'](_0x41d52c(0x1ce))['value'],_0x457f02=[...new Set(allEmployeesData[_0x41d52c(0x1c6)](_0x21487c=>_0x21487c[_0x41d52c(0x111)])[_0x41d52c(0x224)](Boolean))][_0x41d52c(0x2a8)](),_0x35cda2=document[_0x41d52c(0x1c1)]('managerFilterSelect');_0x35cda2[_0x41d52c(0x1f8)]['length']!==_0x457f02[_0x41d52c(0x296)]+0x1&&(_0x35cda2['innerHTML']=_0x41d52c(0x225)+_0x457f02['map'](_0x15f8e8=>_0x41d52c(0x122)+_0x15f8e8+'\x22>'+_0x15f8e8+_0x41d52c(0x22f))[_0x41d52c(0x2b1)](''));_0x35cda2[_0x41d52c(0x1b2)]=_0xefaae4;let _0x4ffe07=allEmployeesData[_0x41d52c(0x224)](_0x23f61a=>_0x23f61a[_0x41d52c(0x1ff)]&&_0x23f61a[_0x41d52c(0x1ff)][_0x41d52c(0x212)]()!=='');if(_0xefaae4)_0x4ffe07=_0x4ffe07[_0x41d52c(0x224)](_0x5e489d=>_0x5e489d[_0x41d52c(0x111)]===_0xefaae4);_0x4ffe07[_0x41d52c(0x2a8)]((_0x582a51,_0x1c863d)=>{const _0x155dd7=_0x41d52c;let _0x37c95d,_0x198ce2;switch(empSortField){case _0x155dd7(0x244):_0x37c95d=_0x582a51[_0x155dd7(0x2a1)]?0x1:0x0,_0x198ce2=_0x1c863d['DateLogin']?0x1:0x0;break;case _0x155dd7(0x22a):return empSortDir===_0x155dd7(0x2ab)?_0x582a51[_0x155dd7(0x137)][_0x155dd7(0x1dd)](_0x1c863d['FullName_th'],'th'):_0x1c863d[_0x155dd7(0x137)][_0x155dd7(0x1dd)](_0x582a51[_0x155dd7(0x137)],'th');case _0x155dd7(0x234):_0x37c95d=_0x582a51['Branch_eng']||'',_0x198ce2=_0x1c863d[_0x155dd7(0x1fc)]||'';break;case'manager':_0x37c95d=_0x582a51['Check_Manager']||'',_0x198ce2=_0x1c863d['Check_Manager']||'';break;case _0x155dd7(0x110):_0x37c95d=_0x582a51[_0x155dd7(0x297)]||'',_0x198ce2=_0x1c863d[_0x155dd7(0x297)]||'';break;case'gift':_0x37c95d=_0x582a51[_0x155dd7(0x1dc)]?0x1:0x0,_0x198ce2=_0x1c863d[_0x155dd7(0x1dc)]?0x1:0x0;break;default:_0x37c95d=_0x582a51[_0x155dd7(0x24e)],_0x198ce2=_0x1c863d[_0x155dd7(0x24e)];}if(_0x37c95d<_0x198ce2)return empSortDir===_0x155dd7(0x2ab)?-0x1:0x1;if(_0x37c95d>_0x198ce2)return empSortDir===_0x155dd7(0x2ab)?0x1:-0x1;return 0x0;});const _0xcf1fd6=_0x4ffe07['length'],_0x3ba512=_0x4ffe07['filter'](_0x4bc29c=>_0x4bc29c[_0x41d52c(0x2a1)])[_0x41d52c(0x296)],_0x3db3d5=_0xcf1fd6-_0x3ba512,_0x312964=_0xcf1fd6>0x0?Math[_0x41d52c(0x285)](_0x3ba512/_0xcf1fd6*0x64):0x0;document[_0x41d52c(0x1c1)](_0x41d52c(0x23b))[_0x41d52c(0x203)]=_0xcf1fd6,document[_0x41d52c(0x1c1)](_0x41d52c(0x176))[_0x41d52c(0x203)]=_0x3ba512,document[_0x41d52c(0x1c1)]('empStatsUnregistered')['textContent']=_0x3db3d5,document[_0x41d52c(0x1c1)](_0x41d52c(0x29e))[_0x41d52c(0x203)]=_0x312964+'%',document['getElementById'](_0x41d52c(0x210))[_0x41d52c(0x19a)][_0x41d52c(0x266)](_0x41d52c(0x190));const _0x29a239=Math['ceil'](_0xcf1fd6/empPageSize);if(empCurrentPage>_0x29a239&&_0x29a239>0x0)empCurrentPage=_0x29a239;const _0x8978b5=_0x4ffe07['slice']((empCurrentPage-0x1)*empPageSize,empCurrentPage*empPageSize);document[_0x41d52c(0x1c1)]('employeeListTableBody')['innerHTML']=_0x8978b5[_0x41d52c(0x1c6)]((_0x1be4f9,_0x5d2a25)=>_0x41d52c(0x13c)+(_0x1be4f9[_0x41d52c(0x2a1)]?_0x41d52c(0x29a):'')+_0x41d52c(0x24c)+((empCurrentPage-0x1)*empPageSize+(_0x5d2a25+0x1))+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20font-normal\x20text-blue-800\x20text-center\x20text-sm\x22>'+_0x1be4f9[_0x41d52c(0x24e)]+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20font-normal\x20uppercase\x20text-left\x20text-sm\x20text-sm\x22>'+_0x1be4f9[_0x41d52c(0x137)]+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20font-normal\x20text-left\x20text-gray-600\x20text-sm\x20text-sm\x22>'+(_0x1be4f9[_0x41d52c(0x1fc)]||'-')+_0x41d52c(0x12f)+(_0x1be4f9[_0x41d52c(0x111)]||'-')+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20font-normal\x20text-center\x20text-gray-400\x20text-sm\x20text-sm\x22>'+(_0x1be4f9[_0x41d52c(0x297)]||'-')+_0x41d52c(0x120)+(_0x1be4f9[_0x41d52c(0x1dc)]?_0x41d52c(0x229):'-')+_0x41d52c(0x216)+(_0x1be4f9[_0x41d52c(0x1ff)]||'-')+_0x41d52c(0x125)+(_0x1be4f9[_0x41d52c(0x2a1)]?'<span\x20class=\x22px-3\x20py-1\x20bg-green-100\x20text-green-700\x20rounded-md\x20text-[10px]\x20font-normal\x20text-xs\x20text-sm\x22>ลงทะเบียน</span>':'-')+_0x41d52c(0x154)+_0x1be4f9['id']+_0x41d52c(0x2a9)+_0x1be4f9[_0x41d52c(0x137)]+_0x41d52c(0x145))[_0x41d52c(0x2b1)](''),renderEmpPagination(_0x29a239);}function renderEmpPagination(_0x45b7fe){const _0x196934=_0x21551b,_0x5e2c23=document[_0x196934(0x1c1)]('empPaginationContainer');if(_0x45b7fe<=0x1){_0x5e2c23[_0x196934(0x183)]='';return;}let _0x475d11=_0x196934(0x273)+(empCurrentPage===0x1?_0x196934(0x259):'')+_0x196934(0x27e)+(empCurrentPage-0x1)+_0x196934(0x177);for(let _0x538465=0x1;_0x538465<=_0x45b7fe;_0x538465++){if(_0x538465===0x1||_0x538465===_0x45b7fe||_0x538465>=empCurrentPage-0x2&&_0x538465<=empCurrentPage+0x2)_0x475d11+=_0x196934(0x268)+(_0x538465===empCurrentPage?_0x196934(0x25d):'')+'\x22\x20onclick=\x22changeEmpPage('+_0x538465+_0x196934(0x1a0)+_0x538465+'</button>';else(_0x538465===empCurrentPage-0x3||_0x538465===empCurrentPage+0x3)&&(_0x475d11+=_0x196934(0x1ec));}_0x475d11+=_0x196934(0x273)+(empCurrentPage===_0x45b7fe?_0x196934(0x259):'')+_0x196934(0x27e)+(empCurrentPage+0x1)+_0x196934(0x144),_0x5e2c23[_0x196934(0x183)]=_0x475d11;}window[_0x21551b(0x2a5)]=_0x5c4bd8=>{empCurrentPage=_0x5c4bd8,updateEmployeeList();},window['cancelReg']=(_0x3f6522,_0x2e91a1)=>{const _0x34451e=_0x21551b,_0x55144e=document['getElementById'](_0x34451e(0x16b));_0x55144e[_0x34451e(0x18c)]=_0x34451e(0x1de),currentConfirmAction=async()=>{const _0x27b37f=_0x34451e;try{await updateDoc(doc(db,_0x27b37f(0x198),_0x3f6522),{'DateLogin':null,'MobileId':''}),document[_0x27b37f(0x1c1)](_0x27b37f(0x20c))[_0x27b37f(0x19a)][_0x27b37f(0x174)](_0x27b37f(0x190));}catch(_0x5e3a31){console[_0x27b37f(0x2af)](_0x5e3a31);}},document['getElementById'](_0x34451e(0x21d))[_0x34451e(0x203)]=_0x34451e(0x1f3),document['getElementById'](_0x34451e(0x114))[_0x34451e(0x203)]=_0x34451e(0x1b1)+_0x2e91a1+_0x34451e(0x2a6),document[_0x34451e(0x1c1)](_0x34451e(0x1a4))[_0x34451e(0x19a)]['add'](_0x34451e(0x190)),document[_0x34451e(0x1c1)](_0x34451e(0x20c))[_0x34451e(0x19a)]['remove'](_0x34451e(0x190));},window[_0x21551b(0x19b)]=_0x3139a9=>{const _0x36b3dc=_0x21551b,_0x198c9f=allEmployeesData[_0x36b3dc(0x224)](_0x1afbf8=>_0x1afbf8['Check_Place']===_0x3139a9);document['getElementById'](_0x36b3dc(0x24a))[_0x36b3dc(0x203)]=_0x36b3dc(0x13a)+_0x3139a9,document[_0x36b3dc(0x1c1)]('groupViewStatsTotal')['textContent']=_0x198c9f['length'],document[_0x36b3dc(0x1c1)](_0x36b3dc(0x19d))[_0x36b3dc(0x203)]=_0x198c9f['filter'](_0x3208f4=>_0x3208f4[_0x36b3dc(0x2a1)])[_0x36b3dc(0x296)],document[_0x36b3dc(0x1c1)](_0x36b3dc(0x195))['innerHTML']=_0x198c9f[_0x36b3dc(0x1c6)]((_0x4623b6,_0x4d8eab)=>{const _0x4b9305=_0x36b3dc;return'<tr\x20class=\x22'+(_0x4623b6['DateLogin']?_0x4b9305(0x29a):'')+'\x20hover:bg-gray-50\x20text-center\x20text-sm\x20text-sm\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20font-bold\x20text-gray-400\x20text-xs\x22>'+(_0x4d8eab+0x1)+_0x4b9305(0x151)+_0x4623b6[_0x4b9305(0x24e)]+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20font-normal\x20uppercase\x20font-bold\x20text-left\x20text-sm\x22>'+_0x4623b6['FullName_th']+_0x4b9305(0x118)+(_0x4623b6[_0x4b9305(0x1fc)]||'-')+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20text-left\x20text-gray-400\x20text-sm\x22>'+(_0x4623b6[_0x4b9305(0x111)]||'-')+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td\x20class=\x22px-4\x20py-0\x20text-center\x20text-sm\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+(_0x4623b6['DateLogin']?_0x4b9305(0x141):'-')+_0x4b9305(0x1d8)+_0x4623b6['id']+_0x4b9305(0x13d);})[_0x36b3dc(0x2b1)]('')||'<tr><td\x20colspan=\x227\x22\x20class=\x22p-10\x20text-center\x20text-sm\x20text-sm\x22>ไม่พบรายชื่อ</td></tr>',document[_0x36b3dc(0x1c1)](_0x36b3dc(0x233))[_0x36b3dc(0x19a)][_0x36b3dc(0x266)](_0x36b3dc(0x190));},window[_0x21551b(0x274)]=_0x1397ab=>{const _0x3dc8d9=_0x21551b,_0x2aa37e=allEmployeesData[_0x3dc8d9(0x2b0)](_0x451a98=>_0x451a98['id']===_0x1397ab);if(!_0x2aa37e)return;currentEditingDocId=_0x1397ab,document['getElementById'](_0x3dc8d9(0x1bf))[_0x3dc8d9(0x203)]=_0x2aa37e[_0x3dc8d9(0x24e)],document['getElementById'](_0x3dc8d9(0x298))['textContent']=_0x2aa37e[_0x3dc8d9(0x137)],document['getElementById'](_0x3dc8d9(0x2ac))['value']=_0x2aa37e[_0x3dc8d9(0x111)]||'',document['getElementById'](_0x3dc8d9(0x13b))[_0x3dc8d9(0x1b2)]=_0x2aa37e['Check_Place']||'',document[_0x3dc8d9(0x1c1)](_0x3dc8d9(0x1d7))[_0x3dc8d9(0x19a)][_0x3dc8d9(0x266)]('hidden');};function searchForRegistration(){const _0x171d32=_0x21551b,_0x4afdb1=document['getElementById']('searchRegEmployeeIdInput')[_0x171d32(0x1b2)][_0x171d32(0x212)](),_0x27dd2d=document[_0x171d32(0x1c1)](_0x171d32(0x117));_0x27dd2d['textContent']='';if(!_0x4afdb1){_0x27dd2d[_0x171d32(0x203)]=_0x171d32(0x1e1);return;}const _0x2608f4=allEmployeesData[_0x171d32(0x2b0)](_0x1e4458=>_0x1e4458[_0x171d32(0x24e)]===_0x4afdb1);_0x2608f4?(currentEditingDocId=_0x2608f4['id'],document[_0x171d32(0x1c1)](_0x171d32(0x171))['textContent']=_0x2608f4[_0x171d32(0x24e)],document['getElementById'](_0x171d32(0x147))[_0x171d32(0x203)]=_0x2608f4[_0x171d32(0x137)],document['getElementById']('regEmpBranch')[_0x171d32(0x203)]=_0x2608f4[_0x171d32(0x1fc)]||'-',document['getElementById'](_0x171d32(0x238))[_0x171d32(0x203)]=_0x2608f4['Check_Manager']||'-',document[_0x171d32(0x1c1)](_0x171d32(0x255))['value']=_0x2608f4[_0x171d32(0x1ff)]||'',document[_0x171d32(0x1c1)](_0x171d32(0x12d))[_0x171d32(0x1b2)]=_0x2608f4[_0x171d32(0x297)]||'',document[_0x171d32(0x1c1)](_0x171d32(0x124))[_0x171d32(0x19a)]['remove']('hidden'),document[_0x171d32(0x1c1)](_0x171d32(0x16a))[_0x171d32(0x203)]=''):_0x27dd2d[_0x171d32(0x203)]=_0x171d32(0x2b3);}async function saveManualRegistration(){const _0x202853=_0x21551b,_0x4dffa9=document['getElementById'](_0x202853(0x255))[_0x202853(0x1b2)][_0x202853(0x212)](),_0x49fe81=document[_0x202853(0x1c1)]('regEmpInviteStatus')['value'],_0x3d9eb8=document[_0x202853(0x1c1)]('regManualError');try{await updateDoc(doc(db,_0x202853(0x198),currentEditingDocId),{'Check_Place':_0x4dffa9,'invite':_0x49fe81,'DateLogin':serverTimestamp()}),document[_0x202853(0x1c1)](_0x202853(0x124))[_0x202853(0x19a)]['add']('hidden'),document[_0x202853(0x1c1)]('searchRegEmployeeIdInput')[_0x202853(0x1b2)]='';}catch(_0xdcdc3b){console[_0x202853(0x2af)](_0xdcdc3b),_0x3d9eb8[_0x202853(0x203)]='เกิดข้อผิดพลาดในการบันทึก';}}function _0x22ac(_0x1ab5eb,_0x1b273f){_0x1ab5eb=_0x1ab5eb-0x110;const _0x5f080c=_0x5f08();let _0x22ac45=_0x5f080c[_0x1ab5eb];return _0x22ac45;}function handleEmpSort(_0x742db2){const _0x2f2a51=_0x21551b;empSortField===_0x742db2?empSortDir=empSortDir===_0x2f2a51(0x2ab)?_0x2f2a51(0x20e):_0x2f2a51(0x2ab):(empSortField=_0x742db2,empSortDir='asc'),empCurrentPage=0x1,updateEmployeeList();}function setupListeners(){const _0x74e547=_0x21551b;document[_0x74e547(0x1c1)]('randomizeButton')[_0x74e547(0x204)](_0x74e547(0x1e6),()=>{const _0x3598a2=_0x74e547;updateLuckyDrawStats(),document[_0x3598a2(0x1c1)](_0x3598a2(0x191))[_0x3598a2(0x19a)][_0x3598a2(0x266)](_0x3598a2(0x190));}),document['getElementById'](_0x74e547(0x127))[_0x74e547(0x204)](_0x74e547(0x1e6),()=>document[_0x74e547(0x1c1)](_0x74e547(0x191))[_0x74e547(0x19a)][_0x74e547(0x174)](_0x74e547(0x190))),document[_0x74e547(0x1c1)](_0x74e547(0x1c9))[_0x74e547(0x204)](_0x74e547(0x1e6),runIndividualLuckyDraw),document[_0x74e547(0x1c1)]('grStartDrawBtn')[_0x74e547(0x204)](_0x74e547(0x1e6),startGroupRandomDraw),document[_0x74e547(0x1c1)]('closeGroupViewModalButton')['addEventListener'](_0x74e547(0x1e6),()=>document[_0x74e547(0x1c1)](_0x74e547(0x233))[_0x74e547(0x19a)][_0x74e547(0x174)](_0x74e547(0x190))),document[_0x74e547(0x1c1)](_0x74e547(0x242))[_0x74e547(0x204)](_0x74e547(0x1e6),()=>document[_0x74e547(0x1c1)]('winnerDetailModal')['classList'][_0x74e547(0x174)](_0x74e547(0x190))),document[_0x74e547(0x1c1)]('closeEditModalButton')['addEventListener'](_0x74e547(0x1e6),()=>document[_0x74e547(0x1c1)]('editEmployeeModal')[_0x74e547(0x19a)][_0x74e547(0x174)](_0x74e547(0x190))),document['getElementById'](_0x74e547(0x14b))['addEventListener']('click',()=>document['getElementById'](_0x74e547(0x20c))[_0x74e547(0x19a)]['add']('hidden')),document['getElementById']('card-total')[_0x74e547(0x204)](_0x74e547(0x1e6),()=>openDashboardList(_0x74e547(0x12c))),document['getElementById'](_0x74e547(0x192))[_0x74e547(0x204)](_0x74e547(0x1e6),()=>openDashboardList(_0x74e547(0x1e4))),document[_0x74e547(0x1c1)](_0x74e547(0x1ed))[_0x74e547(0x204)](_0x74e547(0x1e6),()=>openDashboardList('unregistered')),document['getElementById']('card-extras')[_0x74e547(0x204)](_0x74e547(0x1e6),()=>openDashboardList(_0x74e547(0x1d6))),document[_0x74e547(0x1c1)](_0x74e547(0x115))[_0x74e547(0x204)]('click',()=>document[_0x74e547(0x1c1)](_0x74e547(0x279))[_0x74e547(0x19a)][_0x74e547(0x174)](_0x74e547(0x190))),document[_0x74e547(0x1c1)](_0x74e547(0x299))[_0x74e547(0x204)](_0x74e547(0x1e6),()=>handleEmpSort('id')),document[_0x74e547(0x1c1)](_0x74e547(0x11f))['addEventListener']('click',()=>handleEmpSort(_0x74e547(0x22a))),document[_0x74e547(0x1c1)](_0x74e547(0x134))[_0x74e547(0x204)]('click',()=>handleEmpSort(_0x74e547(0x234))),document[_0x74e547(0x1c1)](_0x74e547(0x160))[_0x74e547(0x204)](_0x74e547(0x1e6),()=>handleEmpSort(_0x74e547(0x270))),document[_0x74e547(0x1c1)](_0x74e547(0x143))['addEventListener'](_0x74e547(0x1e6),()=>handleEmpSort('member')),document['getElementById'](_0x74e547(0x1cd))[_0x74e547(0x204)](_0x74e547(0x1e6),()=>handleEmpSort(_0x74e547(0x257))),document[_0x74e547(0x1c1)](_0x74e547(0x1b7))[_0x74e547(0x204)](_0x74e547(0x1e6),()=>handleEmpSort('status')),document[_0x74e547(0x1c1)](_0x74e547(0x25a))['addEventListener']('click',searchForRegistration),document[_0x74e547(0x1c1)]('closeManualRegModalButton')[_0x74e547(0x204)](_0x74e547(0x1e6),()=>document[_0x74e547(0x1c1)](_0x74e547(0x124))['classList'][_0x74e547(0x174)](_0x74e547(0x190))),document[_0x74e547(0x1c1)]('saveManualRegButton')[_0x74e547(0x204)](_0x74e547(0x1e6),saveManualRegistration),document[_0x74e547(0x1c1)](_0x74e547(0x1a9))[_0x74e547(0x204)]('click',async()=>{if(currentConfirmAction)await currentConfirmAction();}),document['getElementById']('addGiftBtn')[_0x74e547(0x204)](_0x74e547(0x1e6),addGift),document[_0x74e547(0x1c1)](_0x74e547(0x13e))[_0x74e547(0x204)](_0x74e547(0x1e6),()=>{const _0x493567=_0x74e547;giftPickerContext=_0x493567(0x23a),renderGiftPicker(),document[_0x493567(0x1c1)](_0x493567(0x1d5))['classList'][_0x493567(0x266)](_0x493567(0x190));}),document[_0x74e547(0x1c1)](_0x74e547(0x12e))[_0x74e547(0x204)](_0x74e547(0x1e6),()=>{const _0x1c3180=_0x74e547;giftPickerContext=_0x1c3180(0x283),renderGiftPicker(),document['getElementById']('giftPickerModal')[_0x1c3180(0x19a)][_0x1c3180(0x266)]('hidden');}),document[_0x74e547(0x1c1)](_0x74e547(0x28b))[_0x74e547(0x204)](_0x74e547(0x1e6),()=>document['getElementById']('giftPickerModal')[_0x74e547(0x19a)]['add'](_0x74e547(0x190))),document[_0x74e547(0x1c1)](_0x74e547(0x271))[_0x74e547(0x204)]('click',()=>document['getElementById']('editGiftModal')[_0x74e547(0x19a)][_0x74e547(0x174)](_0x74e547(0x190))),document['getElementById'](_0x74e547(0x1f2))[_0x74e547(0x204)](_0x74e547(0x1e6),async()=>{const _0x127540=_0x74e547,_0x5c02f1=document[_0x127540(0x1c1)](_0x127540(0x241))[_0x127540(0x1b2)][_0x127540(0x212)](),_0x2fdf2b=parseInt(document[_0x127540(0x1c1)]('editGiftTotalQty')['value']),_0x43aa14=parseInt(document['getElementById'](_0x127540(0x289))['value']);if(!_0x5c02f1||isNaN(_0x2fdf2b)||isNaN(_0x43aa14))return;await updateDoc(doc(db,'crsg_gift',currentEditingGiftId),{'name':_0x5c02f1,'totalQty':_0x2fdf2b,'remainingQty':_0x43aa14}),document['getElementById'](_0x127540(0x21e))[_0x127540(0x19a)][_0x127540(0x174)]('hidden');}),document[_0x74e547(0x1c1)]('saveEditModalButton')[_0x74e547(0x204)]('click',async()=>{const _0x4ec2d0=_0x74e547;await updateDoc(doc(db,_0x4ec2d0(0x198),currentEditingDocId),{'Check_Manager':document[_0x4ec2d0(0x1c1)](_0x4ec2d0(0x2ac))[_0x4ec2d0(0x1b2)],'Check_Place':document['getElementById'](_0x4ec2d0(0x13b))[_0x4ec2d0(0x1b2)]}),document['getElementById'](_0x4ec2d0(0x1d7))[_0x4ec2d0(0x19a)][_0x4ec2d0(0x174)]('hidden');}),document[_0x74e547(0x1c1)]('searchEmployeeButton')[_0x74e547(0x204)](_0x74e547(0x1e6),()=>{const _0x3628d8=_0x74e547,_0x2b2f48=document[_0x3628d8(0x1c1)](_0x3628d8(0x1fe));_0x2b2f48[_0x3628d8(0x203)]='';const _0x3b8e5b=document[_0x3628d8(0x1c1)]('searchEmployeeIdInput')['value'][_0x3628d8(0x212)]();if(!_0x3b8e5b){_0x2b2f48[_0x3628d8(0x203)]=_0x3628d8(0x1e1);return;}const _0x90b1d0=allEmployeesData[_0x3628d8(0x2b0)](_0x540668=>_0x540668[_0x3628d8(0x24e)]===_0x3b8e5b);_0x90b1d0?(editEmp(_0x90b1d0['id']),document[_0x3628d8(0x1c1)](_0x3628d8(0x287))['value']=''):_0x2b2f48[_0x3628d8(0x203)]=_0x3628d8(0x162);}),document[_0x74e547(0x1c1)](_0x74e547(0x217))[_0x74e547(0x204)](_0x74e547(0x22e),updateTeamTab),document[_0x74e547(0x1c1)](_0x74e547(0x1a7))[_0x74e547(0x204)](_0x74e547(0x22e),updateGridTab),document['getElementById']('managerFilterSelect')[_0x74e547(0x204)]('change',()=>{empCurrentPage=0x1,updateEmployeeList();}),document['getElementById']('updateTeamNamesBtn')[_0x74e547(0x204)]('click',()=>{const _0x1146ba=_0x74e547,_0x2d8aa9=document['getElementById'](_0x1146ba(0x227))[_0x1146ba(0x1b2)][_0x1146ba(0x212)]();if(!_0x2d8aa9)return;teamNames=_0x2d8aa9[_0x1146ba(0x22c)](',')[_0x1146ba(0x1c6)](_0xc0ae78=>_0xc0ae78['trim']())[_0x1146ba(0x224)](Boolean),refreshUI();}),document[_0x74e547(0x1c1)](_0x74e547(0x208))['addEventListener'](_0x74e547(0x1e6),()=>{const _0x20c49e=_0x74e547;let _0x2949db=_0x20c49e(0x1ab);allEmployeesData[_0x20c49e(0x224)](_0x3c48f1=>_0x3c48f1['DateLogin'])[_0x20c49e(0x248)](_0x57f90a=>{const _0x4fbc3f=_0x20c49e;_0x2949db+='\x22'+_0x57f90a[_0x4fbc3f(0x24e)]+_0x4fbc3f(0x219)+_0x57f90a[_0x4fbc3f(0x137)]+'\x22,\x22'+(_0x57f90a[_0x4fbc3f(0x1fc)]||'')+'\x22,\x22'+(_0x57f90a[_0x4fbc3f(0x111)]||'')+'\x22,\x22'+(_0x57f90a[_0x4fbc3f(0x1ff)]||'')+_0x4fbc3f(0x1e0);});const _0x9b8d6c=new Blob([_0x2949db],{'type':_0x20c49e(0x194)}),_0xda2b5a=document[_0x20c49e(0x1ef)]('a');_0xda2b5a[_0x20c49e(0x16e)]=URL['createObjectURL'](_0x9b8d6c),_0xda2b5a[_0x20c49e(0x1eb)]='Registration_Report.csv',_0xda2b5a[_0x20c49e(0x1e6)]();}),document['getElementById'](_0x74e547(0x15e))[_0x74e547(0x204)](_0x74e547(0x1e6),()=>{const _0x3f0ce4=_0x74e547,_0x575039=document[_0x3f0ce4(0x1c1)]('managerFilterSelect')['value'];let _0x5299cc=allEmployeesData[_0x3f0ce4(0x224)](_0x52886a=>_0x52886a[_0x3f0ce4(0x1ff)]&&_0x52886a[_0x3f0ce4(0x1ff)][_0x3f0ce4(0x212)]()!=='');if(_0x575039)_0x5299cc=_0x5299cc[_0x3f0ce4(0x224)](_0x1ddcfc=>_0x1ddcfc[_0x3f0ce4(0x111)]===_0x575039);let _0x416184=_0x3f0ce4(0x24b);_0x5299cc[_0x3f0ce4(0x248)]((_0xa8e75b,_0x18b5a4)=>{const _0x33aed9=_0x3f0ce4,_0x3b8220=_0xa8e75b[_0x33aed9(0x2a1)]?'ลงทะเบียน':'-',_0x284abf=_0xa8e75b[_0x33aed9(0x297)]||'-',_0x5b2b76=_0xa8e75b[_0x33aed9(0x1dc)]?_0x33aed9(0x229):'-';_0x416184+='\x22'+(_0x18b5a4+0x1)+_0x33aed9(0x219)+_0xa8e75b['employeeId']+_0x33aed9(0x219)+_0xa8e75b[_0x33aed9(0x137)]+_0x33aed9(0x219)+(_0xa8e75b[_0x33aed9(0x1fc)]||'-')+_0x33aed9(0x219)+(_0xa8e75b[_0x33aed9(0x111)]||'-')+_0x33aed9(0x219)+_0x284abf+_0x33aed9(0x219)+_0x5b2b76+'\x22,\x22'+(_0xa8e75b[_0x33aed9(0x1ff)]||'-')+_0x33aed9(0x219)+_0x3b8220+'\x22\x0a';});const _0x180164=new Blob([_0x416184],{'type':_0x3f0ce4(0x194)}),_0x5f4399=document[_0x3f0ce4(0x1ef)]('a');_0x5f4399[_0x3f0ce4(0x16e)]=URL[_0x3f0ce4(0x1d2)](_0x180164),_0x5f4399['download']='Employee_List_Report.csv',_0x5f4399[_0x3f0ce4(0x1e6)]();}),document[_0x74e547(0x1c1)](_0x74e547(0x135))['addEventListener'](_0x74e547(0x1e6),()=>{const _0x4c1794=_0x74e547,_0x194328=allEmployeesData['filter'](_0x140c78=>_0x140c78[_0x4c1794(0x25e)])[_0x4c1794(0x2a8)]((_0x3b4753,_0x272ab9)=>(_0x272ab9['RandomTime']?.[_0x4c1794(0x17a)]()||0x0)-(_0x3b4753[_0x4c1794(0x25e)]?.[_0x4c1794(0x17a)]()||0x0));let _0x197cf3=_0x4c1794(0x2a0);_0x194328['forEach'](_0x4fdefd=>{const _0x49a245=_0x4c1794,_0x4dfd90=_0x4fdefd[_0x49a245(0x25e)]?.[_0x49a245(0x17a)]()?new Date(_0x4fdefd['RandomTime'][_0x49a245(0x17a)]())[_0x49a245(0x1f9)](_0x49a245(0x168)):'-',_0x2f77be=_0x4fdefd[_0x49a245(0x1a5)]?_0x49a245(0x26c):'ยังไม่รับ';_0x197cf3+='\x22'+_0x4fdefd[_0x49a245(0x24e)]+'\x22,\x22'+_0x4fdefd[_0x49a245(0x137)]+'\x22,\x22'+(_0x4fdefd[_0x49a245(0x1dc)]||'')+'\x22,\x22'+(_0x4fdefd['Branch_eng']||'')+_0x49a245(0x219)+(_0x4fdefd[_0x49a245(0x111)]||'')+'\x22,\x22'+(_0x4fdefd[_0x49a245(0x1ff)]||'')+_0x49a245(0x219)+_0x2f77be+_0x49a245(0x219)+_0x4dfd90+'\x22\x0a';});const _0x300e08=new Blob([_0x197cf3],{'type':_0x4c1794(0x194)}),_0x379171=document['createElement']('a');_0x379171['href']=URL[_0x4c1794(0x1d2)](_0x300e08),_0x379171[_0x4c1794(0x1eb)]=_0x4c1794(0x269),_0x379171[_0x4c1794(0x1e6)]();}),document[_0x74e547(0x1c1)](_0x74e547(0x220))[_0x74e547(0x204)](_0x74e547(0x1e6),()=>{const _0x32ae30=_0x74e547,_0x13b784=document['getElementById'](_0x32ae30(0x16b)),_0x3394cf=document[_0x32ae30(0x1c1)](_0x32ae30(0x1a4)),_0x2eddee=document[_0x32ae30(0x1c1)](_0x32ae30(0x1f7));_0x3394cf[_0x32ae30(0x19a)][_0x32ae30(0x266)](_0x32ae30(0x190)),_0x2eddee[_0x32ae30(0x1b2)]='',currentConfirmAction=async()=>{const _0x596642=_0x32ae30;if(_0x2eddee['value'][_0x596642(0x212)]()[_0x596642(0x14a)]()!==_0x596642(0x282))return;const _0x5dcd08=writeBatch(db);allEmployeesData[_0x596642(0x248)](_0x58d1e7=>{const _0x9df29f=_0x596642;_0x5dcd08[_0x9df29f(0x16f)](doc(db,_0x9df29f(0x198),_0x58d1e7['id']),{'DateLogin':null,'RandomTime':null,'AwardedGift':'','AwardedGiftId':null,'ReceivedTime':null,'MobileId':''});}),await _0x5dcd08[_0x596642(0x202)](),document[_0x596642(0x1c1)]('confirmModal')['classList'][_0x596642(0x174)](_0x596642(0x190));},document['getElementById'](_0x32ae30(0x21d))['textContent']=_0x32ae30(0x200),document[_0x32ae30(0x1c1)](_0x32ae30(0x114))[_0x32ae30(0x203)]=_0x32ae30(0x18b),document['getElementById']('confirmModal')[_0x32ae30(0x19a)][_0x32ae30(0x266)](_0x32ae30(0x190));});}function updateGroupRandomUI(){const _0x40e8fa=_0x21551b,_0x5aaacb=allEmployeesData[_0x40e8fa(0x224)](_0x4abc4f=>_0x4abc4f['DateLogin']&&_0x4abc4f['invite']===_0x40e8fa(0x297)),_0x5be1c8=_0x5aaacb[_0x40e8fa(0x224)](_0x160843=>_0x160843[_0x40e8fa(0x25e)])[_0x40e8fa(0x2a8)]((_0x2825b4,_0x5185ee)=>(_0x5185ee[_0x40e8fa(0x25e)]?.[_0x40e8fa(0x17a)]()||0x0)-(_0x2825b4[_0x40e8fa(0x25e)]?.['toMillis']()||0x0)),_0x3cc885=_0x5aaacb[_0x40e8fa(0x224)](_0x3dbdeb=>!_0x3dbdeb[_0x40e8fa(0x25e)]);if(document[_0x40e8fa(0x1c1)](_0x40e8fa(0x243)))document[_0x40e8fa(0x1c1)]('grTotalEligible')[_0x40e8fa(0x203)]=_0x5aaacb[_0x40e8fa(0x296)];if(document[_0x40e8fa(0x1c1)](_0x40e8fa(0x11b)))document['getElementById']('grRemainingEligible')[_0x40e8fa(0x203)]=_0x3cc885[_0x40e8fa(0x296)];if(document[_0x40e8fa(0x1c1)]('grTotalWinners'))document[_0x40e8fa(0x1c1)](_0x40e8fa(0x179))[_0x40e8fa(0x203)]=_0x5be1c8[_0x40e8fa(0x296)];}
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, collection, onSnapshot, 
+            doc, updateDoc, setDoc, addDoc, deleteDoc, serverTimestamp, writeBatch 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgWMzWcZPzyzoBu5eQzj2y59nKsxTWurQ",
+            authDomain: "ttb-register.firebaseapp.com",
+            projectId: "ttb-register",
+            storageBucket: "ttb-register.firebasestorage.app",
+            messagingSenderId: "1070273157855",
+            appId: "1:1070273157855:web:5c8120e1df27e233d8676a"
+        };
+
+        let db, auth;
+        let allEmployeesData = [];
+        let allGiftsData = [];
+        let selectedIndGiftId = null; 
+        let selectedGroupGiftId = null; 
+        let giftPickerContext = 'ind'; 
+        let teamNames = ["A1","A2","A3","A4","A5","A6","A7","A8","A9","A10","A11","A12","A13","A14","A15","A16","A17","A18","A19","A20","A21","A22","A23","A24","B1","B2","B3","B4","B5","B6","B7","B8","B9","B10","B11","B12","B13","B14","B15","B16","B17","B18","B19","B20","B21","B22","B23","B24"];
+        let charts = {};
+        let currentConfirmAction = null;
+        let currentEditingDocId = null;
+        let currentEditingGiftId = null;
+        let drawInterval = null;
+
+        // Sorting state for Employee List
+        let empSortField = 'status'; // default to status
+        let empSortDir = 'desc'; // default desc for status (registered first)
+
+        // Pagination state for Employee List
+        let empCurrentPage = 1;
+        const empPageSize = 100;
+
+        // Init App
+        (async () => {
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                await signInAnonymously(auth);
+                
+                initCharts();
+                setupTabs();
+                setupListeners();
+                startListening();
+                startListeningGifts();
+                
+                // Initialize Team Names display
+                document.getElementById('definedTeamNamesInput').value = teamNames.join(',');
+                
+                setInterval(() => {
+                    const now = new Date();
+                    document.getElementById('currentDateTime').textContent = now.toLocaleString('th-TH', { 
+                        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' 
+                    });
+                }, 1000);
+            } catch (e) { console.error(e); }
+        })();
+
+        // Navigation
+        function setupTabs() {
+            const tabs = {
+                'tab-dashboard': 'dashboard-content',
+                'tab-team-list': 'team-list-content',
+                'tab-group-view': 'group-view-content',
+                'tab-employee-list': 'employee-list-content',
+                'tab-gift-management': 'gift-management-content',
+                'tab-register': 'register-content',
+                'tab-group-random': 'group-random-content',
+                'tab-winners-list': 'winners-list-content'
+            };
+            Object.keys(tabs).forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.addEventListener('click', function() {
+                    Object.keys(tabs).forEach(k => {
+                        const b = document.getElementById(k);
+                        const c = document.getElementById(tabs[k]);
+                        if (b) b.classList.replace('bg-gray-300', 'bg-gray-100');
+                        if (c) c.classList.add('hidden');
+                    });
+                    this.classList.replace('bg-gray-100', 'bg-gray-300');
+                    document.getElementById(tabs[id])?.classList.remove('hidden');
+                    window.dispatchEvent(new Event('resize'));
+                });
+            });
+        }
+
+        function initCharts() {
+            const opts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { color: '#fff', font: { weight: 'bold', size: 12 }, formatter: v => v > 0 ? v : '' } } };
+            charts.breakdown = new Chart(document.getElementById('registrationBreakdownChart'), { type: 'doughnut', data: { labels: ['Invite', 'Non-Invite'], datasets: [{ data: [0, 0], backgroundColor: ['#3B82F6', '#F59E0B'] }] }, options: { ...opts, cutout: '75%' }, plugins: [ChartDataLabels] });
+            charts.goal = new Chart(document.getElementById('registrationDonutChart'), { type: 'doughnut', data: { labels: ['Registered', 'Remaining'], datasets: [{ data: [0, 0], backgroundColor: ['#10B981', '#E5E7EB'] }] }, options: { ...opts, cutout: '75%' }, plugins: [ChartDataLabels] });
+            const barOpts = { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } }, plugins: { legend: { display: true, position: 'bottom', labels: { font: { size: 12 } } }, datalabels: { color: '#fff' } } };
+            charts.bar1 = new Chart(document.getElementById('teamBarChart1'), { type: 'bar', data: { labels: [], datasets: [{ label: 'ลงแล้ว', data: [], backgroundColor: '#3B82F6' }, { label: 'ยังไม่ลง', data: [], backgroundColor: '#BFDBFE' }] }, options: barOpts, plugins: [ChartDataLabels] });
+            charts.bar2 = new Chart(document.getElementById('teamBarChart2'), { type: 'bar', data: { labels: [], datasets: [{ label: 'ลงแล้ว', data: [], backgroundColor: '#3B82F6' }, { label: 'ยังไม่ลง', data: [], backgroundColor: '#BFDBFE' }] }, options: barOpts, plugins: [ChartDataLabels] });
+            
+            // Registration Timeline Chart
+            charts.timeline = new Chart(document.getElementById('registrationTimelineChart'), {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 24}, (_, i) => `${i.toString().padStart(2, '0')}:00`),
+                    datasets: [
+                        { label: 'กลุ่มเป้าหมาย', data: Array(24).fill(0), borderColor: '#3B82F6', backgroundColor: '#3B82F6', tension: 0.1 },
+                        { label: 'ผู้ร่วมงาน', data: Array(24).fill(0), borderColor: '#F59E0B', backgroundColor: '#F59E0B', tension: 0.1 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { display: true, position: 'top' },
+                        datalabels: { display: false } 
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1, precision: 0 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function startListening() {
+            onSnapshot(collection(db, "crsg"), snap => {
+                allEmployeesData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                refreshUI();
+            }, err => console.error(err));
+        }
+
+        function startListeningGifts() {
+            onSnapshot(collection(db, "crsg_gift"), snap => {
+                const gifts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                allGiftsData = gifts.sort((a, b) => (a.order || 0) - (b.order || 0));
+                renderGiftTable();
+                refreshIndGiftState(); 
+                refreshGroupGiftState(); 
+                updateWinnersList();
+            }, err => console.error(err));
+        }
+
+        function refreshUI() {
+            const reg = allEmployeesData.filter(e => e.DateLogin);
+            // ปรับเงื่อนไขการนับเป้าหมายและผู้ลงทะเบียนตามฟิลด์ invite === 'invite'
+            const regMembers = allEmployeesData.filter(e => e.DateLogin && e.invite === 'invite');
+            const regExtras = allEmployeesData.filter(e => e.DateLogin && e.invite !== 'invite');
+            const partTarget = allEmployeesData.filter(e => e.invite === 'invite');
+            
+            document.getElementById('managerEmployeeCount').textContent = allEmployeesData.filter(e => e.Check_Manager).length;
+            document.getElementById('teamMemberCountElem').textContent = allEmployeesData.filter(e => e.Check_Place).length;
+            
+            // Calculate stats specifically for those with seats (Check_Place)
+            const membersWithSeats = allEmployeesData.filter(e => e.Check_Place && e.Check_Place.trim() !== '');
+            const empTotal = membersWithSeats.length;
+            const empReg = membersWithSeats.filter(e => e.DateLogin).length;
+            const empUnreg = empTotal - empReg;
+            const empPerc = empTotal > 0 ? Math.round((empReg / empTotal) * 100) : 0;
+            
+            if(document.getElementById('empStatsContainer')) {
+                document.getElementById('empStatsTotal').textContent = empTotal;
+                document.getElementById('empStatsRegistered').textContent = empReg;
+                document.getElementById('empStatsUnregistered').textContent = empUnreg;
+                document.getElementById('empStatsPercent').textContent = empPerc + "%";
+                document.getElementById('empStatsContainer').classList.remove('hidden');
+            }
+            
+            document.getElementById('targetCount').textContent = partTarget.length;
+            document.getElementById('participantsCountBox').textContent = regMembers.length;
+            document.getElementById('attendeesCount').textContent = regExtras.length;
+            document.getElementById('remainingCount').textContent = Math.max(0, partTarget.length - regMembers.length);
+            
+            document.getElementById('breakdownCenterTotal').textContent = reg.length;
+            document.getElementById('donutPercentage').textContent = partTarget.length ? Math.round((regMembers.length/partTarget.length)*100)+"%" : "0%";
+            
+            if(charts.breakdown) { 
+                charts.breakdown.data.datasets[0].data = [regMembers.length, regExtras.length]; 
+                charts.breakdown.update(); 
+            }
+            if(charts.goal) { 
+                charts.goal.data.datasets[0].data = [regMembers.length, Math.max(0, partTarget.length - regMembers.length)]; 
+                charts.goal.update(); 
+            }
+
+            // Timeline & Stats Update
+            if (charts.timeline) {
+                const inviteData = Array(24).fill(0);
+                const extraData = Array(24).fill(0);
+                let totalInvite = 0;
+                let totalExtra = 0;
+
+                reg.forEach(e => {
+                    if (e.DateLogin) {
+                        const date = new Date(e.DateLogin.toMillis());
+                        const hour = date.getHours();
+                        if (e.invite === 'invite') {
+                            inviteData[hour]++;
+                            totalInvite++;
+                        } else {
+                            extraData[hour]++;
+                            totalExtra++;
+                        }
+                    }
+                });
+
+                charts.timeline.data.datasets[0].data = inviteData;
+                charts.timeline.data.datasets[1].data = extraData;
+                charts.timeline.update();
+
+                document.getElementById('timelineTotalInvite').textContent = totalInvite;
+                document.getElementById('timelineTotalExtra').textContent = totalExtra;
+            }
+            
+            const teamStats = {}; 
+            teamNames.forEach(t => teamStats[t] = { r: 0, t: 0 });
+            allEmployeesData.forEach(e => { 
+                if(e.Check_Place && teamStats[e.Check_Place]) { 
+                    teamStats[e.Check_Place].t++; 
+                    if(e.DateLogin) teamStats[e.Check_Place].r++; 
+                } 
+            });
+            
+            const mid = Math.ceil(teamNames.length / 2);
+            if(charts.bar1) { 
+                charts.bar1.data.labels = teamNames.slice(0, mid); 
+                charts.bar1.data.datasets[0].data = teamNames.slice(0, mid).map(k => teamStats[k].r); 
+                charts.bar1.data.datasets[1].data = teamNames.slice(0, mid).map(k => teamStats[k].t - teamStats[k].r); 
+                charts.bar1.update(); 
+            }
+            if(charts.bar2) { 
+                charts.bar2.data.labels = teamNames.slice(mid); 
+                charts.bar2.data.datasets[0].data = teamNames.slice(mid).map(k => teamStats[k].r); 
+                charts.bar2.data.datasets[1].data = teamNames.slice(mid).map(k => teamStats[k].t - teamStats[k].r); 
+                charts.bar2.update(); 
+            }
+
+            const sorted = [...reg].sort((a,b) => (b.DateLogin?.toMillis() || 0) - (a.DateLogin?.toMillis() || 0)).slice(0, 30);
+            document.getElementById('latestRegistrationsTableBody').innerHTML = sorted.map(e => `<tr><td class="px-4 py-0 text-center text-sm">${e.employeeId}</td><td class="px-4 py-0 uppercase font-bold text-xm text-left text-sm">${e.FullName_th}</td><td class="px-4 py-0 text-gray-600 text-xm text-left text-sm">${e.Branch_eng||'-'}</td><td class="px-4 py-0 text-gray-600 text-xm text-left text-sm">${e.Check_Manager||'-'}</td><td class="px-4 py-0 text-center"><span class="px-3 py-0 bg-green-100 text-green-700 rounded-full text-xs font-black uppercase">ลงทะเบียน</span></td><td class="px-4 py-0 text-center"><span onclick="cancelReg('${e.id}', '${e.FullName_th}')" class="text-red-600 hover:text-red-700 cursor-pointer font-black text-xs">ลบ</span></td></tr>`).join('');
+            
+            updateTeamTab(); updateGridTab(); updateEmployeeList(); updateGroupRandomUI(); updateLuckyDrawStats(); updateWinnersList();
+        }
+
+        // --- WINNERS LIST ---
+        function updateWinnersList() {
+            const container = document.getElementById('winnersByGiftContainer');
+            if (!container) return;
+            const winners = allEmployeesData.filter(e => e.RandomTime);
+            if (winners.length === 0) { container.innerHTML = '<div class="p-10 text-center text-gray-400 font-bold italic">-- ยังไม่มีผู้ได้รับรางวัล --</div>'; return; }
+            container.innerHTML = allGiftsData.map(gift => {
+                const giftWinners = winners.filter(w => w.AwardedGiftId === gift.id || (w.AwardedGift === gift.name && !w.AwardedGiftId));
+                if (giftWinners.length === 0) return '';
+                giftWinners.sort((a, b) => (b.RandomTime?.toMillis() || 0) - (a.RandomTime?.toMillis() || 0));
+                return `
+                    <div class="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
+                        <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
+                            <h3 class="text-lg font-black text-indigo-700 uppercase">🎁 ของรางวัล: ${gift.name}</h3>
+                            <span class="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase">${giftWinners.length} ท่าน</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm">
+                                <thead class="table-header-gray">
+                                    <tr>
+                                        <th class="px-4 py-4 text-center font-bold text-gray-600">ลำดับ</th>
+                                        <th class="px-4 py-4 text-left font-bold text-gray-600">รหัส</th>
+                                        <th class="px-4 py-4 text-left font-bold text-gray-600">ชื่อ-นามสกุล</th>
+                                        <th class="px-4 py-4 text-left font-bold text-gray-600">สาขา</th>
+                                        <th class="px-4 py-4 text-left font-bold text-gray-600">สังกัด</th>
+                                        <th class="px-4 py-4 text-left font-bold text-gray-600">ที่นั่ง</th>
+                                        <th class="px-4 py-4 text-center font-bold text-gray-600">รับของรางวัล</th>
+                                        <th class="px-4 py-4 text-center font-bold text-gray-600">จัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    ${giftWinners.map((w, i) => {
+                                        const isReceived = w.ReceivedTime ? true : false;
+                                        const statusLabel = isReceived ? 'รับแล้ว' : 'ยังไม่รับ';
+                                        const statusClass = isReceived ? 'bg-green-500 text-white' : 'bg-red-500 text-white cursor-pointer hover:bg-red-600';
+                                        const statusAction = isReceived ? '' : `onclick="markAsReceived('${w.id}')"`;
+                                        return `
+                                            <tr class="hover:bg-gray-50 transition-colors text-sm">
+                                                <td class="px-4 py-0 text-center font-bold text-gray-400 text-xs">${i+1}</td>
+                                                <td class="px-4 py-0 font-mono font-black text-blue-700">${w.employeeId}</td>
+                                                <td class="px-4 py-0 font-black uppercase text-left">${w.FullName_th}</td>
+                                                <td class="px-4 py-0 text-gray-600 uppercase text-left">${w.Branch_eng || '-'}</td>
+                                                <td class="px-4 py-0 text-gray-600 uppercase text-left">${w.Check_Manager || '-'}</td>
+                                                <td class="px-4 py-0 text-blue-600 font-bold uppercase text-center">${w.Check_Place || '-'}</td>
+                                                <td class="px-4 py-0 text-center">
+                                                    <span ${statusAction} class="px-3 py-0.5 rounded text-[10px] font-black transition-all shadow-sm ${statusClass}">${statusLabel}</span>
+                                                </td>
+                                                <td class="px-4 py-0 text-center">
+                                                    <button onclick="removeLuckyWinner('${w.id}')" class="px-3 py-0 bg-red-100 text-red-600 rounded-lg text-xs font-black hover:bg-red-600 hover:text-white transition-all uppercase">ลบ</button>
+                                                </td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.markAsReceived = async (id) => {
+            try { await updateDoc(doc(db, "crsg", id), { ReceivedTime: serverTimestamp() }); } catch (err) { console.error(err); }
+        };
+
+        // --- Dashboard Modal Logic ---
+        window.openDashboardList = (type) => {
+            let title = "";
+            let list = [];
+            
+            if (type === 'total') {
+                title = "รายชื่อพนักงานเป้าหมายทั้งหมด";
+                list = allEmployeesData.filter(e => e.invite === 'invite');
+            } else if (type === 'registered') {
+                title = "รายชื่อพนักงานที่ลงทะเบียนแล้ว";
+                list = allEmployeesData.filter(e => e.DateLogin && e.invite === 'invite');
+            } else if (type === 'unregistered') {
+                title = "รายชื่อพนักงานที่ยังไม่ลงทะเบียน";
+                list = allEmployeesData.filter(e => !e.DateLogin && e.invite === 'invite');
+            } else if (type === 'extras') {
+                title = "รายชื่อผู้ร่วมงาน";
+                list = allEmployeesData.filter(e => e.DateLogin && e.invite !== 'invite');
+            }
+
+            document.getElementById('dashboardListModalTitle').textContent = title;
+            document.getElementById('dashboardListCount').textContent = list.length;
+            
+            const tbody = document.getElementById('dashboardListTableBody');
+            tbody.innerHTML = list.map((e, i) => {
+                const isRegistered = e.DateLogin ? true : false;
+                const statusHtml = isRegistered ? `<span class="bg-green-100 text-green-700 px-3 py-0.5 rounded-full text-[10px] font-black uppercase">ลงทะเบียน</span>` : '-';
+                
+                return `
+                    <tr class="hover:bg-gray-50 text-center text-sm">
+                        <td class="px-4 py-2 text-gray-400 font-bold text-xs">${i+1}</td>
+                        <td class="px-4 py-2 font-mono font-bold text-blue-700 text-center">${e.employeeId}</td>
+                        <td class="px-4 py-2 font-bold text-left uppercase">${e.FullName_th}</td>
+                        <td class="px-4 py-2 text-left text-gray-600">${e.Branch_eng || '-'}</td>
+                        <td class="px-4 py-2 text-left text-gray-600">${e.Check_Manager || '-'}</td>
+                        <td class="px-4 py-2 font-bold text-blue-500 uppercase text-center">${e.Check_Place || '-'}</td>
+                        <td class="px-4 py-2 font-bold text-center">${statusHtml}</td>
+                        <td class="px-4 py-2 text-center">
+                            <button onclick="cancelReg('${e.id}', '${e.FullName_th}')" 
+                                ${isRegistered ? '' : 'disabled'}
+                                class="${isRegistered ? 'bg-red-600 text-white hover:bg-red-700' : 'bg-gray-100 text-gray-400'} px-4 py-1 rounded text-[10px] font-black uppercase transition-all shadow-sm">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('') || '<tr><td colspan="8" class="p-10 text-center text-gray-400">ไม่พบข้อมูล</td></tr>';
+
+            document.getElementById('dashboardListModal').classList.remove('hidden');
+        };
+
+        // --- GIFT MANAGEMENT ---
+        async function addGift() {
+            const name = document.getElementById('giftNameInput').value.trim();
+            const qty = parseInt(document.getElementById('giftQtyInput').value);
+            if (!name || isNaN(qty)) return;
+            const maxOrder = allGiftsData.reduce((max, g) => Math.max(max, g.order || 0), 0);
+            await addDoc(collection(db, "crsg_gift"), { name, totalQty: qty, remainingQty: qty, status: 'on', order: maxOrder + 1, createdAt: serverTimestamp() });
+            document.getElementById('giftNameInput').value = ""; document.getElementById('giftQtyInput').value = "1";
+        }
+
+        function renderGiftTable() {
+            const body = document.getElementById('giftListTableBody');
+            if (allGiftsData.length === 0) { body.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-gray-400 font-bold">ยังไม่มีข้อมูลของรางวัล</td></tr>'; return; }
+            body.innerHTML = allGiftsData.map((g, idx) => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 text-center"><input type="number" value="${g.order || (idx + 1)}" onchange="updateGiftOrder('${g.id}', this.value)" class="w-16 p-1 text-center border rounded font-bold text-blue-600" min="1"></td>
+                    <td class="px-4 py-2 text-sm font-normal">${g.name}</td>
+                    <td class="px-4 py-2 text-center text-sm">${g.totalQty}</td>
+                    <td class="px-4 py-2 text-center text-blue-600 font-bold text-sm">${g.remainingQty}</td>
+                    <td class="px-4 py-2 text-center"><button onclick="toggleGiftStatus('${g.id}', '${g.status}')" class="px-4 py-1 rounded-full text-xs font-black uppercase transition-all shadow-sm border ${g.status === 'on' ? 'bg-green-400 text-white border-green-600' : 'bg-gray-200 text-gray-600'}">${g.status === 'on' ? 'ON' : 'OFF'}</button></td>
+                    <td class="px-4 py-2 text-center"><span onclick="editGift('${g.id}')" class="text-orange-500 hover:text-orange-700 cursor-pointer font-bold text-xs uppercase mr-2 text-sm">Edit</span>| <span onclick="deleteGift('${g.id}', '${g.name}')" class="text-red-500 hover:text-red-700 cursor-pointer font-bold text-xs uppercase text-sm">Delete</span></td>
+                </tr>
+            `).join('');
+        }
+
+        window.updateGiftOrder = async (id, val) => { const v = parseInt(val); if (!isNaN(v)) await updateDoc(doc(db, "crsg_gift", id), { order: v }); };
+        window.toggleGiftStatus = async (id, cur) => { await updateDoc(doc(db, "crsg_gift", id), { status: cur === 'on' ? 'off' : 'on' }); };
+        
+        window.editGift = (id) => { 
+            const g = allGiftsData.find(x => x.id === id); if(!g) return; currentEditingGiftId = id; 
+            document.getElementById('editGiftName').value = g.name; 
+            document.getElementById('editGiftTotalQty').value = g.totalQty; 
+            document.getElementById('editGiftRemainingQty').value = g.remainingQty; 
+            document.getElementById('editGiftModal').classList.remove('hidden'); 
+        };
+
+        window.deleteGift = (id, name) => { 
+            const modalInner = document.getElementById('confirmModalInner');
+            modalInner.className = "bg-white rounded-2xl p-10 max-w-lg w-full shadow-2xl text-center transition-all duration-300";
+            currentConfirmAction = async () => { await deleteDoc(doc(db, "crsg_gift", id)); document.getElementById('confirmModal').classList.add('hidden'); }; 
+            document.getElementById('confirmTitle').textContent = "ลบของรางวัล"; 
+            document.getElementById('confirmText').textContent = `ยืนยันการลบ [${name}] ?`; 
+            document.getElementById('confirmInputContainer').classList.add('hidden'); 
+            document.getElementById('confirmModal').classList.remove('hidden'); 
+        };
+
+        // --- GIFT PICKER LOGIC ---
+        function renderGiftPicker() {
+            const list = document.getElementById('giftPickerList');
+            const available = allGiftsData.filter(g => g.status === 'on' && g.remainingQty > 0);
+            document.getElementById('giftPickerTitle').textContent = (giftPickerContext === 'ind') ? "สุ่มรายคน: เลือกของรางวัล" : "สุ่มแบบกลุ่ม: เลือกของรางวัล";
+            if (!available.length) { list.innerHTML = '<p class="text-center py-10 text-gray-400 font-bold italic text-sm">-- ไม่มีของรางวัลคงเหลือ --</p>'; return; }
+            const currentId = (giftPickerContext === 'ind') ? selectedIndGiftId : selectedGroupGiftId;
+            list.innerHTML = available.map(g => {
+                const isSelected = g.id === currentId;
+                return `<div onclick="pickGift('${g.id}')" class="flex items-center justify-between p-4 border rounded-xl hover:bg-blue-50 cursor-pointer transition-all ${isSelected ? 'bg-blue-100 border-blue-500 shadow-md' : 'bg-white border-gray-100'}">
+                    <div>
+                        <p class="font-black ${isSelected ? 'text-blue-800' : 'text-base text-gray-800'} uppercase text-sm">${g.name}</p>
+                        <p class="${isSelected ? 'text-blue-600' : 'text-gray-500'} font-bold text-sm">คงเหลือ: ${g.remainingQty}</p>
+                    </div>
+                    <div class="px-4 py-1 ${isSelected ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'} rounded-lg text-sm font-black uppercase">${isSelected ? 'Selected' : 'Select'}</div>
+                </div>`;
+            }).join('');
+        }
+
+        window.pickGift = (id) => {
+            if (giftPickerContext === 'ind') { selectedIndGiftId = id; refreshIndGiftState(); }
+            else { 
+                selectedGroupGiftId = id; 
+                document.getElementById('teamGridA').innerHTML = '';
+                document.getElementById('teamGridB').innerHTML = '';
+                refreshGroupGiftState(); 
+            }
+            document.getElementById('giftPickerModal').classList.add('hidden');
+        };
+
+        function refreshIndGiftState() {
+            const display = document.getElementById('indGiftDisplayName');
+            const qty = document.getElementById('indGiftDisplayQty');
+            const btn = document.getElementById('startRandomizeButton');
+            if (!selectedIndGiftId) { display.textContent = "-- ยังไม่ได้เลือกของรางวัล --"; qty.textContent = "คงเหลือ: - ชิ้น"; btn.disabled = true; return; }
+            const g = allGiftsData.find(x => x.id === selectedIndGiftId);
+            if (!g || g.remainingQty <= 0) { display.textContent = g ? g.name + " (หมดแล้ว)" : "-- รางวัลถูกลบ --"; qty.textContent = "คงเหลือ: 0"; btn.disabled = true; }
+            else { display.textContent = g.name; qty.textContent = `คงเหลือ: ${g.remainingQty} ชิ้น`; btn.disabled = false; }
+        }
+
+        function refreshGroupGiftState() {
+            const display = document.getElementById('grGiftDisplayName');
+            const qty = document.getElementById('grGiftDisplayQty');
+            const box = document.getElementById('grGiftBox');
+            const btn = document.getElementById('grStartDrawBtn');
+            const ipp = document.getElementById('grDrawCount');
+            if (!selectedGroupGiftId) { 
+                display.textContent = "-- ยังไม่ได้เลือกของรางวัล --"; 
+                display.className = "text-base font-black text-gray-400 leading-tight uppercase text-sm";
+                qty.textContent = "คงเหลือ: - ชิ้น"; 
+                qty.className = "text-sm font-bold text-gray-300 mt-1 text-sm";
+                box.className = "flex items-center justify-between bg-white border-2 border-dashed border-gray-200 rounded-xl p-3 transition-all text-sm";
+                ipp.value = 0; btn.disabled = true; return; 
+            }
+            const g = allGiftsData.find(x => x.id === selectedGroupGiftId);
+            if (!g || g.remainingQty <= 0) { 
+                display.textContent = g ? g.name + " (หมดแล้ว)" : "-- รางวัลถูกลบ --"; 
+                display.className = "text-base font-black text-red-400 leading-tight uppercase text-sm";
+                qty.textContent = "คงเหลือ: 0"; box.className = "flex items-center justify-between bg-white border-2 border-dashed border-gray-200 rounded-xl p-3 transition-all";
+                ipp.value = 0; btn.disabled = true; 
+            }
+            else { 
+                display.textContent = g.name; display.className = "text-base font-black text-blue-600 leading-tight uppercase text-sm"; 
+                qty.textContent = `คงเหลือ: ${g.remainingQty} ชิ้น`; qty.className = "text-sm font-bold text-gray-600 mt-1 text-sm"; 
+                box.className = "flex items-center justify-between bg-blue-50 border-2 border-blue-300 rounded-xl p-3 transition-all";
+                ipp.value = g.remainingQty; ipp.max = g.remainingQty; btn.disabled = false; 
+            }
+        }
+
+        // --- LUCKY DRAW LOGIC ---
+        async function startGroupRandomDraw() {
+            const amount = parseInt(document.getElementById('grDrawCount').value) || 0;
+            // ปรับเงื่อนไขการสุ่มแบบกลุ่มให้เช็ค invite === 'invite'
+            const participants = allEmployeesData.filter(e => e.DateLogin && e.invite === 'invite' && !e.RandomTime);
+            
+            if (!selectedGroupGiftId) return;
+            const g = allGiftsData.find(x => x.id === selectedGroupGiftId);
+            if (amount <= 0 || participants.length < amount || g.remainingQty < amount) return;
+
+            const btn = document.getElementById('grStartDrawBtn'); btn.disabled = true;
+            const boxL = document.getElementById('grBoxLeft'); const boxR = document.getElementById('grBoxRight');
+            boxL.innerHTML = ''; boxR.innerHTML = '';
+
+            const selected = [...participants].sort(() => 0.5 - Math.random()).slice(0, amount);
+            await updateDoc(doc(db, "crsg_gift", selectedGroupGiftId), { remainingQty: g.remainingQty - amount });
+
+            const half = Math.ceil(amount / 2);
+            const winnersL = selected.slice(0, half); const winnersR = selected.slice(half);
+
+            const showLoader = (box) => { const div = document.createElement('div'); div.id = 'loader'; div.className = 'loading-gif'; box.appendChild(div); };
+            const hideLoader = (box) => { const loader = box.querySelector('#loader'); if(loader) loader.remove(); };
+
+            for(let i=0; i < winnersL.length; i++) {
+                showLoader(boxL); await new Promise(r => setTimeout(r, 1000)); hideLoader(boxL);
+                const w = winnersL[i]; boxL.innerHTML += createWinnerItemHTML(i + 1, w);
+                await updateWinnerInDB(w, g.name, selectedGroupGiftId);
+            }
+            for(let i=0; i < winnersR.length; i++) {
+                showLoader(boxR); await new Promise(r => setTimeout(r, 1000)); hideLoader(boxR);
+                const w = winnersR[i]; boxR.innerHTML += createWinnerItemHTML(half + i + 1, w);
+                await updateWinnerInDB(w, g.name, selectedGroupGiftId);
+            }
+            btn.disabled = false; confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
+        }
+
+        function createWinnerItemHTML(order, w) {
+            return `
+                <div class="flex items-center justify-between bg-blue-50 p-2.5 rounded-xl border border-blue-100 winner-row-animate shadow-sm mb-1.5">
+                    <div class="flex items-center gap-2.5">
+                        <span class="bg-blue-600 text-white w-5 h-5 flex items-center justify-center rounded-full text-[9px] font-bold">${order}</span>
+                        <span class="text-sm font-black text-gray-800 uppercase text-left">${w.FullName_th} (${w.employeeId})</span>
+                    </div>
+                    <span onclick="removeLuckyWinner('${w.id}')" class="text-red-400 hover:text-red-600 cursor-pointer font-bold text-lg ml-3 text-sm">&times;</span>
+                </div>
+            `;
+        }
+
+        async function updateWinnerInDB(w, giftName, giftId) {
+            await updateDoc(doc(db, "crsg", w.id), { RandomTime: serverTimestamp(), AwardedGift: giftName, AwardedGiftId: giftId });
+        }
+
+        async function runIndividualLuckyDraw() {
+            const errorEl = document.getElementById('randomizeError');
+            errorEl.textContent = "";
+
+            // ปรับเงื่อนไขการสุ่มรายคนให้เช็ค invite === 'invite'
+            const eligible = allEmployeesData.filter(e => e.DateLogin && e.invite === 'invite' && !e.RandomTime);
+            
+            if (!selectedIndGiftId) { errorEl.textContent = "กรุณาเลือกของรางวัลก่อน"; return; }
+            if (!eligible.length) { errorEl.textContent = "ไม่มีผู้มีสิทธิ์ลุ้น"; return; }
+
+            const g = allGiftsData.find(x => x.id === selectedIndGiftId);
+            if (!g || g.remainingQty <= 0) { errorEl.textContent = "ของรางวัลหมดแล้ว"; return; }
+
+            const btn = document.getElementById('startRandomizeButton'); 
+            btn.disabled = true;
+            
+            const digs = [1,2,3,4,5].map(i => document.getElementById('digit'+i));
+            
+            let tick = 0;
+            drawInterval = setInterval(() => {
+                digs.forEach(d => d.textContent = Math.floor(Math.random()*10));
+                if(++tick > 40) {
+                    clearInterval(drawInterval);
+                    const w = eligible[Math.floor(Math.random()*eligible.length)];
+                    const idStr = String(w.employeeId).slice(-5).padStart(5,'0');
+                    digs.forEach((d, i) => d.textContent = idStr[i]);
+                    
+                    setTimeout(async () => {
+                        await updateDoc(doc(db, "crsg_gift", selectedIndGiftId), { remainingQty: g.remainingQty - 1 });
+                        await updateDoc(doc(db, "crsg", w.id), { RandomTime: serverTimestamp(), AwardedGift: g.name, AwardedGiftId: selectedIndGiftId });
+                        
+                        document.getElementById('winnerName').textContent = `${w.FullName_th} (${w.employeeId})`;
+                        document.getElementById('winnerGiftText').textContent = `รางวัล: ${g.name}`;
+                        document.getElementById('winnerEmployeeId').textContent = `รหัสพนักงาน: ${w.employeeId}`;
+                        document.getElementById('winnerBU').textContent = `สาขา: ${w.Branch_eng || '-'}`;
+                        document.getElementById('winnerTeam').textContent = `สังกัด: ${w.Check_Manager || '-'}`;
+                        document.getElementById('winnerDetailModal').classList.remove('hidden');
+                        
+                        confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } }); 
+                        btn.disabled = false;
+                        updateLuckyDrawStats();
+                    }, 500);
+                }
+            }, 50);
+        }
+
+        window.removeLuckyWinner = async (id) => {
+            const e = allEmployeesData.find(x => x.id === id); if (!e) return;
+            if (e.AwardedGiftId) {
+                const g = allGiftsData.find(x => x.id === e.AwardedGiftId);
+                if (g) await updateDoc(doc(db, "crsg_gift", g.id), { remainingQty: g.remainingQty + 1 });
+            }
+            await updateDoc(doc(db, "crsg", id), { RandomTime: null, AwardedGift: "", AwardedGiftId: null, ReceivedTime: null });
+            document.getElementById('winnerDetailModal').classList.add('hidden');
+        };
+
+        // --- UI UPDATES ---
+        function updateLuckyDrawStats() {
+            // ปรับเงื่อนไขการนับสถิติใน Modal ให้เช็ค invite === 'invite'
+            const pool = allEmployeesData.filter(e => e.DateLogin && e.invite === 'invite');
+            const drawn = pool.filter(e => e.RandomTime).sort((a,b) => (b.RandomTime?.toMillis() || 0) - (a.RandomTime?.toMillis() || 0));
+            document.getElementById('modalParticipantsCount').textContent = pool.filter(e => !e.RandomTime).length;
+            document.getElementById('modalDrawnCount').textContent = drawn.length;
+            document.getElementById('drawnWinnersTableBody').innerHTML = drawn.map(w => `<tr><td class="px-4 py-4 font-mono font-black text-blue-700 text-center text-sm">${w.employeeId}</td><td class="px-4 py-4 uppercase font-bold text-xm text-left text-sm text-sm">${w.FullName_th}${w.AwardedGift ? `<br/><span class="text-sm text-orange-600 text-xs">🎁 ${w.AwardedGift}</span>` : ""}</td><td class="px-4 py-4 text-xm font-bold text-gray-500 uppercase text-left text-sm">${w.Branch_eng || '-'}</td><td class="px-4 py-4 text-center"><span onclick="removeLuckyWinner('${w.id}')" class="bg-red-50 text-white px-3 py-1 rounded cursor-pointer text-sm font-bold">ลบ</span></td></tr>`).join('');
+        }
+
+        function updateTeamTab() {
+            const sel = document.getElementById('teamSelect'); const cur = sel.value;
+            sel.innerHTML = '<option value="">-- เลือกทีม --</option>' + teamNames.map(t => `<option value="${t}">${t}</option>`).join('');
+            sel.value = teamNames.includes(cur) ? cur : "";
+            
+            if(sel.value) {
+                const members = allEmployeesData.filter(e => e.Check_Place === sel.value);
+                document.getElementById('teamStatsTotal').textContent = members.length; document.getElementById('teamStatsRegistered').textContent = members.filter(m => m.DateLogin).length;
+                document.getElementById('teamStatsContainer').classList.remove('hidden');
+                document.getElementById('selectedTeamTableBody').innerHTML = members.map((e,i) => `
+                    <tr class="${e.DateLogin ? 'bg-yellow-50':''} hover:bg-gray-50 transition-colors text-center text-sm">
+                        <td class="px-4 py-0 font-normal">${i+1}</td>
+                        <td class="px-4 py-0 font-normal text-blue-800">${e.employeeId}</td>
+                        <td class="px-4 py-0 font-normal uppercase text-left">${e.FullName_th}</td>
+                        <td class="px-4 py-0 font-normal text-gray-600 text-left">${e.Branch_eng||'-'}</td>
+                        <td class="px-4 py-0 font-normal text-gray-600 text-left">${e.Check_Manager||'-'}</td>
+                        <td class="px-4 py-0 text-center font-black uppercase text-xs">
+                            ${e.DateLogin ? '<span class="px-3 py-1 bg-green-100 text-green-700 rounded-md">ลงทะเบียน</span>' : '-'}
+                        </td>
+                        <td class="px-4 py-0 text-center"><span onclick="editEmp('${e.id}')" class="text-orange-500 hover:text-orange-700 cursor-pointer font-black text-xs uppercase shadow-sm">Edit</span></td>
+                    </tr>`).join('');
+            } else document.getElementById('teamStatsContainer').classList.add('hidden');
+        }
+
+        function updateGridTab() {
+            const filter = document.getElementById('groupViewManagerFilter').value;
+            const managers = [...new Set(allEmployeesData.map(e => e.Check_Manager).filter(Boolean))].sort();
+            const filterSelect = document.getElementById('groupViewManagerFilter');
+            
+            if (filterSelect.options.length !== managers.length + 1) {
+                filterSelect.innerHTML = '<option value="">-- ดูทั้งหมด --</option>' + managers.map(m => `<option value="${m}">${m}</option>`).join('');
+            }
+            filterSelect.value = filter;
+
+            const filtered = filter ? allEmployeesData.filter(e => e.Check_Manager === filter) : allEmployeesData;
+            
+            // สถิติรวมสำหรับคนที่มี invite
+            const invitedPeople = filtered.filter(e => e.invite === 'invite');
+            document.getElementById('gvOverallStatsTotal').textContent = invitedPeople.length; 
+            document.getElementById('gvOverallStatsRegistered').textContent = invitedPeople.filter(e => e.DateLogin).length;
+            document.getElementById('gvOverallStatsContainer').classList.remove('hidden');
+            
+            const counts = {}; 
+            teamNames.forEach(t => counts[t] = { r: 0, t: 0 });
+            
+            // นับจำนวนตามผังที่นั่ง (Check_Place)
+            filtered.filter(e => e.Check_Place).forEach(e => { 
+                if(counts[e.Check_Place]) { 
+                    counts[e.Check_Place].t++; 
+                    if(e.DateLogin) counts[e.Check_Place].r++; 
+                } 
+            });
+
+            const gridA = document.getElementById('teamGridA');
+            const gridB = document.getElementById('teamGridB');
+            gridA.innerHTML = '';
+            gridB.innerHTML = '';
+
+            teamNames.forEach(t => {
+                const c = counts[t]; 
+                let bg = 'bg-gray-100'; 
+                if(c.t > 0) {
+                    if(c.r === c.t) bg = 'bg-green-100'; 
+                    else if(c.r > 0) bg = 'bg-orange-100';
+                }
+                const circleHTML = `
+                    <div onclick="openGroupDetail('${t}')" class="${bg} aspect-square rounded-full border border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:shadow-lg hover:scale-105 transition-all active:scale-95 shadow-sm">
+                        <p class="text-[12px] font-bold text-blue-700 leading-none text-xs font-bold">${t}</p>
+                        <p class="text-sm font-black text-gray-900 mt-0.5 text-sm">${c.r}/${c.t}</p>
+                    </div>
+                `;
+                if(t.startsWith('A')) gridA.innerHTML += circleHTML;
+                else if(t.startsWith('B')) gridB.innerHTML += circleHTML;
+            });
+        }
+
+        function updateEmployeeList() {
+            const filter = document.getElementById('managerFilterSelect').value;
+            const managers = [...new Set(allEmployeesData.map(e => e.Check_Manager).filter(Boolean))].sort();
+            const managerSelect = document.getElementById('managerFilterSelect');
+            if (managerSelect.options.length !== managers.length + 1) {
+                managerSelect.innerHTML = '<option value="">-- ทั้งหมด --</option>' + managers.map(m => `<option value="${m}">${m}</option>`).join('');
+            }
+            managerSelect.value = filter;
+            
+            // FILTER 1: แสดงข้อมูลพนักงานที่มี "ผังที่นั่ง" OR "ลงทะเบียนแล้ว"
+            let filtered = allEmployeesData.filter(e => 
+                (e.Check_Place && e.Check_Place.trim() !== '') || 
+                (e.DateLogin)
+            );
+
+            // FILTER 2: Manager Filter
+            if (filter) filtered = filtered.filter(e => e.Check_Manager === filter);
+
+            // Apply Sorting Logic
+            filtered.sort((a, b) => {
+                let valA, valB;
+                switch(empSortField) {
+                    case 'status':
+                        valA = a.DateLogin ? 1 : 0; valB = b.DateLogin ? 1 : 0;
+                        break;
+                    case 'name':
+                        return empSortDir === 'asc' ? a.FullName_th.localeCompare(b.FullName_th, 'th') : b.FullName_th.localeCompare(a.FullName_th, 'th');
+                    case 'branch':
+                        valA = a.Branch_eng || ''; valB = b.Branch_eng || '';
+                        break;
+                    case 'manager':
+                        valA = a.Check_Manager || ''; valB = b.Check_Manager || '';
+                        break;
+                    case 'member':
+                        valA = a.invite || ''; valB = b.invite || '';
+                        break;
+                    case 'gift':
+                        valA = a.AwardedGift ? 1 : 0; valB = b.AwardedGift ? 1 : 0;
+                        break;
+                    default: // id
+                        valA = a.employeeId; valB = b.employeeId;
+                }
+
+                if (valA < valB) return empSortDir === 'asc' ? -1 : 1;
+                if (valA > valB) return empSortDir === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            // Update Statistics specifically for Member Tab
+            const totalItems = filtered.length;
+            const regCount = filtered.filter(e => e.DateLogin).length;
+            const unregCount = totalItems - regCount;
+            const perc = totalItems > 0 ? Math.round((regCount / totalItems) * 100) : 0;
+
+            document.getElementById('empStatsTotal').textContent = totalItems;
+            document.getElementById('empStatsRegistered').textContent = regCount;
+            document.getElementById('empStatsUnregistered').textContent = unregCount;
+            document.getElementById('empStatsPercent').textContent = perc + "%";
+            document.getElementById('empStatsContainer').classList.remove('hidden');
+
+            // Pagination Logic
+            const totalPages = Math.ceil(totalItems / empPageSize);
+            if (empCurrentPage > totalPages && totalPages > 0) empCurrentPage = totalPages;
+            
+            const paginatedItems = filtered.slice((empCurrentPage - 1) * empPageSize, empCurrentPage * empPageSize);
+
+            document.getElementById('employeeListTableBody').innerHTML = paginatedItems.map((e,i) => {
+                const isRegistered = e.DateLogin ? true : false;
+                return `
+                <tr class="${isRegistered ? 'bg-yellow-50':''} hover:bg-gray-50 transition-colors text-center text-sm">
+                    <td class="px-4 py-0 text-gray-400 text-center text-xs">${((empCurrentPage - 1) * empPageSize) + (i+1)}</td>
+                    <td class="px-4 py-0 font-normal text-blue-800 text-center text-sm">${e.employeeId}</td>
+                    <td class="px-4 py-0 font-normal uppercase text-left text-sm text-sm">${e.FullName_th}</td>
+                    <td class="px-4 py-0 font-normal text-left text-gray-600 text-sm text-sm">${e.Branch_eng || '-'}</td>
+                    <td class="px-4 py-0 font-normal text-left text-gray-600 text-sm text-sm">${e.Check_Manager || '-'}</td>
+                    <td class="px-4 py-0 font-normal text-center text-gray-400 text-sm text-sm">${e.invite || '-'}</td>
+                    <td class="px-4 py-0 font-normal text-center text-orange-600 text-sm text-sm">${e.AwardedGift ? 'รางวัล' : '-'}</td>
+                    <td class="px-4 py-0 font-bold text-blue-500 uppercase text-center text-sm text-sm">${e.Check_Place || '-'}</td>
+                    <td class="px-4 py-0">
+                        ${isRegistered ? '<span class="px-3 py-1 bg-green-100 text-green-700 rounded-md text-[10px] font-normal text-xs text-sm">ลงทะเบียน</span>' : '-'}
+                    </td>
+                    <td class="px-4 py-0 text-center">
+                        <button onclick="cancelReg('${e.id}', '${e.FullName_th}')" 
+                            ${isRegistered ? '' : 'disabled'}
+                            class="${isRegistered ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-gray-100 text-gray-400'} px-3 py-1 rounded text-[10px] font-normal uppercase cursor-pointer transition-all text-sm text-sm">Delete</button>
+                    </td>
+                </tr>
+            `}).join('');
+
+            renderEmpPagination(totalPages);
+        }
+
+        function renderEmpPagination(totalPages) {
+            const container = document.getElementById('empPaginationContainer');
+            if (totalPages <= 1) {
+                container.innerHTML = "";
+                return;
+            }
+
+            let html = `
+                <button class="pagination-btn" ${empCurrentPage === 1 ? 'disabled' : ''} onclick="changeEmpPage(${empCurrentPage - 1})">ก่อนหน้า</button>
+            `;
+
+            // Simple pagination strategy
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= empCurrentPage - 2 && i <= empCurrentPage + 2)) {
+                    html += `<button class="pagination-btn ${i === empCurrentPage ? 'active' : ''}" onclick="changeEmpPage(${i})">${i}</button>`;
+                } else if (i === empCurrentPage - 3 || i === empCurrentPage + 3) {
+                    html += `<span class="px-1 text-gray-400">...</span>`;
+                }
+            }
+
+            html += `
+                <button class="pagination-btn" ${empCurrentPage === totalPages ? 'disabled' : ''} onclick="changeEmpPage(${empCurrentPage + 1})">ถัดไป</button>
+            `;
+            container.innerHTML = html;
+        }
+
+        window.changeEmpPage = (page) => {
+            empCurrentPage = page;
+            updateEmployeeList();
+        };
+
+        window.cancelReg = (id, name) => {
+            const e = allEmployeesData.find(x => x.id === id);
+            if (!e) return;
+
+            const modalInner = document.getElementById('confirmModalInner');
+            modalInner.className = "bg-white rounded-2xl p-10 max-w-lg w-full shadow-2xl text-center";
+            currentConfirmAction = async () => {
+                try {
+                    const updates = { 
+                        DateLogin: null, 
+                        MobileId: "",
+                        AwardedGift: "",
+                        AwardedGiftId: null,
+                        RandomTime: null,
+                        ReceivedTime: null
+                    };
+
+                    // ถ้าเคยได้รับรางวัล ให้คืนค่า remainingQty กลับเข้าสู่รางวัลนั้นๆ
+                    if (e.AwardedGiftId) {
+                        const g = allGiftsData.find(x => x.id === e.AwardedGiftId);
+                        if (g) {
+                            await updateDoc(doc(db, "crsg_gift", g.id), { 
+                                remainingQty: (g.remainingQty || 0) + 1 
+                            });
+                        }
+                    }
+
+                    await updateDoc(doc(db, "crsg", id), updates);
+                    document.getElementById('confirmModal').classList.add('hidden');
+                    
+                    // หากเปิด Lightbox Dashboard อยู่ ให้ทำการอัปเดตข้อมูลในตารางทันที
+                    if(!document.getElementById('dashboardListModal').classList.contains('hidden')) {
+                        // ระบุประเภทจาก Title ของ Modal เพื่ออัปเดตข้อมูลใหม่
+                        const currentTitle = document.getElementById('dashboardListModalTitle').textContent;
+                        let type = 'total';
+                        if(currentTitle.includes('ที่ลงทะเบียนแล้ว')) type = 'registered';
+                        else if(currentTitle.includes('ที่ยังไม่ลงทะเบียน')) type = 'unregistered';
+                        else if(currentTitle.includes('ผู้ร่วมงาน')) type = 'extras';
+                        
+                        // รอผลลัพธ์จาก Firestore อัปเดตผ่าน onSnapshot แล้วค่อย refresh UI (ซึ่งเกิดขึ้นอัตโนมัติ)
+                        // แต่เพื่อให้ผู้ใช้เห็นการเปลี่ยนแปลงทันที เราอาจต้องเรียกดึงข้อมูลใหม่ (ในที่นี้ onSnapshot จะจัดการเอง)
+                    }
+                } catch (err) { console.error(err); }
+            };
+            document.getElementById('confirmTitle').textContent = "ยืนยันการลบข้อมูลพนักงาน"; 
+            document.getElementById('confirmText').textContent = `ต้องการลบข้อมูลลงทะเบียนและของรางวัลของ [${name}] หรือไม่? (ข้อมูลรางวัลจะถูกคืนเข้าคลัง)`; 
+            document.getElementById('confirmInputContainer').classList.add('hidden'); 
+            document.getElementById('confirmModal').classList.remove('hidden');
+        };
+
+        window.openGroupDetail = (teamName) => {
+            const members = allEmployeesData.filter(e => e.Check_Place === teamName);
+            document.getElementById('groupViewModalTitle').textContent = `ข้อมูลสมาชิกทีม ${teamName}`;
+            document.getElementById('groupViewStatsTotal').textContent = members.length; document.getElementById('groupViewStatsRegistered').textContent = members.filter(m => m.DateLogin).length;
+            document.getElementById('groupViewTableBody').innerHTML = members.map((e, i) => {
+                return `<tr class="${e.DateLogin ? 'bg-yellow-50' : ''} hover:bg-gray-50 text-center text-sm text-sm">
+                    <td class="px-4 py-0 font-bold text-gray-400 text-xs">${i + 1}</td>
+                    <td class="px-4 py-0 font-normal text-blue-700 text-center text-sm">${e.employeeId}</td>
+                    <td class="px-4 py-0 font-normal uppercase font-bold text-left text-sm">${e.FullName_th}</td>
+                    <td class="px-4 py-0 text-left text-gray-400 text-sm">${e.Branch_eng || '-'}</td>
+                    <td class="px-4 py-0 text-left text-gray-400 text-sm">${e.Check_Manager || '-'}</td>
+                    <td class="px-4 py-0 text-center text-sm">
+                        ${e.DateLogin ? '<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-normal">ลงทะเบียน</span>' : '-'}
+                    </td>
+                    <td class="px-4 py-0 text-center">
+                        <span onclick="editEmp('${e.id}')" class="bg-red-500 text-white px-3 py-0.5 rounded text-[10px] font-bold uppercase cursor-pointer">Edit</span>
+                    </td>
+                </tr>`;
+            }).join('') || '<tr><td colspan="7" class="p-10 text-center text-sm text-sm">ไม่พบรายชื่อ</td></tr>';
+            document.getElementById('groupViewModal').classList.remove('hidden');
+        };
+
+        window.editEmp = (id) => {
+            const e = allEmployeesData.find(x => x.id === id); if(!e) return; currentEditingDocId = id;
+            document.getElementById('editEmpId').textContent = e.employeeId; document.getElementById('editEmpName').textContent = e.FullName_th;
+            document.getElementById('editEmpManager').value = e.Check_Manager || ''; document.getElementById('editEmpTeam').value = e.Check_Place || '';
+            document.getElementById('editEmployeeModal').classList.remove('hidden');
+        };
+
+        // --- Manual Registration Logic ---
+        function searchForRegistration() {
+            const id = document.getElementById('searchRegEmployeeIdInput').value.trim();
+            const errorEl = document.getElementById('searchRegEmployeeError');
+            errorEl.textContent = "";
+            
+            if(!id) { errorEl.textContent = "กรุณาใส่รหัสพนักงาน"; return; }
+            
+            const e = allEmployeesData.find(x => x.employeeId === id);
+            if(e) {
+                currentEditingDocId = e.id;
+                document.getElementById('regEmpId').textContent = e.employeeId;
+                document.getElementById('regEmpName').textContent = e.FullName_th;
+                
+                // แสดงข้อมูล สาขา และ สังกัด เพิ่มเติมใต้ชื่อ
+                document.getElementById('regEmpBranch').textContent = e.Branch_eng || '-';
+                document.getElementById('regEmpManager').textContent = e.Check_Manager || '-';
+
+                document.getElementById('regEmpSeat').value = e.Check_Place || '';
+                // ดึงข้อมูลจากฟิลด์ invite
+                document.getElementById('regEmpInviteStatus').value = e.invite || '';
+                
+                document.getElementById('manualRegisterModal').classList.remove('hidden');
+                document.getElementById('regManualError').textContent = "";
+            } else {
+                errorEl.textContent = "ไม่พบรหัสพนักงานในระบบ";
+            }
+        }
+
+        async function saveManualRegistration() {
+            const seat = document.getElementById('regEmpSeat').value.trim();
+            const inviteStatus = document.getElementById('regEmpInviteStatus').value;
+            const errorEl = document.getElementById('regManualError');
+            
+            try {
+                // บันทึกลงฟิลด์ invite และ Check_Place โดยตรง
+                await updateDoc(doc(db, "crsg", currentEditingDocId), {
+                    Check_Place: seat,
+                    invite: inviteStatus,
+                    DateLogin: serverTimestamp() // บันทึกเวลาลงทะเบียนทันที
+                });
+                document.getElementById('manualRegisterModal').classList.add('hidden');
+                document.getElementById('searchRegEmployeeIdInput').value = "";
+            } catch (err) {
+                console.error(err);
+                errorEl.textContent = "เกิดข้อผิดพลาดในการบันทึก";
+            }
+        }
+
+        function handleEmpSort(field) {
+            if (empSortField === field) {
+                empSortDir = empSortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                empSortField = field;
+                empSortDir = 'asc';
+            }
+            // Reset to page 1 on sort change
+            empCurrentPage = 1;
+            updateEmployeeList();
+        }
+
+        function setupListeners() {
+            document.getElementById('randomizeButton').addEventListener('click', () => { updateLuckyDrawStats(); document.getElementById('randomizeModal').classList.remove('hidden'); });
+            document.getElementById('closeRandomizeModalButtonX').addEventListener('click', () => document.getElementById('randomizeModal').classList.add('hidden'));
+            document.getElementById('startRandomizeButton').addEventListener('click', runIndividualLuckyDraw);
+            document.getElementById('grStartDrawBtn').addEventListener('click', startGroupRandomDraw);
+            document.getElementById('closeGroupViewModalButton').addEventListener('click', () => document.getElementById('groupViewModal').classList.add('hidden'));
+            document.getElementById('closeWinnerModalButton').addEventListener('click', () => document.getElementById('winnerDetailModal').classList.add('hidden'));
+            document.getElementById('closeEditModalButton').addEventListener('click', () => document.getElementById('editEmployeeModal').classList.add('hidden'));
+            document.getElementById('closeConfirmButton').addEventListener('click', () => document.getElementById('confirmModal').classList.add('hidden'));
+            
+            // Dashboard Cards Click Listeners
+            document.getElementById('card-total').addEventListener('click', () => openDashboardList('total'));
+            document.getElementById('card-registered').addEventListener('click', () => openDashboardList('registered'));
+            document.getElementById('card-unregistered').addEventListener('click', () => openDashboardList('unregistered'));
+            document.getElementById('card-extras').addEventListener('click', () => openDashboardList('extras'));
+            document.getElementById('closeDashboardListModalButton').addEventListener('click', () => document.getElementById('dashboardListModal').classList.add('hidden'));
+
+            // Sorting Listeners
+            document.getElementById('sort-emp-id').addEventListener('click', () => handleEmpSort('id'));
+            document.getElementById('sort-emp-name').addEventListener('click', () => handleEmpSort('name'));
+            document.getElementById('sort-emp-branch').addEventListener('click', () => handleEmpSort('branch'));
+            document.getElementById('sort-emp-manager').addEventListener('click', () => handleEmpSort('manager'));
+            document.getElementById('sort-emp-member').addEventListener('click', () => handleEmpSort('member'));
+            document.getElementById('sort-emp-gift').addEventListener('click', () => handleEmpSort('gift'));
+            document.getElementById('sort-emp-status').addEventListener('click', () => handleEmpSort('status'));
+
+            // Manual Reg Listeners
+            document.getElementById('searchRegEmployeeButton').addEventListener('click', searchForRegistration);
+            document.getElementById('closeManualRegModalButton').addEventListener('click', () => document.getElementById('manualRegisterModal').classList.add('hidden'));
+            document.getElementById('saveManualRegButton').addEventListener('click', saveManualRegistration);
+
+            document.getElementById('confirmActionButton').addEventListener('click', async () => {
+                if (currentConfirmAction) await currentConfirmAction();
+            });
+
+            document.getElementById('addGiftBtn').addEventListener('click', addGift);
+            document.getElementById('openGiftPickerBtn').addEventListener('click', () => { giftPickerContext = 'ind'; renderGiftPicker(); document.getElementById('giftPickerModal').classList.remove('hidden'); });
+            document.getElementById('openGroupGiftPickerBtn').addEventListener('click', () => { giftPickerContext = 'group'; renderGiftPicker(); document.getElementById('giftPickerModal').classList.remove('hidden'); });
+            document.getElementById('closeGiftPickerBtn').addEventListener('click', () => document.getElementById('giftPickerModal').classList.add('hidden'));
+            document.getElementById('closeEditGiftModalBtn').addEventListener('click', () => document.getElementById('editGiftModal').classList.add('hidden'));
+            
+            document.getElementById('saveEditGiftBtn').addEventListener('click', async () => {
+                const newName = document.getElementById('editGiftName').value.trim();
+                const newTotal = parseInt(document.getElementById('editGiftTotalQty').value);
+                const newRemaining = parseInt(document.getElementById('editGiftRemainingQty').value);
+                if(!newName || isNaN(newTotal) || isNaN(newRemaining)) return;
+                await updateDoc(doc(db, "crsg_gift", currentEditingGiftId), { name: newName, totalQty: newTotal, remainingQty: newRemaining });
+                document.getElementById('editGiftModal').classList.add('hidden');
+            });
+
+            document.getElementById('saveEditModalButton').addEventListener('click', async () => { await updateDoc(doc(db, "crsg", currentEditingDocId), { Check_Manager: document.getElementById('editEmpManager').value, Check_Place: document.getElementById('editEmpTeam').value }); document.getElementById('editEmployeeModal').classList.add('hidden'); });
+            
+            // แก้ไขปุ่มค้นหาพนักงานเพื่อแก้ไขข้อมูล ในหน้าจัดกลุ่ม
+            document.getElementById('searchEmployeeButton').addEventListener('click', () => { 
+                const errorEl = document.getElementById('searchEmployeeError');
+                errorEl.textContent = ""; // ล้าง error เก่า
+                const id = document.getElementById('searchEmployeeIdInput').value.trim(); 
+                if(!id) { errorEl.textContent = "กรุณาใส่รหัสพนักงาน"; return; }
+                const e = allEmployeesData.find(x => x.employeeId === id); 
+                if(e) {
+                    editEmp(e.id); 
+                    document.getElementById('searchEmployeeIdInput').value = ""; // ล้างช่องค้นหาเมื่อเจอ
+                } else {
+                    errorEl.textContent = "ไม่พบรหัสพนักงาน"; 
+                }
+            });
+
+            document.getElementById('teamSelect').addEventListener('change', updateTeamTab);
+            document.getElementById('groupViewManagerFilter').addEventListener('change', updateGridTab);
+            document.getElementById('managerFilterSelect').addEventListener('change', () => {
+                empCurrentPage = 1;
+                updateEmployeeList();
+            });
+            
+            document.getElementById('updateTeamNamesBtn').addEventListener('click', () => {
+                const val = document.getElementById('definedTeamNamesInput').value.trim();
+                if(!val) return;
+                teamNames = val.split(',').map(t => t.trim()).filter(Boolean);
+                refreshUI();
+            });
+
+            document.getElementById('downloadCsvButton').addEventListener('click', () => {
+                let csv = "\uFEFFรหัส,ชื่อ-นามสกุล,สายงาน,สังกัด,ทีม,สถานะ\n";
+                allEmployeesData.filter(e => e.DateLogin).forEach(e => { csv += `"${e.employeeId}","${e.FullName_th}","${e.Branch_eng||''}","${e.Check_Manager||''}","${e.Check_Place||''}","ลงทะเบียน"\n`; });
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "Registration_Report.csv"; link.click();
+            });
+
+            // ปุ่ม Download CSV สำหรับข้อมูลสมาชิก (รวมตัวกรองและการค้นหา)
+            document.getElementById('downloadEmployeeCsvButton').addEventListener('click', () => {
+                const filter = document.getElementById('managerFilterSelect').value;
+                // Filter same as the view: พนักงานที่มี "ที่นั่ง" OR "ลงทะเบียนแล้ว"
+                let filtered = allEmployeesData.filter(e => 
+                    (e.Check_Place && e.Check_Place.trim() !== '') || 
+                    (e.DateLogin)
+                );
+                if (filter) filtered = filtered.filter(e => e.Check_Manager === filter);
+                
+                let csv = "\uFEFFลำดับ,รหัส,ชื่อ-นามสกุล,สาขา,สังกัด,Member,รางวัล,ที่นั่ง,สถานะ\n";
+                filtered.forEach((e, i) => {
+                    const statusText = e.DateLogin ? 'ลงทะเบียน' : '-';
+                    const memberText = e.invite || '-';
+                    const giftText = e.AwardedGift ? 'รางวัล' : '-';
+                    csv += `"${i+1}","${e.employeeId}","${e.FullName_th}","${e.Branch_eng||'-'}","${e.Check_Manager||'-'}","${memberText}","${giftText}","${e.Check_Place||'-'}","${statusText}"\n`;
+                });
+                
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = "Employee_List_Report.csv";
+                link.click();
+            });
+
+            document.getElementById('downloadWinnersCsvButton').addEventListener('click', () => {
+                const winners = allEmployeesData.filter(e => e.RandomTime).sort((a,b) => (b.RandomTime?.toMillis() || 0) - (a.RandomTime?.toMillis() || 0));
+                let csv = "\uFEFFรหัสพนักงาน,ชื่อ-นามสกุล,ของรางวัล,สาขา,สังกัด,ที่นั่ง,สถานะรับของ,เวลาได้รับ\n";
+                winners.forEach(e => { 
+                    const timeStr = e.RandomTime?.toMillis() ? new Date(e.RandomTime.toMillis()).toLocaleString('th-TH') : '-';
+                    const receivedStr = e.ReceivedTime ? 'รับแล้ว' : 'ยังไม่รับ';
+                    csv += `"${e.employeeId}","${e.FullName_th}","${e.AwardedGift||''}","${e.Branch_eng||''}","${e.Check_Manager||''}","${e.Check_Place||''}","${receivedStr}","${timeStr}"\n`; 
+                });
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "Winners_Report.csv"; link.click();
+            });
+
+            document.getElementById('resetTeamButton').addEventListener('click', () => {
+                const modalInner = document.getElementById('confirmModalInner');
+                const inputContainer = document.getElementById('confirmInputContainer');
+                const inputField = document.getElementById('confirmInput');
+                inputContainer.classList.remove('hidden');
+                inputField.value = "";
+                currentConfirmAction = async () => {
+                    if (inputField.value.trim().toUpperCase() !== 'RESET') return;
+                    const batch = writeBatch(db);
+                    
+                    // Reset พนักงานทั้งหมด
+                    allEmployeesData.forEach(e => {
+                        batch.update(doc(db, "crsg", e.id), { 
+                            DateLogin: null, 
+                            RandomTime: null, 
+                            AwardedGift: "", 
+                            AwardedGiftId: null, 
+                            ReceivedTime: null,
+                            MobileId: ""
+                        });
+                    });
+
+                    // Reset จำนวนคงเหลือของรางวัลให้เท่ากับจำนวนตั้งต้นทั้งหมด
+                    allGiftsData.forEach(g => {
+                        batch.update(doc(db, "crsg_gift", g.id), {
+                            remainingQty: g.totalQty || 1
+                        });
+                    });
+
+                    await batch.commit();
+                    document.getElementById('confirmModal').classList.add('hidden');
+                };
+                document.getElementById('confirmTitle').textContent = "รีเซ็ตระบบ"; 
+                document.getElementById('confirmText').textContent = "ยืนยันการล้างข้อมูลการลงทะเบียนและรางวัลทั้งหมด? (รางวัลจะถูกคืนค่าจำนวนคงเหลือทั้งหมด)"; 
+                document.getElementById('confirmModal').classList.remove('hidden');
+            });
+        }
+
+        function updateGroupRandomUI() {
+            // ปรับเงื่อนไขหน้าสุ่มแบบกลุ่มให้เช็ค invite === 'invite'
+            const pool = allEmployeesData.filter(e => e.DateLogin && e.invite === 'invite');
+            const drawn = pool.filter(e => e.RandomTime).sort((a,b) => (b.RandomTime?.toMillis() || 0) - (a.RandomTime?.toMillis() || 0));
+            const avail = pool.filter(e => !e.RandomTime);
+            if(document.getElementById('grTotalEligible')) document.getElementById('grTotalEligible').textContent = pool.length;
+            if(document.getElementById('grRemainingEligible')) document.getElementById('grRemainingEligible').textContent = avail.length;
+            if(document.getElementById('grTotalWinners')) document.getElementById('grTotalWinners').textContent = drawn.length;
+        }
     </script>
 </body>
-
 </html>
