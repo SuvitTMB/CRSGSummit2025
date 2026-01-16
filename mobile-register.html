@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONE Retail Club</title>
+    <!-- โหลด Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            background-image: url('./images/bgRecogNight.jpg');
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .otp-active {
+            background-color: #0056ff !important;
+            color: white !important;
+            border-color: #000000 !important; 
+            border-width: 2px !important;
+        }
+        .bottom-nav {
+            height: 60px;
+            background-color: #0056ff;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+        }
+        .tab-content {
+            padding-bottom: 80px; /* Space for bottom nav */
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Timeline styling for Agenda */
+        .timeline-item {
+            position: relative;
+            padding-left: 2.5rem;
+            padding-bottom: 1.5rem;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0.25rem;
+            height: 100%;
+            width: 2px;
+            background-color: #e5e7eb;
+        }
+        .timeline-item:last-child::before {
+            display: none;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: 0.15rem;
+            top: 0.25rem;
+            height: 0.8rem;
+            width: 0.8rem;
+            background-color: #0056ff;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px #bfdbfe;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- ส่วนหัว (Logo) แสดงตลอด -->
+    <header class="w-full pt-8 pb-4 flex flex-col items-center">
+        <img src="./images/RecogNight.png" class="w-[70%] max-w-[280px]" alt="Recognition Night Logo" onerror="this.src='https://placehold.co/280x80?text=Recognition+Night'">
+    </header>
+
+    <main id="mainContainer" class="flex-1 flex flex-col items-center px-4 overflow-y-auto" >
+        <!-- กล่องลงทะเบียน (แสดงเฉพาะก่อน Login) -->
+        <div id="loginSection" class="w-full max-w-md p-2 space-y-6 fade-in" style="margin-top:-10px;">
+            <p id="eventDate" class="text-sm font-bold text-gray-800 text-center drop-shadow-md mb-8"></p>
+            
+            <form id="registrationForm" class="space-y-6" onsubmit="return false;">
+                <div>
+                    <div class="flex justify-center gap-2" id="otp-container">
+                        <input type="text" inputmode="numeric" maxlength="1" class="otp-input w-12 h-14 text-center text-3xl font-bold border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all uppercase bg-white/95 shadow-sm" data-index="0">
+                        <input type="text" inputmode="numeric" maxlength="1" class="otp-input w-12 h-14 text-center text-3xl font-bold border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all uppercase bg-white/95 shadow-sm" data-index="1">
+                        <input type="text" inputmode="numeric" maxlength="1" class="otp-input w-12 h-14 text-center text-3xl font-bold border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all uppercase bg-white/95 shadow-sm" data-index="2">
+                        <input type="text" inputmode="numeric" maxlength="1" class="otp-input w-12 h-14 text-center text-3xl font-bold border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all uppercase bg-white/95 shadow-sm" data-index="3">
+                        <input type="text" inputmode="numeric" maxlength="1" class="otp-input w-12 h-14 text-center text-3xl font-bold border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all uppercase bg-white/95 shadow-sm" data-index="4">
+                    </div>
+                    <!-- ส่วนข้อความคำแนะนำที่จะถูกแทนที่ด้วยชื่อ-นามสกุล -->
+                    <p id="instructionText" class="block text-sm font-bold text-gray-800 mt-4 text-center drop-shadow-md transition-all duration-300">กรุณากรอกรหัสพนักงานของท่าน</p>
+                    
+                    <p id="checkingIdIndicator" class="hidden text-center text-xs text-blue-900 mt-2 font-black animate-pulse">กำลังตรวจสอบ...</p>
+                </div>
+                
+                <button type="button" id="registerButton" disabled
+                        class="block mx-auto w-[80%] px-4 py-3 font-bold text-white bg-[#002d63] rounded-xl hover:bg-opacity-95 transition duration-150 disabled:bg-gray-400 shadow-xl">
+                    ลงทะเบียน
+                </button>
+            </form>
+            <div id="message" class="text-center text-sm font-bold drop-shadow-sm mt-4"></div>
+        </div>
+
+        <!-- ส่วนเนื้อหาหลักหลัง Login (Tabs) -->
+        <div id="dashboardSection" class="hidden w-full max-w-4xl tab-content fade-in">
+            
+            <!-- Tab 1: ที่นั่งของคุณ -->
+            <div id="tab1" class="tab-pane space-y-4">
+                <div class="text-center text-white bg-[#002d63]/40 p-6 rounded-2xl backdrop-blur-md">
+                    <h2 id="infoFullName" class="text-xm font-bold"></h2>
+                    <p id="infoBranch" class="text-sm opacity-90 mt-1"></p>
+                    <p id="infoDept" class="text-sm opacity-90"></p>
+                    <p id="infoChief" class="text-xs mt-2 font-bold bg-white/20 inline-block px-3 py-1 rounded-full"></p>
+                </div>
+
+                <div class="bg-white/90 p-6 rounded-2xl shadow-lg text-center">
+                    <p class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-1">ที่นั่งของคุณ</p>
+                    <h3 id="teamNameDisplay" class="text-3xl font-black text-[#0056ff]" style="margin-top:15px;"></h3>
+                    <!-- ส่วนแสดงชื่อเล่น (NickName) -->
+                    <p id="infoNickName" class="text-3xl font-bold text-red-700 mt-1 hidden"></p>
+                    
+                    <div class="mt-4 pt-2 border-t border-gray-100">
+                        <p id="registrationStatusMessage" class="text-sm font-black text-green-600"></p>
+                        <p id="registrationTimestamp" class="text-[10px] text-gray-500"></p>
+                    </div>
+                </div>
+
+                <div id="seatingMapContainer" class="bg-white/90 p-4 rounded-2xl shadow-lg text-center">
+                    <p class="text-xs font-bold text-gray-800 mb-2">ผังที่นั่งของงาน</p>
+                    <img src="./images/seatingMap.png" class="w-full rounded-lg shadow-inner mx-auto" alt="Seating Chart" onerror="this.src='https://placehold.co/600x400?text=Seating+Map'">
+                </div>
+            </div>
+
+            <!-- Tab 2: ผู้ร่วมโต๊ะ -->
+            <div id="tab2" class="tab-pane hidden">
+                <div class="bg-white/90 p-6 rounded-2xl shadow-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 id="tab2Header" class="font-black text-gray-800">ผู้ร่วมโต๊ะ</h3>
+                        <select id="teamSelect" class="bg-gray-100 border-none text-sm rounded-lg p-1.5 focus:ring-0"></select>
+                    </div>
+                    <div class="overflow-hidden border border-gray-100 rounded-xl">
+                        <table class="min-w-full text-sm">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left font-bold text-gray-600">ชื่อ-นามสกุล</th>
+                                    <th class="px-4 py-2 text-center font-bold text-gray-600">สถานะ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teamMembersTableBody" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: กำหนดการ -->
+            <div id="tab3" class="tab-pane hidden">
+                <div class="bg-white/95 p-6 rounded-3xl shadow-2xl border border-white/50 backdrop-blur-sm">
+                    <!-- Event Header -->
+                    <div class="text-center mb-8">
+                        <h3 class="text-lg font-black text-[#002d63] leading-tight">Recog Night White Elegance</h3>
+                        <p class="text-xs font-bold text-gray-500 mt-1 uppercase tracking-widest">A moment of Honor 2025 by<br>ONE RETAIL Club</p>
+                        
+                        <div class="mt-4 flex flex-col items-center gap-2">
+                            <div class="flex items-center text-[#0056ff] bg-blue-50 px-4 py-1.5 rounded-full border border-blue-100 shadow-sm">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>
+                                <span class="text-xs font-black">16 มกราคม 2569 | 15.00 – 20.00 น.</span>
+                            </div>
+                            <div class="flex items-center text-gray-600 text-[11px] font-bold">
+                                <svg class="w-4 h-4 mr-1.5 text-red-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
+                                โรงแรมเซ็นทารา แกรนด์ แอท เซ็นทรัลพลาซ่า ลาดพร้าว
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Agenda List -->
+                    <div class="space-y-1">
+                        <h4 class="text-sm font-black text-gray-400 mb-4 border-b border-gray-100 pb-2 uppercase tracking-tighter">Agenda</h4>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div>
+                                <p class="text-[12px] font-bold text-[#0056ff]">15.00 – 16.00 น.</p>
+                                <p class="text-sm font-black text-gray-800">ลงทะเบียน</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div>
+                                <p class="text-[12px] font-bold text-[#0056ff]">16.00 – 16.30 น.</p>
+                                <p class="text-sm font-black text-gray-800">เปิดงาน</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div>
+                                <p class="text-[12px] font-bold text-[#0056ff]">16.30 – 18.00 น.</p>
+                                <p class="text-sm font-black text-gray-800">รับประทานอาหาร / Lucky Draw</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div>
+                                <p class="text-[12px] font-bold text-[#0056ff]">18.00 – 19.00 น.</p>
+                                <p class="text-sm font-black text-gray-800">มินิคอนเสิร์ตจากศิลปินชื่อดัง</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div>
+                                <p class="text-[12px] font-bold text-[#0056ff]">19.00 – 20.00 น.</p>
+                                <p class="text-sm font-black text-gray-800 text-orange-600">After Party</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer Note -->
+                    <div class="mt-6 pt-2 text-center">
+                        <div class="inline-flex items-center text-[#002d63] bg-orange-100 px-4 py-1 rounded-lg border border-orange-200">
+                            <span class="text-xl mr-2">🎁</span>
+                            <p class="text-[12px] font-black uppercase text-orange-700">ร่วมลุ้นของรางวัล Lucky Draw<br>ตลอดทั้งงาน</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 4: รางวัลของคุณ -->
+            <div id="tab4" class="tab-pane hidden">
+                <div id="prizeContainer" class="bg-white/90 p-8 rounded-2xl shadow-lg text-center min-h-[300px] flex flex-col justify-center items-center">
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav id="bottomNav" class="hidden fixed bottom-0 left-0 right-0 bottom-nav flex justify-around items-center text-white z-50">
+        <button onclick="switchTab(1)" class="flex flex-col items-center justify-center flex-1 h-full">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+            <span class="text-[10px] mt-1 font-bold">ที่นั่งของคุณ</span>
+        </button>
+        <button onclick="switchTab(2)" class="flex flex-col items-center justify-center flex-1 h-full">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <span id="tab2NavText" class="text-[10px] mt-1 text-center font-bold leading-tight">ผู้ร่วมโต๊ะ</span>
+        </button>
+        <button onclick="switchTab(3)" class="flex flex-col items-center justify-center flex-1 h-full">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+            <span class="text-[10px] mt-1 font-bold">กำหนดการ</span>
+        </button>
+        <button onclick="switchTab(4)" class="flex flex-col items-center justify-center flex-1 h-full">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v3c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-1.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg>
+            <span class="text-[10px] mt-1 font-bold">รางวัล</span>
+        </button>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where, doc, updateDoc, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"; 
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgWMzWcZPzyzoBu5eQzj2y59nKsxTWurQ",
+            authDomain: "ttb-register.firebaseapp.com",
+            databaseURL: "https://ttb-register-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "ttb-register",
+            storageBucket: "ttb-register.firebasestorage.app",
+            messagingSenderId: "1070273157855",
+            appId: "1:1070273157855:web:5c8120e1df27e233d8676a",
+            measurementId: "G-9DJLWJ5LQ1"
+        };
+
+        // รายการชื่อโต๊ะ A1-A24 และ B1-B24
+        const teamNames = [
+            ...Array.from({length: 24}, (_, i) => `A${i + 1}`),
+            ...Array.from({length: 24}, (_, i) => `B${i + 1}`)
+        ];
+
+        let db, auth;
+        let userData = null;
+        
+        // ฟังก์ชันสร้าง Device ID (ยังเก็บไว้เพื่อบันทึกข้อมูลการใช้งานล่าสุด แต่ไม่ใช้ในการบล็อก)
+        const generateStableId = () => {
+            const fingerprint = navigator.userAgent + screen.width + screen.height + navigator.language;
+            let hash = 0;
+            for (let i = 0; i < fingerprint.length; i++) {
+                hash = ((hash << 5) - hash) + fingerprint.charCodeAt(i);
+                hash |= 0; 
+            }
+            return 'BROWSER-' + Math.abs(hash).toString(16).toUpperCase();
+        };
+        const deviceId = generateStableId();
+
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const registerButton = document.getElementById("registerButton");
+        const messageDiv = document.getElementById("message");
+        const instructionText = document.getElementById("instructionText");
+        const teamSelect = document.getElementById("teamSelect");
+
+        window.switchTab = (tabIndex) => {
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab${tabIndex}`).classList.remove('hidden');
+            const buttons = document.querySelectorAll('#bottomNav button');
+            buttons.forEach((btn, idx) => {
+                btn.style.opacity = (idx + 1 === tabIndex) ? "1" : "0.5";
+            });
+        };
+
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            await signInAnonymously(auth);
+            
+            const today = new Date();
+            document.getElementById("eventDate").textContent = "วันที่ " + today.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+            
+            populateTeamDropdown(); 
+            setupOtpInputs(); 
+            otpInputs[0].focus();
+        } catch (error) {
+            console.error(error);
+        }
+
+        function setupOtpInputs() {
+            otpInputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                    if (e.target.value) input.classList.add('otp-active');
+                    else input.classList.remove('otp-active');
+                    if (e.target.value.length === 1 && index < otpInputs.length - 1) otpInputs[index + 1].focus();
+                    
+                    const code = Array.from(otpInputs).map(i => i.value).join('');
+                    if (code.length === 5) validateEmployeeId(code);
+                    else {
+                        userData = null;
+                        registerButton.disabled = true;
+                        instructionText.textContent = "กรุณากรอกรหัสพนักงานของท่าน";
+                        instructionText.className = "block text-sm font-bold text-gray-800 mt-4 text-center drop-shadow-md";
+                        messageDiv.innerHTML = "";
+                    }
+                });
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value && index > 0) otpInputs[index - 1].focus();
+                });
+            });
+        }
+
+        async function validateEmployeeId(empId) {
+            document.getElementById('checkingIdIndicator').classList.remove('hidden');
+            try {
+                // ค้นหาพนักงานโดยตรงจาก Firestore
+                const q = query(collection(db, "crsg"), where("employeeId", "==", String(empId)), limit(1));
+                const snap = await getDocs(q);
+                
+                if (!snap.empty) {
+                    const docSnap = snap.docs[0];
+                    const data = docSnap.data();
+
+                    // ** นำระบบตรวจสอบ MobileId ออกเพื่อให้ล็อกอินได้ทุกเครื่อง **
+                    userData = { id: docSnap.id, ...data };
+                    registerButton.disabled = false;
+                    instructionText.innerHTML = `<span class="text-lg text-blue-900">คุณ${userData.FullName_th}</span>`;
+                    instructionText.className = "block font-bold mt-4 text-center drop-shadow-md fade-in";
+                    messageDiv.innerHTML = "";
+                } else {
+                    instructionText.textContent = "กรุณากรอกรหัสพนักงานของท่าน";
+                    instructionText.className = "block text-sm font-bold text-gray-800 mt-4 text-center drop-shadow-md";
+                    messageDiv.innerHTML = `<span class="text-red-600">ไม่พบรหัสพนักงานนี้</span>`;
+                    registerButton.disabled = true;
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                document.getElementById('checkingIdIndicator').classList.add('hidden');
+            }
+        }
+
+        registerButton.addEventListener("click", async () => {
+            if (!userData) return;
+            registerButton.disabled = true;
+            registerButton.textContent = "กำลังลงทะเบียน...";
+            
+            try {
+                // ** นำระบบตรวจสอบเครื่องที่ถูกสมาชิกท่านอื่นใช้อยู่ออก **
+                const now = new Date();
+                const docRef = doc(db, "crsg", userData.id);
+                
+                // บันทึกข้อมูลวันเวลาที่ล็อกอินและ ID ของเบราว์เซอร์ล่าสุดที่ใช้งาน
+                await updateDoc(docRef, { 
+                    DateLogin: now,
+                    MobileId: deviceId 
+                });
+                
+                userData.DateLogin = now;
+                userData.MobileId = deviceId;
+                showDashboard();
+            } catch (err) {
+                console.error(err);
+                registerButton.disabled = false;
+                registerButton.textContent = "ลงทะเบียน";
+                messageDiv.innerHTML = `<span class="text-red-600 text-xs">เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง</span>`;
+            }
+        });
+
+        function showDashboard() {
+            document.getElementById("loginSection").classList.add("hidden");
+            document.getElementById("dashboardSection").classList.remove("hidden");
+            document.getElementById("bottomNav").classList.remove("hidden");
+            
+            document.getElementById("infoFullName").textContent = `${userData.FullName_th} (${userData.employeeId})`;
+            document.getElementById("infoBranch").textContent = `${userData.Branch_eng || '-'}`;
+            document.getElementById("infoDept").textContent = `${userData.Department_eng || '-'}`;
+            document.getElementById("infoChief").textContent = `${userData.Chief || '-'}`;
+            
+            const checkPlaceRaw = (userData.Check_Place || "").trim();
+            const hasPlace = checkPlaceRaw !== "";
+            
+            const teamNameDisplay = document.getElementById("teamNameDisplay");
+            const seatingMapContainer = document.getElementById("seatingMapContainer");
+            
+            if (hasPlace) {
+                teamNameDisplay.textContent = "โต๊ะที่ " + checkPlaceRaw;
+                seatingMapContainer.classList.remove("hidden");
+            } else {
+                teamNameDisplay.textContent = "ผู้ร่วมงาน";
+                seatingMapContainer.classList.add("hidden");
+            }
+
+            // แสดงชื่อเล่น (NickName)
+            const nickName = (userData.NickName || "").trim();
+            const nickNameEl = document.getElementById("infoNickName");
+            if (nickName !== "") {
+                nickNameEl.textContent = `${nickName}`;
+                nickNameEl.classList.remove("hidden");
+            } else {
+                nickNameEl.classList.add("hidden");
+            }
+
+            document.getElementById("registrationStatusMessage").textContent = "ลงทะเบียนสำเร็จ!";
+            const loginTime = userData.DateLogin?.toDate ? userData.DateLogin.toDate() : new Date(userData.DateLogin);
+            document.getElementById("registrationTimestamp").textContent = `เมื่อ: ${loginTime.toLocaleString('th-TH')}`;
+            
+            const tab2NavText = document.getElementById("tab2NavText");
+            const tab2Header = document.getElementById("tab2Header");
+            
+            if (hasPlace) {
+                tab2NavText.textContent = "ผู้ร่วมโต๊ะ";
+                tab2Header.textContent = "ผู้ร่วมโต๊ะ";
+                teamSelect.value = checkPlaceRaw;
+                fetchTeamMembers(checkPlaceRaw);
+            } else {
+                tab2NavText.textContent = "โต๊ะที่ A1-B24";
+                tab2Header.textContent = "เลือกดูรายชื่อโต๊ะ";
+                teamSelect.value = teamNames[0];
+                fetchTeamMembers(teamNames[0]);
+            }
+            
+            listenForPrize();
+            switchTab(1);
+        }
+
+        function populateTeamDropdown() {
+            teamSelect.innerHTML = teamNames.map(t => `<option value="${t}">โต๊ะที่ ${t}</option>`).join('');
+            teamSelect.addEventListener("change", (e) => fetchTeamMembers(e.target.value));
+        }
+
+        async function fetchTeamMembers(teamName) {
+            const tbody = document.getElementById("teamMembersTableBody");
+            tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center animate-pulse text-gray-400">กำลังโหลด...</td></tr>`;
+            try {
+                // ดึงข้อมูลพนักงานที่สังกัดโต๊ะที่เลือก
+                const q = query(collection(db, "crsg"), where("Check_Place", "==", teamName));
+                const snap = await getDocs(q);
+                const members = [];
+                snap.forEach(d => members.push(d.data()));
+                members.sort((a,b) => (a.FullName_th || '').localeCompare(b.FullName_th || ''));
+                
+                tbody.innerHTML = members.map(m => `
+                    <tr class="${m.DateLogin ? 'bg-blue-50' : ''}">
+                        <td class="px-4 py-2 font-bold text-gray-800">${m.FullName_th}</td>
+                        <td class="px-4 py-2 text-center">
+                            ${m.DateLogin ? '<span class="text-green-600 font-bold">✓</span>' : '<span class="text-gray-300">รอ</span>'}
+                        </td>
+                    </tr>
+                `).join('');
+                if (members.length === 0) tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-gray-400">ไม่พบรายชื่อในโต๊ะนี้</td></tr>`;
+            } catch (err) { console.error(err); }
+        }
+
+        function listenForPrize() {
+            const prizeDiv = document.getElementById("prizeContainer");
+            onSnapshot(doc(db, "crsg", userData.id), (docSnapshot) => {
+                const data = docSnapshot.data();
+                if (!data) return;
+                const awardedGift = data.AwardedGift ? String(data.AwardedGift).trim() : "";
+                
+                if (awardedGift !== "") {
+                    const hasReceived = data.ReceivedTime && data.ReceivedTime !== null && data.ReceivedTime !== "";
+                    if (hasReceived) {
+                        const receiveTime = data.ReceivedTime.toDate ? data.ReceivedTime.toDate() : new Date(data.ReceivedTime);
+                        prizeDiv.innerHTML = `
+                            <div class="text-green-600 fade-in">
+                                <svg class="w-20 h-20 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <h3 class="text-xl font-bold">ยืนยันรับรางวัลเรียบร้อยแล้ว!</h3>
+                                <div class="my-4 p-4 bg-green-50 rounded-xl border border-green-200">
+                                    <p class="text-lg font-bold text-gray-800">${awardedGift}</p>
+                                </div>
+                                <p class="text-xs text-gray-500 font-bold">ยืนยันเมื่อ: ${receiveTime.toLocaleString('th-TH')}</p>
+                            </div>
+                        `;
+                    } else {
+                        prizeDiv.innerHTML = `
+                            <div class="fade-in">
+                                <div class="text-6xl mb-4 text-orange-500">🎁</div>
+                                <h3 class="text-xm font-black text-blue-900">ยินดีด้วย! คุณได้รับรางวัล</h3>
+                                <div class="my-6 p-6 bg-yellow-100 border-2 border-yellow-400 rounded-2xl shadow-inner">
+                                    <p class="text-xm font-bold text-gray-800">${awardedGift}</p>
+                                </div>
+                                <button onclick="claimPrize()" id="claimBtn" class="block mx-auto w-[80%] px-4 py-3 font-bold text-white bg-[#f68b1f] rounded-xl hover:bg-opacity-95 transition duration-150 shadow-xm">
+                                    ยืนยันการรับรางวัล
+                                </button>
+                                <p class="text-[11px] text-red-400 mt-4 uppercase tracking-tighter font-bold">* กรุณากดเพื่อยืนยันการรับสิทธิ์กับเจ้าหน้าที่ *</p>
+                            </div>
+                        `;
+                    }
+                } else {
+                    prizeDiv.innerHTML = `
+                        <div class="text-gray-400 opacity-60">
+                            <svg class="w-16 h-16 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 5a3 3 0 015-2.236A3 3 0 0114.83 6H16a2 2 0 110 4h-5V9a1 1 0 10-2 0v1H4a2 2 0 110-4h1.17C5.06 5.687 5 5.35 5 5zm4 1V5a1 1 0 10-1 1h1zm3 0a1 1 0 10-1-1v1h1z" clip-rule="evenodd"></path><path d="M9 11H3v5a2 2 0 002 2h4v-7zM11 18h4a2 2 0 002-2v-5h-6v7z"></path></svg>
+                            <p class="font-bold text-lg">รอลุ้นรางวัลช่วง Lucky Draw...</p>
+                            <p class="text-xs mt-2">หากได้รับรางวัล รายละเอียดจะปรากฏที่นี่ทันที</p>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        window.claimPrize = async () => {
+            const btn = document.getElementById("claimBtn");
+            if (!btn || btn.disabled) return;
+            btn.disabled = true;
+            btn.textContent = "กำลังบันทึก...";
+            try {
+                await updateDoc(doc(db, "crsg", userData.id), { 
+                    ReceivedTime: new Date(),
+                    PrizeClaimed: true
+                });
+            } catch (err) {
+                console.error(err);
+                btn.disabled = false;
+                btn.textContent = "ยืนยันการรับรางวัล";
+            }
+        };
+
+    </script>
+</body>
+</html>
